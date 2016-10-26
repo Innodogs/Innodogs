@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% for request in add_requests -%}
+        <div>
+            <h1>{{ request.id }}</h1>
+            {{ request.description }}
+            <div>
+                User: {{ request.user.name }}
+            </div>
+        </div>
+
+    {%- endfor %}
+{% endblock %}

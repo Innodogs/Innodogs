@@ -21,4 +21,7 @@ def create_app(config_name):
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
+    from .addrequests import add_requests as add_requests_blueprint
+    app.register_blueprint(add_requests_blueprint, url_prefix='/add-requests')
+
     return app
