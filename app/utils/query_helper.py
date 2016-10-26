@@ -21,18 +21,24 @@ class QueryHelper:
         """
         Returns string of columns, which can be used in SQL statement, like:
 
-        'requests.id, requests.name'
+        'requests.id AS request_id, request.name AS request_name'
 
         where 'requests' is temporary_name parameter
+        and request is actual name of the table
+        this is done to satisfy requirements of SQLAlchemy's mapper (case of outer join)
 
         :param mapping: SQLAlchemy table
         :param temporary_name: Temporary name for table in the statement
         :return: String
         """
 
+        def get_column_description(column):
+            return temporary_name+"."+column+" AS "+mapping.description+"_"+column
+
         columns = cls.get_columns_list(mapping)
+
         if temporary_name:
-            columns = [temporary_name+"."+column for column in columns]
+            columns = [get_column_description(column) for column in columns]
         return ', '.join(columns)
 
     @classmethod

@@ -24,4 +24,7 @@ def create_app(config_name):
     from .addrequests import add_requests as add_requests_blueprint
     app.register_blueprint(add_requests_blueprint, url_prefix='/add-requests')
 
+    from .dogs import dogs as dogs_blueprint
+    app.register_blueprint(dogs_blueprint, url_prefix='/dogs')
+
     return app

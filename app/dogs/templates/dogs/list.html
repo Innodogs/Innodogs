@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Dogs list</h1>
+    {% for dog in dogs -%}
+        <div>
+            <h2>{{ dog.id }}</h2>
+            {{ dog.description }}
+            <div>
+                <ul>
+                    <li>Name: {{ dog.name }}</li>
+                    <li>Sex: {{ dog.sex }}</li>
+                </ul>
+
+            </div>
+        </div>
+    {%- endfor %}
+{% endblock %}
