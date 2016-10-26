@@ -2,6 +2,7 @@ CREATE TYPE SEX AS ENUM ('female', 'male', 'unknown');
 
 CREATE TABLE "user" (
   id            SERIAL PRIMARY KEY,
+  google_id     VARCHAR(255),
   is_volunteer  BOOL         NOT NULL,
   is_admin      BOOL         NOT NULL,
   name          VARCHAR(100) NOT NULL,
@@ -18,9 +19,9 @@ CREATE TABLE location (
 
 CREATE TABLE dog (
   id          SERIAL PRIMARY KEY,
-  is_hidden   BOOL         NOT NULL,
+  is_hidden   BOOL NOT NULL,
   name        VARCHAR(255),
-  sex         SEX NOT NULL,
+  sex         SEX  NOT NULL,
   description TEXT,
   is_adopted  BOOL NOT NULL,
   location_id INTEGER REFERENCES location (id) --has
@@ -79,8 +80,8 @@ CREATE TABLE comment (
 );
 
 CREATE TABLE adoption_request (
-  user_id  INTEGER NOT NULL REFERENCES "user" (id),
-  dog_id   INTEGER NOT NULL REFERENCES dog (id),
+  user_id  INTEGER     NOT NULL REFERENCES "user" (id),
+  dog_id   INTEGER     NOT NULL REFERENCES dog (id),
   comment  TEXT,
   datetime TIMESTAMPTZ NOT NULL,
   PRIMARY KEY (user_id, dog_id)
