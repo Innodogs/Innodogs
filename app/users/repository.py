@@ -35,5 +35,5 @@ class UsersRepository:
                 table_name=UserMapping.description,
                 columns=columns,
                 substitutions=substitutions))
-        user = db.engine.execute(query.params(**params_dict))
-        return next(iter(user))[0]  # get one
+        db.engine.execute(query.params(**params_dict))
+        return cls.get_user_by_google_id(user.google_id)

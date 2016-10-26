@@ -22,10 +22,10 @@ class User(UserMixin):
         self.id = None
         self.name = kwargs['name']
         self.google_id = str(kwargs['id'])
-        self.is_volunteer = None
-        self.is_admin = None
+        self.is_volunteer = False
+        self.is_admin = False
         self.email = kwargs['email']
-        self.password_hash = None
+        self.password_hash = 0
 
     def get_id(self):
         try:

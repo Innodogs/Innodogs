@@ -22,12 +22,7 @@ def login_success(token, userinfo):
     user = User(**userinfo)
     from_db = UsersRepository.get_user_by_google_id(user.google_id)
     if not from_db:
-        user.is_admin = False
-        user.is_volunteer = False
-        user.password_hash = 0
-        id = UsersRepository.save_user(user)
-        from_db = user
-        from_db.id = id
+        from_db = UsersRepository.save_user(user)
     login_user(from_db)
     session['token'] = json.dumps(token)
     return redirect(url_for('users.profile'))
