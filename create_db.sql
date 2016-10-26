@@ -1,12 +1,13 @@
 CREATE TYPE SEX AS ENUM ('female', 'male', 'unknown');
 
 CREATE TABLE "user" (
-  id            SERIAL PRIMARY KEY,
-  google_id     VARCHAR(255),
-  is_volunteer  BOOL         NOT NULL,
-  is_admin      BOOL         NOT NULL,
-  name          VARCHAR(100) NOT NULL,
-  email         VARCHAR(255) NOT NULL
+  id           SERIAL PRIMARY KEY,
+  google_id    VARCHAR(255) UNIQUE,
+  is_volunteer BOOL         NOT NULL,
+  is_admin     BOOL         NOT NULL,
+  name         VARCHAR(100) NOT NULL,
+  email        VARCHAR(255) NOT NULL,
+  UNIQUE (google_id, email)
 );
 
 CREATE TABLE location (
