@@ -53,6 +53,8 @@ class AddRequestsRepository:
     def update_add_request(cls, add_request):
         """Updates given AddRequest"""
 
-        update_clause = QueryHelper.get_update_string(AddRequestMapping, add_request, fields_to_exclude=['id'])
-        query = "UPDATE %s SET %s WHERE id = %s" % (AddRequestMapping.description, update_clause, add_request.id)
-        db.engine.execute(query)
+        update_clause, params_dict = QueryHelper.get_update_string_and_dict(AddRequestMapping, add_request,
+                                                                            fields_to_exclude=['id'])
+        query = text("UPDATE %s SET %s WHERE id = :request_id" % (AddRequestMapping.description, update_clause))
+        params_dict['request_id'] = add_request.id
+        db.engine.execute(query.params(**params_dict))
