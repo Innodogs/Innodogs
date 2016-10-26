@@ -26,6 +26,14 @@ class User(UserMixin):
         self.is_admin = kwargs.get('is_admin', False)
         self.email = kwargs.get('email')
 
+    def get_roles(self):
+        roles = []
+        if self.is_volunteer:
+            roles.append('volunteer')
+        if self.is_admin:
+            roles.append('admin')
+        return roles
+
     def get_id(self):
         try:
             return self.google_id

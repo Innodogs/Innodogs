@@ -6,15 +6,23 @@ from flask import url_for
 from flask_login import login_required, login_user
 
 from app import google_login
-from app.users.repository import UsersRepository
 from . import users
 from .models import User
+from .repository import UsersRepository
+from .utils import requires_roles
 
 
+@users.route('/profile', methods=['GET', 'POST'])
 @login_required
-@users.route("/profile", methods=["GET", "POST"])
 def profile():
     return render_template('profile.html')
+
+
+@users.route('/only_for_admin', methods=['GET'])
+@login_required
+@requires_roles('admin')
+def only_for_admin():
+    return 'for admin only'
 
 
 @google_login.login_success
