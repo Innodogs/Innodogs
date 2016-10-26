@@ -1,6 +1,8 @@
 click==6.6
 coverage==4.2
 Flask==0.11.1
+Flask-Login==0.3.2
+Flask-OAuth2-Login==0.0.9
 Flask-SQLAlchemy==2.1
 itsdangerous==0.24
 Jinja2==2.8
