@@ -19,13 +19,12 @@ class User(UserMixin):
 
     def __init__(self, **kwargs):
         super().__init__()
-        self.id = None
-        self.name = kwargs['name']
-        self.google_id = str(kwargs['id'])
-        self.is_volunteer = False
-        self.is_admin = False
-        self.email = kwargs['email']
-        self.password_hash = 0
+        self.id = kwargs.get('id')
+        self.name = kwargs.get('name')
+        self.google_id = str(kwargs.get('google_id'))
+        self.is_volunteer = kwargs.get('is_volunteer', False)
+        self.is_admin = kwargs.get('is_admin', False)
+        self.email = kwargs.get('email')
 
     def get_id(self):
         try:
@@ -43,8 +42,7 @@ UserMapping = Table('user', metadata,
                     Column('is_volunteer', Boolean),
                     Column('is_admin', Boolean),
                     Column('name', String(100)),
-                    Column('email', String(255)),
-                    Column('password_hash', String(255)),
+                    Column('email', String(255))
                     )
 
 mapper(User, UserMapping)

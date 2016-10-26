@@ -18,11 +18,14 @@ def profile():
 
 
 @google_login.login_success
-def login_success(token, userinfo):
-    user = User(**userinfo)
+def login_success(token, user_info):
+    user_info['google_id'] = user_info.pop('id')  # rename id key to google_id
+    user = User(**user_info)
+
     from_db = UsersRepository.get_user_by_google_id(user.google_id)
     if not from_db:
         from_db = UsersRepository.save_user(user)
+
     login_user(from_db)
     session['token'] = json.dumps(token)
     return redirect(url_for('users.profile'))

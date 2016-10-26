@@ -6,8 +6,7 @@ CREATE TABLE "user" (
   is_volunteer  BOOL         NOT NULL,
   is_admin      BOOL         NOT NULL,
   name          VARCHAR(100) NOT NULL,
-  email         VARCHAR(255) NOT NULL,
-  password_hash VARCHAR(255) NOT NULL
+  email         VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE location (
