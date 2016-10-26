@@ -24,7 +24,7 @@ class User(UserMixin):
         self.google_id = str(kwargs['id'])
         self.is_volunteer = None
         self.is_admin = None
-        self.email = None
+        self.email = kwargs['email']
         self.password_hash = None
 
     def get_id(self):

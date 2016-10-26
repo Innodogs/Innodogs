@@ -6,7 +6,6 @@ __author__ = 'Xomak'
 
 
 class QueryHelper:
-
     @classmethod
     def get_columns_list(cls, mapping: Table) -> List[str]:
         """
@@ -32,7 +31,7 @@ class QueryHelper:
 
         columns = cls.get_columns_list(mapping)
         if temporary_name:
-            columns = [temporary_name+"."+column for column in columns]
+            columns = [temporary_name + "." + column for column in columns]
         return ', '.join(columns)
 
     @classmethod
@@ -61,3 +60,16 @@ class QueryHelper:
                 updates.append("%s = :%s" % (column.name, column.name))
                 params_dict[column.name] = getattr(data_object, column.key)
         return ", ".join(updates), params_dict
+
+    @classmethod
+    def get_insert_strings_and_dict(cls, mapping: Table, data_object, fields_to_insert=[], fields_to_exclude=[]) \
+            -> Tuple[str, Dict]:
+        column_names = []
+        params_dict = {}
+        for column in mapping.get_children():
+            if column.key not in fields_to_exclude and (column.key in fields_to_insert or len(fields_to_insert) == 0):
+                column_names.append(column.name)
+                params_dict[column.name] = getattr(data_object, column.key)
+        substitutions = ", ".join([":" + column for column in column_names])
+        columns = ", ".join(column_names)
+        return columns, substitutions, params_dict
