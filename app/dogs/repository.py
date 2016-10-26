@@ -40,7 +40,6 @@ class DogsRepository:
         :param join_tuple: Input tuple
         :return: Dog with location
         """
-        print(join_tuple)
         dog = join_tuple[0]
         dog.location = join_tuple[1]
 

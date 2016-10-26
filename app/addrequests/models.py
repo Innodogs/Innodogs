@@ -1,4 +1,4 @@
-"""Models for students sample app"""
+"""Models for addrequests app"""
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
