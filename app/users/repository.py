@@ -28,6 +28,7 @@ class UsersRepository:
     def save_user(cls, user: User) -> User:
         """Saves given user"""
 
+        # noinspection PyTupleAssignmentBalance
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(UserMapping, user,
                                                                                       fields_to_exclude=['id'])
         query = text(
