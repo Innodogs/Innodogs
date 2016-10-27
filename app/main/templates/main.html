@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    Rendered template from app/main/templates/base.html
-{%  endblock %}
+    {% if current_user.is_authenticated %}
+        Hi {{ current_user.name }}!
+    {% endif %}
+    <a href="{{ authorization_url }}">log in</a>
+{% endblock %}

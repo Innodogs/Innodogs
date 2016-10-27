@@ -6,7 +6,6 @@ __author__ = 'Xomak'
 
 
 class QueryHelper:
-
     @classmethod
     def get_columns_list(cls, mapping: Table) -> List[str]:
         """
@@ -55,7 +54,7 @@ class QueryHelper:
         And dict: {"param1": "value1", "param2": "value2"}
 
         :param mapping: SQLAlchemy mapping
-        :param object: object with data, which will be included in statement
+        :param data_object: object with data, which will be included in statement
         :param fields_to_update: fields, which should be considered (if empty - all will be considered)
         :param fields_to_exclude: fields, which will not be considered
         :return: String and dict
@@ -67,3 +66,36 @@ class QueryHelper:
                 updates.append("%s = :%s" % (column.name, column.name))
                 params_dict[column.name] = getattr(data_object, column.key)
         return ", ".join(updates), params_dict
+
+    @classmethod
+    def get_insert_strings_and_dict(cls, mapping: Table, data_object, fields_to_insert=[], fields_to_exclude=[]) \
+            -> Tuple[str, str, Dict]:
+        """
+        Typical insert statement: `INSERT INTO "{table_name}" ({columns}) VALUES ({substitutions})`
+
+        This method returns columns:
+
+        `param1, param2, param3, ...`
+
+        Returns substitutions:
+
+        `:param1, :param2, :param3`
+
+        And dict: `{"param1": "value1", "param2": "value2"}`
+
+
+        :param mapping: SQLAlchemy mapping
+        :param data_object: object with data, which will be included in statement
+        :param fields_to_insert: fields, which should be considered (if empty - all will be considered)
+        :param fields_to_exclude: fields, which will not be considered
+        :return: String and dict
+        """
+        column_names = []
+        params_dict = {}
+        for column in mapping.get_children():
+            if column.key not in fields_to_exclude and (column.key in fields_to_insert or len(fields_to_insert) == 0):
+                column_names.append(column.name)
+                params_dict[column.name] = getattr(data_object, column.key)
+        substitutions = ", ".join([":" + column for column in column_names])
+        columns = ", ".join(column_names)
+        return columns, substitutions, params_dict

@@ -1,4 +1,6 @@
 """Models for user's app"""
+from flask_login import UserMixin
+from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import Integer
@@ -12,17 +14,31 @@ __author__ = 'Xomak'
 metadata = MetaData()
 
 
-class User:
+class User(UserMixin):
     """User's model"""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.id = None
-        self.is_volunteer = None
-        self.is_admin = None
-        self.name = None
-        self.email = None
-        self.password_hash = None
+        self.id = kwargs.get('id')
+        self.name = kwargs.get('name')
+        self.google_id = str(kwargs.get('google_id'))
+        self.is_volunteer = kwargs.get('is_volunteer', False)
+        self.is_admin = kwargs.get('is_admin', False)
+        self.email = kwargs.get('email')
+
+    def get_roles(self):
+        roles = []
+        if self.is_volunteer:
+            roles.append('volunteer')
+        if self.is_admin:
+            roles.append('admin')
+        return roles
+
+    def get_id(self):
+        try:
+            return self.google_id
+        except AttributeError:
+            raise NotImplementedError('No `google_id` attribute - override `get_id`')
 
     def __str__(self):
         return "User # %s (%s)" % (self.id, self.name)
@@ -30,11 +46,11 @@ class User:
 
 UserMapping = Table('user', metadata,
                     Column('id', Integer, primary_key=True),
+                    Column('google_id', BigInteger),
                     Column('is_volunteer', Boolean),
                     Column('is_admin', Boolean),
                     Column('name', String(100)),
-                    Column('email', String(255)),
-                    Column('password_hash', String(255)),
+                    Column('email', String(255))
                     )
 
 mapper(User, UserMapping)
