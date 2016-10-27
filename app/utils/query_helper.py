@@ -48,7 +48,7 @@ class QueryHelper:
         And dict: {"param1": "value1", "param2": "value2"}
 
         :param mapping: SQLAlchemy mapping
-        :param object: object with data, which will be included in statement
+        :param data_object: object with data, which will be included in statement
         :param fields_to_update: fields, which should be considered (if empty - all will be considered)
         :param fields_to_exclude: fields, which will not be considered
         :return: String and dict
@@ -63,7 +63,27 @@ class QueryHelper:
 
     @classmethod
     def get_insert_strings_and_dict(cls, mapping: Table, data_object, fields_to_insert=[], fields_to_exclude=[]) \
-            -> Tuple[str, Dict]:
+            -> Tuple[str, str, Dict]:
+        """
+        Typical insert statement: `INSERT INTO "{table_name}" ({columns}) VALUES ({substitutions})`
+
+        This method returns columns:
+
+        `param1, param2, param3, ...`
+
+        Returns substitutions:
+
+        `:param1, :param2, :param3`
+
+        And dict: `{"param1": "value1", "param2": "value2"}`
+
+
+        :param mapping: SQLAlchemy mapping
+        :param data_object: object with data, which will be included in statement
+        :param fields_to_insert: fields, which should be considered (if empty - all will be considered)
+        :param fields_to_exclude: fields, which will not be considered
+        :return: String and dict
+        """
         column_names = []
         params_dict = {}
         for column in mapping.get_children():

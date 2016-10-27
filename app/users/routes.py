@@ -18,15 +18,18 @@ def profile():
     return render_template('profile.html')
 
 
+# the order of the wrappers matters (!)
 @users.route('/only_for_admin', methods=['GET'])
 @login_required
 @requires_roles('admin')
 def only_for_admin():
+    """Special section for admin. Only for test purposes. Could be removed."""
     return 'for admin only'
 
 
+# user_info and token comes from google
 @google_login.login_success
-def login_success(token, user_info):
+def login_success_callback(token, user_info):
     user_info['google_id'] = user_info.pop('id')  # rename id key to google_id
     user = User(**user_info)
 
@@ -40,5 +43,5 @@ def login_success(token, user_info):
 
 
 @google_login.login_failure
-def login_failure(e):
+def login_failure_callback(e):
     return jsonify(error=str(e))

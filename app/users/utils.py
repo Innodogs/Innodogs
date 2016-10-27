@@ -15,10 +15,22 @@ def load_user(google_id):
 
 
 def access_denied_response():
+    """Example of access is denied response. Not final. Could be removed"""
     return render_template('access_denied_response.html')
 
 
 def requires_roles(*allowed_roles):
+    """Wrapper for any function that requires some roles restrictions:
+
+    :Example:
+
+    @requires_roles('admin','admin2')
+    def f():
+        ...
+
+    f is wrapped into requires_roles wrapper and f will be executed only if current_user has admin or admin2 roles.
+    """
+
     def wrapper(f):
         @wraps(f)
         def wrapped(*args, **kwargs):

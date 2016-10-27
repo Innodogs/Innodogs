@@ -26,9 +26,8 @@ class UsersRepository:
 
     @classmethod
     def save_user(cls, user: User) -> User:
-        """Saves given user"""
+        """Saves given user and returns user with id"""
 
-        # noinspection PyTupleAssignmentBalance
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(UserMapping, user,
                                                                                       fields_to_exclude=['id'])
         query = text(
@@ -36,5 +35,5 @@ class UsersRepository:
                 table_name=UserMapping.description,
                 columns=columns,
                 substitutions=substitutions))
-        db.engine.execute(query.params(**params_dict))
+        db.engine.execute(query.params(**params_dict))  # didn't find how to do it correctly with sqlalchemy :(
         return cls.get_user_by_google_id(user.google_id)
