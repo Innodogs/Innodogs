@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <ul class="collection">
     {% for request in add_requests -%}
+      <a href="#" class="collection-item avatar">
+        <i class="material-icon circle red">{{ request.id }}</i>
         <div>
-            <h1>{{ request.id }}</h1>
-            {{ request.description }}
-            <div>
-                User: {{ request.user.name }}
-            </div>
+          <span class="title">{{ request.user.name }}: {{ request.description }}</span>
+          <p>Comment: {{ request.comment }}</p>
+          <p>{{ request.datetime }}</p>
         </div>
-
+      </a>
     {%- endfor %}
+    </ul>
 {% endblock %}
