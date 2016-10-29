@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form class="add-requests-form" method="POST" action="{{ url_for('.add_request_form') }}" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div>{{ form.description.label }} {{ form.description }}</div>
+        <div>{{ form.pictures.label }} {{ form.pictures }}</div>
+        <div><input type="submit" value="Submit"></div>
+    </form>
+{% endblock %}
