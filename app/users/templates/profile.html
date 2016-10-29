@@ -2,4 +2,5 @@
 
 {% block content %}
     Profile of {{ current_user.name }}!
+    <a href="{{ url_for('users.logout') }}">log out</a>
 {% endblock %}

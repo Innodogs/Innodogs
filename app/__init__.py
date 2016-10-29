@@ -10,7 +10,7 @@ __author__ = 'Xomak'
 db = SQLAlchemy()
 google_login = GoogleLogin()
 login_manager = LoginManager()
-login_manager.login_view = "login"
+login_manager.login_view = "main.index"
 login_manager.session_protection = "strong"
 
 

@@ -1,9 +1,10 @@
 from flask import json, jsonify
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import session
 from flask import url_for
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, logout_user
 
 from app import google_login
 from . import users
@@ -40,6 +41,13 @@ def login_success_callback(token, user_info):
     login_user(from_db)
     session['token'] = json.dumps(token)
     return redirect(url_for('users.profile'))
+
+
+@users.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('main.index'))
 
 
 @google_login.login_failure
