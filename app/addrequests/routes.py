@@ -8,6 +8,7 @@ from werkzeug.utils import secure_filename
 from app.addrequests import add_requests
 from app.addrequests.forms import AddRequestForm
 from app.addrequests.repository import AddRequestsRepository
+from app.addrequests.utils import add_request_form_to_domain
 
 __author__ = 'Xomak'
 
@@ -28,6 +29,7 @@ def submit_add_request_form():
         if form.pictures.data.filename != '':
             form.pictures.data.save(
                 os.path.join(current_app.config['UPLOAD_FOLDER'], filename))  # current_app -> probably fine
+        AddRequestsRepository.save_add_request(add_request_form_to_domain(form))
         flash('Thank you for your submission', 'info')
         return redirect(url_for('main.index'))
     return render_template('addrequests/add-request-form.html', form=form)

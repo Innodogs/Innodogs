@@ -32,7 +32,7 @@ CREATE TABLE add_request (
   description TEXT,
   datetime    TIMESTAMPTZ,
   status      VARCHAR(100) NOT NULL, -- Should be archived
-  comment     TEXT         NOT NULL,
+  comment     TEXT,
   user_id     INTEGER      NOT NULL REFERENCES "user" (id) --submits
 );
 

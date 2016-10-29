@@ -58,3 +58,18 @@ class AddRequestsRepository:
         query = text("UPDATE %s SET %s WHERE id = :request_id" % (AddRequestMapping.description, update_clause))
         params_dict['request_id'] = add_request.id
         db.engine.execute(query.params(**params_dict))
+
+
+    @classmethod
+    def save_add_request(cls, add_request: AddRequest):
+        """Saves given request and returns it with id"""
+        columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(AddRequestMapping, add_request,
+                                                                                      fields_to_exclude=['id'])
+        query = text(
+            'INSERT INTO "{table_name}" ({columns}) VALUES ({substitutions}) RETURNING *'.format(
+                table_name=AddRequestMapping.description,
+                columns=columns,
+                substitutions=substitutions))
+        result = db.engine.execute(query.params(**params_dict))
+        id = next(iter(result))[0]
+        return cls.get_add_request_by_id(id)
