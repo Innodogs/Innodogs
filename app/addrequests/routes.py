@@ -2,6 +2,7 @@ import os
 
 from flask import flash, redirect, url_for
 from flask import render_template, current_app
+from flask.ext.login import login_required
 from werkzeug.utils import secure_filename
 
 from app.addrequests import add_requests
@@ -12,12 +13,14 @@ __author__ = 'Xomak'
 
 
 @add_requests.route('/', methods=['GET'])
+@login_required
 def requests_list():
     r = AddRequestsRepository.get_all_add_requests()
     return render_template('addrequests/list.html', add_requests=r)
 
 
 @add_requests.route('/', methods=['POST'])
+@login_required
 def submit_add_request_form():
     form = AddRequestForm()
     if form.validate_on_submit():
@@ -31,6 +34,7 @@ def submit_add_request_form():
 
 
 @add_requests.route('/add-form', methods=['GET'])
+@login_required
 def add_request_form():
     form = AddRequestForm()
     return render_template('addrequests/add-request-form.html', form=form)
