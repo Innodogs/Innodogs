@@ -1,6 +1,6 @@
-CREATE TYPE SEX AS ENUM ('female', 'male', 'unknown');
+CREATE TYPE public.SEX AS ENUM ('female', 'male', 'unknown');
 
-CREATE TABLE "user" (
+CREATE TABLE public."user" (
   id           SERIAL PRIMARY KEY,
   google_id    VARCHAR(255) UNIQUE,
   is_volunteer BOOL         NOT NULL,
@@ -10,14 +10,14 @@ CREATE TABLE "user" (
   UNIQUE (google_id, email)
 );
 
-CREATE TABLE location (
+CREATE TABLE public.location (
   id          SERIAL PRIMARY KEY,
   name        VARCHAR(255) NOT NULL,
   description TEXT,
   parent_id   INTEGER REFERENCES location (id)
 );
 
-CREATE TABLE dog (
+CREATE TABLE public.dog (
   id          SERIAL PRIMARY KEY,
   is_hidden   BOOL NOT NULL,
   name        VARCHAR(255),
@@ -27,35 +27,35 @@ CREATE TABLE dog (
   location_id INTEGER REFERENCES location (id) --has
 );
 
-CREATE TABLE add_request (
+CREATE TABLE public.add_request (
   id          SERIAL PRIMARY KEY,
   description TEXT,
   datetime    TIMESTAMPTZ,
   status      VARCHAR(100) NOT NULL, -- Should be archived
-  comment     TEXT         NOT NULL,
+  comment     TEXT,
   user_id     INTEGER      NOT NULL REFERENCES "user" (id) --submits
 );
 
-CREATE TABLE inpayment (
+CREATE TABLE public.inpayment (
   id      SERIAL PRIMARY KEY,
   amount  MONEY NOT NULL,
   comment TEXT,
   user_id INTEGER REFERENCES "user" (id) -- was_done_by
 );
 
-CREATE TABLE expenditure (
+CREATE TABLE public.expenditure (
   id      SERIAL PRIMARY KEY,
   amount  MONEY NOT NULL, -- add check if can be negative
   comment TEXT
 );
 
-CREATE TABLE event_type (
+CREATE TABLE public.event_type (
   id             SERIAL PRIMARY KEY,
   type_name      VARCHAR(255) NOT NULL,
   is_significant BOOL         NOT NULL
 );
 
-CREATE TABLE event (
+CREATE TABLE public.event (
   id             SERIAL PRIMARY KEY,
   datetime       TIMESTAMPTZ NOT NULL, -- date + time + timezone
   description    TEXT,
@@ -64,14 +64,14 @@ CREATE TABLE event (
   dog_id         INTEGER     NOT NULL REFERENCES dog (id) --has
 );
 
-CREATE TABLE dog_picture (
+CREATE TABLE public.dog_picture (
   id         SERIAL PRIMARY KEY,
   uri        VARCHAR(1000) NOT NULL,
   dog_id     INTEGER REFERENCES dog (id), --dog has
   request_id INTEGER REFERENCES add_request (id) --request has
 );
 
-CREATE TABLE comment (
+CREATE TABLE public.comment (
   index    SERIAL,
   text     TEXT        NOT NULL,
   datetime TIMESTAMPTZ NOT NULL,
@@ -79,7 +79,7 @@ CREATE TABLE comment (
   user_id  INTEGER     NOT NULL REFERENCES "user" (id) --leaves
 );
 
-CREATE TABLE adoption_request (
+CREATE TABLE public.adoption_request (
   user_id  INTEGER     NOT NULL REFERENCES "user" (id),
   dog_id   INTEGER     NOT NULL REFERENCES dog (id),
   comment  TEXT,

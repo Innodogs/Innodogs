@@ -1,7 +1,6 @@
 from flask import json, jsonify
 from flask import redirect
 from flask import render_template
-from flask import request
 from flask import session
 from flask import url_for
 from flask_login import login_required, login_user, logout_user

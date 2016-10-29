@@ -1,9 +1,11 @@
 from functools import wraps
 
+from flask import abort
 from flask import render_template
 from flask_login import current_user
 
 from app import login_manager
+from app.users import users
 from .repository import UsersRepository
 
 
@@ -14,9 +16,10 @@ def load_user(google_id):
     return UsersRepository.get_user_by_google_id(str(google_id))
 
 
-def access_denied_response():
+@users.errorhandler(403)
+def access_denied_response(e):
     """Example of access is denied response. Not final. Could be removed"""
-    return render_template('access_denied_response.html')
+    return render_template('access_denied_response.html'), 403
 
 
 def requires_roles(*allowed_roles):
@@ -36,7 +39,7 @@ def requires_roles(*allowed_roles):
         def wrapped(*args, **kwargs):
             if any(role in allowed_roles for role in current_user.get_roles()):
                 return f(*args, **kwargs)
-            return access_denied_response()
+            return abort(403)
 
         return wrapped
 

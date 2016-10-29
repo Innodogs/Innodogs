@@ -34,7 +34,7 @@ class User(UserMixin):
             roles.append('admin')
         return roles
 
-    def get_id(self):
+    def get_id(self):  # get_id is called by google_login plugin.
         try:
             return self.google_id
         except AttributeError:
