@@ -2,7 +2,7 @@ import os
 
 from flask import flash, redirect, url_for
 from flask import render_template, current_app
-from flask.ext.login import login_required
+from flask_login import login_required
 from werkzeug.utils import secure_filename
 
 from app.addrequests import add_requests
