@@ -1,14 +1,22 @@
 {% extends "base.html" %}
 
+{% block title %} List of requests {% endblock %}
+
 {% block content %}
+    <h3 class="header center red-text text-lighten-2">List of requests</h3>
     <ul class="collection">
     {% for request in add_requests -%}
       <a href="#" class="collection-item avatar">
-        <i class="material-icon circle red">{{ request.id }}</i>
+        <i class="material-icon circle red lighten-1">{{ request.id }}</i>
         <div>
-          <span class="title">{{ request.user.name }}: {{ request.description }}</span>
+          {% if request.description %}
+          <span class="title"><b>{{ request.user.name }}</b>: {{ request.description }}</span>
+          {% else %}
+          <span class="title"><b>{{ request.user.name }}</b></span>
+          {% endif %}
           <p>Comment: {{ request.comment }}</p>
-          <p>{{ request.datetime }}</p>
+          <p><i>From: {{ request.datetime.strftime("%d %b %Y") }}</i></p>
+          <p class="secondary-content">{{ request.status }}</p>
         </div>
       </a>
     {%- endfor %}
