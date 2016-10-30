@@ -6,19 +6,22 @@
     <h3 class="header center red-text text-lighten-2">List of requests</h3>
     <ul class="collection">
     {% for request in add_requests -%}
-      <a href="#" class="collection-item avatar">
+      <li class="collection-item avatar">
         <i class="material-icon circle red lighten-1">{{ request.id }}</i>
-        <div>
-          {% if request.description %}
-          <span class="title"><b>{{ request.user.name }}</b>: {{ request.description }}</span>
-          {% else %}
-          <span class="title"><b>{{ request.user.name }}</b></span>
-          {% endif %}
-          <p>Comment: {{ request.comment }}</p>
-          <p><i>From: {{ request.datetime.strftime("%d %b %Y") }}</i></p>
-          <p class="secondary-content">{{ request.status }}</p>
+        <a href="#">
+        {% if request.description %}
+        <span class="title"><b>{{ request.user.name }}</b>: {{ request.description }}</span>
+        {% else %}
+        <span class="title"><b>{{ request.user.name }}</b></span>
+        {% endif %}
+        <p>Comment: {{ request.comment }}</p>
+        <p><i>From: {{ request.datetime.strftime("%d %b %Y") }}</i></p>
+        </a>
+        <div class="secondary-content">
+          <p>{{ request.status }}<p>
+          <a href="reject/{{ request.id }}"><i>Reject</i></a>
         </div>
-      </a>
+      </li>
     {%- endfor %}
     </ul>
 {% endblock %}
