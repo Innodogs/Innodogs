@@ -1,4 +1,4 @@
-from flask import render_template, redirect, request
+from flask import render_template, redirect, request, abort
 from flask_login import login_required
 
 from app.addrequests import add_requests
@@ -19,15 +19,24 @@ def requests_list():
 @login_required
 @requires_roles('volunteer')
 def requests_reject(req_id):
+    try:
+        req = AddRequestsRepository.get_add_request_by_id(req_id)
+    except Exception:
+        abort(404)
+    if req.status == "rejected":
+        return redirect('/add-requests/')
     return render_template('addrequests/reject.html', req_id=req_id)
 
 @add_requests.route('/reject/<req_id>/done', methods=['GET','POST'])
 @login_required
 @requires_roles('volunteer')
 def requests_reject_finish(req_id):
-    req = AddRequestsRepository.get_add_request_by_id(req_id)
-    req.status = 'rejected'
-    req.comment += " - " + request.form['comment']
-    AddRequestsRepository.update_add_request(req)
+    try:
+        req = AddRequestsRepository.get_add_request_by_id(req_id)
+        req.status = 'rejected'
+        req.comment = request.form['comment']
+        AddRequestsRepository.update_add_request(req)
+    except Exception:
+        abort(404)
     return redirect('/add-requests/')
 
