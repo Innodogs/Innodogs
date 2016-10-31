@@ -10,3 +10,11 @@ __author__ = 'Xomak'
 def requests_list():
     all_dogs = DogsRepository.get_all_dogs()
     return render_template('dogs/list.html', dogs=all_dogs)
+
+@dogs.route('/add', methods=['GET','POST'])
+def requests_add():
+    return render_template('dogs/add.html')
+
+@dogs.route('/page', methods=['GET','POST'])
+def requests_page():
+    return render_template('dogs/page.html')

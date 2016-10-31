@@ -1,39 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>{% block title %}{% endblock %}</title>
 
-  <title>{% block title %}{% endblock %}</title>
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/materialize.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{ url_for('static', filename='css/style.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
 
-  <!-- CSS -->
-  <link href="{{ url_for('static', filename='css/materialize.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <style>
+        nav{
+            background: white;
+            color: black;
+            border-bottom: 2px solid gainsboro;
+        }
+
+        nav ul a {
+            transition: background-color .3s;
+            font-size: 1rem;
+            color: black;
+            display: block;
+            padding: 0 15px;
+            cursor: pointer;
+        }
+
+        main {
+            flex: 1 0 auto;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            flex-direction: column;
+            background: #fafafa;
+        }
+
+        .input-field input[type=date]:focus + label,
+        .input-field input[type=text]:focus + label,
+        .input-field input[type=email]:focus + label,
+        .input-field input[type=password]:focus + label {
+            color: #e91e63;
+        }
+
+        .input-field input[type=date]:focus,
+        .input-field input[type=text]:focus,
+        .input-field input[type=email]:focus,
+        .input-field input[type=password]:focus {
+            border-bottom: 2px solid #e91e63;
+            box-shadow: none;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-  <nav>
-    <div class="nav-wrapper">
-      <a href="#" class="brand-logo">Innodogs</a>
-      <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li><a href="#">Dogs</a></li>
-        <li><a href="#">Stats</a></li>
-      </ul>
+<nav>
+    <div class="nav-wrapper" style="    margin: 0 16%;">
+        <img class="responsive-img" style="width: 50px; margin: 4px;"
+        src="{{ url_for('static', filename='icon.png') }}"/>
+        <a href="#" class="brand-logo" style="color:black;">InnoDog</a>
+        <ul id="nav-mobile" style="color:black;" class="right hide-on-med-and-down">
+            <li><a href="/dogs">Dogs</a></li>
+            <li><a href="badges.html">Money</a></li>
+            <li><a href="collapsible.html">JavaScript</a></li>
+        </ul>
     </div>
-  </nav>
-  <div class="container">
-      {% block content %}{% endblock %}
-  </div>
+</nav>
 
-
-
-  <footer class="page-footer">
     <div class="container">
-      <p class="white-text">Let's help to each other!</p>
+      {% block content %}{% endblock %}
     </div>
-  </footer>
 
-  <!-- Scripts -->
-  <script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+
+<!--  Scripts-->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+<script src="{{ url_for('static', filename='js/init.js') }}"></script>
 
 </body>
 </html>
-
