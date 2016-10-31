@@ -7,7 +7,8 @@ CREATE TABLE public."user" (
   is_admin     BOOL         NOT NULL,
   name         VARCHAR(100) NOT NULL,
   email        VARCHAR(255) NOT NULL,
-  UNIQUE (google_id, email)
+  UNIQUE (google_id),
+  UNIQUE (email)
 );
 
 CREATE TABLE public.location (
@@ -29,7 +30,7 @@ CREATE TABLE public.dog (
 
 CREATE TABLE public.add_request (
   id          SERIAL PRIMARY KEY,
-  description TEXT,
+  description TEXT         NOT NULL,
   datetime    TIMESTAMPTZ,
   status      VARCHAR(100) NOT NULL, -- Should be archived
   comment     TEXT,
