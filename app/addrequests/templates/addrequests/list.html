@@ -15,7 +15,9 @@
         </a>
         <div class="secondary-content">
           <p>{{ request.status }}<p>
+	  {% if request.status != 'rejected' %}
           <a href="reject/{{ request.id }}"><i>Reject</i></a>
+	  {% endif %}
         </div>
       </li>
     {%- endfor %}
