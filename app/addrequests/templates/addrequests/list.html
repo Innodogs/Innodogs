@@ -15,7 +15,7 @@
         </a>
         <div class="secondary-content">
           <p>{{ request.status }}<p>
-          <a href="/dogs/approove-request/{{ request.id }}">Approove</a> <br>
+          <a href="/dogs/approve-request/{{ request.id }}"><i>Approve</i></a> <br>
 	  {% if request.status != 'rejected' %}
           <a href="reject/{{ request.id }}"><i>Reject</i></a>
 	  {% endif %}
