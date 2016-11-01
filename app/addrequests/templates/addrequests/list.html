@@ -11,10 +11,11 @@
         <a href="#">
         <span class="title"><b>{{ request.user.name }}</b>: {{ request.description }}</span>
         <p>Comment: {{ request.comment }}</p>
-        <p><i>From: {{ request.datetime.strftime("%d %b %Y") }}</i></p>
+        <p><i>From: {{ request.datetime.strftime("%d %b %Y") if request.datetime else '' }}</i></p>
         </a>
         <div class="secondary-content">
           <p>{{ request.status }}<p>
+          <a href="/dogs/approove-request/{{ request.id }}">Approove</a> <br>
 	  {% if request.status != 'rejected' %}
           <a href="reject/{{ request.id }}"><i>Reject</i></a>
 	  {% endif %}

@@ -17,7 +17,7 @@
                 </div>
                 <div class="col s8">
                     <label>User name</label>
-                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ current_user.name }}
+                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ req.user.name }}
                     </div>
                     <label>Date</label>
                     <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ date.strftime("%d.%m.%Y") }}
@@ -28,6 +28,7 @@
                 <div class="col s12">
                     <label>Commentary</label>
                     <div style="   margin-top: 16px; margin-bottom: 15px;">
+                    {{ req.description }}
                     </div>
                 </div>
             </div>

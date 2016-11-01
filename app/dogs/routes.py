@@ -3,6 +3,7 @@ from flask_login import current_user
 from datetime import datetime
 
 from app.dogs.repository import DogsRepository
+from app.addrequests.repository import AddRequestsRepository
 from . import dogs
 
 __author__ = 'Xomak'
@@ -13,8 +14,8 @@ def requests_list():
     all_dogs = DogsRepository.get_all_dogs()
     return render_template('dogs/list.html', dogs=all_dogs)
 
-@dogs.route('/add', methods=['GET','POST'])
-def requests_add():
+@dogs.route('/approove-request/<req_id>', methods=['GET','POST'])
+def requests_add(req_id):
     if request.method == 'POST':
         dog = Dog()
         dog.name = request.form['name']
@@ -25,7 +26,8 @@ def requests_add():
         DogsRepository.new_dog(dog)
         #abort(401)
         return redirect('/dogs')
-    return render_template('dogs/add.html', date=datetime.now())
+    req = AddRequestsRepository.get_add_request_by_id(req_id)
+    return render_template('dogs/add.html', date=datetime.now(), req=req)
 
 @dogs.route('/page/<int:dog_id>', methods=['GET','POST'])
 def requests_page(dog_id):
