@@ -7,14 +7,40 @@
     <div class="section"></div>
 
     <div class="row"
-         style="padding: 20px;    background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
-        <form class="col s12">
+         style="padding: 20px; width: 110%;     margin-left: -5%;   background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
+        <div class="col s6">
             <div class="row">
-                <div class="input-field col s4">
+                <div class="col s4">
                     <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
-                         height="250"
-                         src="http://th01.deviantart.net/fs70/PRE/i/2013/126/1/e/nature_portrait_by_pw_fotografie-d63tx0n.jpg">
-
+                         height="auto"
+                         src="1366695174.png">
+                </div>
+                <div class="col s8">
+                    <label>User name</label>
+                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">Some people
+                    </div>
+                    <label>Date</label>
+                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">12.10.2016
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <label>Commentary</label>
+                    <div style="   margin-top: 16px; margin-bottom: 15px;">Some people
+                        jsdkhfskjfhdjsf'
+                        fsdifjlsflsdjfklsf
+                        sdfskjdfjskldfjsdklfjsdlflsjdfl;ldf
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form class="col s6" style="border-left: 1px solid gainsboro;">
+            <div class="row">
+                <div class="col s4">
+                    <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
+                         height="auto"
+                         src="1366695174.png">
                 </div>
                 <div class="col s8">
                     <div>
@@ -23,47 +49,53 @@
                     </div>
 
                     <div class="row">
-                        <div class="input-field col s4">
+                        <div class="input-field col s6">
                             <input placeholder="Example: 5" id="age" type="number" class="validate">
                             <label for="age">Age</label>
                         </div>
-                        <div class="input-field col s4">
-                            <input placeholder="example: 124234234" id="chipNumber" type="text" class="validate">
-                            <label for="chipNumber">Chip number</label>
-                        </div>
-                        <div class=" col s4">
-                            <label>Sex</label>
-                            <select class="browser-default">
-                                <option value="" disabled selected>Choose sex of dog</option>
-                                <option value="male">male</option>
-                                <option value="female">female</option>
-                                <option value="none">none</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-
                         <div class=" col s6">
-                            <label>Location</label>
-                            <select class="browser-default">
-                                <option value="" disabled selected>Location</option>
-                                <option value="male">male</option>
-                                <option value="female">female</option>
-                                <option value="none">none</option>
-                            </select>
-                        </div>
-                        <div class="col s6">
-                            <label for="commentary">Commentary</label>
-                            <textarea id="commentary" style="    padding: 0;" class="materialize-textarea"></textarea>
-                        </div>
+                        <label>Sex</label>
+                        <select class="browser-default">
+                            <option value="" disabled selected>Choose sex of dog</option>
+                            <option value="male">male</option>
+                            <option value="female">female</option>
+                            <option value="none">none</option>
+                        </select>
                     </div>
 
+
+                    </div>
+
+
+
+                </div>
+                <div class="col s12">
+
+                    <div class=" col s6">
+                        <label>Location</label>
+                        <select class="browser-default">
+                            <option value="" disabled selected>Location</option>
+                            <option value="male">male</option>
+                            <option value="female">female</option>
+                            <option value="none">none</option>
+                        </select>
+                    </div>
+                    <div class="input-field col s6">
+                        <input placeholder="example: 124234234" id="chipNumber" type="text" class="validate">
+                        <label for="chipNumber">Chip number</label>
+                    </div>
+                    <div class="col s12">
+                        <label for="commentary">Commentary</label>
+                        <textarea id="commentary" style="    padding: 0;" class="materialize-textarea"></textarea>
+                    </div>
                 </div>
             <div class="row">
                 <a class="waves-effect waves-light btn" style="float: right;
     margin-right: 20px;">Add</a>
             </div>
             </div>
+
         </form>
     </div>
+
 {% endblock %}

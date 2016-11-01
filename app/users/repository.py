@@ -37,3 +37,6 @@ class UsersRepository:
                 substitutions=substitutions))
         db.engine.execute(query.params(**params_dict))  # didn't find how to do it correctly with sqlalchemy :(
         return cls.get_user_by_google_id(user.google_id)
+
+
+

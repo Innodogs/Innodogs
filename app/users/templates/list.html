@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %} List of users {% endblock %}
+
+{% block content %}
+
+<div class="section"></div>
+
+    <div class="row">
+
+        <div class="col s8">
+            <ul class="collection z-depth-1">
+                <li class="collection-item avatar">
+                    <img src="noavatar.jpg" alt="" class="circle">
+                    <span class="title">Petrov Petr</span>
+                    <p>Status: user <br>
+                        Adding date: 21.11.2015
+                    </p>
+                    <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
+                </li>
+                <li class="collection-item avatar">
+                    <img src="noavatar.jpg" alt="" class="circle">
+                    <span class="title">asfgagasd</span>
+                    <p>Status: user <br>
+                        Adding date: 21.11.2015
+                    </p>
+                    <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
+                </li>
+                <li class="collection-item avatar">
+                    <img src="noavatar.jpg" alt="" class="circle">
+                    <span class="title">Ivanov Ivan</span>
+                    <p>Status: volontier <br>
+                        Adding date: 21.11.2015
+                    </p>
+                    <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
+                </li>
+                <li class="collection-item avatar">
+                    <img src="noavatar.jpg" alt="" class="circle">
+                    <span class="title">Petrov Petr</span>
+                    <p>Status: user <br>
+                        Adding date: 21.11.2015
+                    </p>
+                    <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
+                </li>
+            </ul>
+            <center>
+                <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
+                    more</a>
+            </center>
+        </div>
+
+
+        <div class="col s4 ">
+
+
+            <form action="#" class="z-depth-1" style="background: rgba(177, 220, 251, 0.36);     padding: 15px;">
+                <div class="input-field">
+                    <input value="Alvin" id="first_name2" type="text" class="validate">
+                    <label class="active" for="first_name2">Name</label>
+                </div>
+
+                <label>Status</label>
+                <p>
+                    <input type="checkbox" id="isUser" />
+                    <label for="isUser" style="    color: black;">User</label>
+                </p>
+                <p>
+                    <input type="checkbox" id="isVolantier" style="    color: black;"/>
+                    <label for="isVolantier" style="    color: black;">isVolantier</label>
+                </p>
+                <p>
+                    <input type="checkbox" id="isAdmin" style="    color: black;"/>
+                    <label for="isAdmin" style="    color: black;">Admin</label>
+                </p>
+
+
+            </form>
+        </div>
+    </div>
+
+
+    <br><br>
+
+    <div class="section">
+
+    </div>
+
+{% endblock %}

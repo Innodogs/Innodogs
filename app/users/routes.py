@@ -52,3 +52,7 @@ def logout():
 @google_login.login_failure
 def login_failure_callback(e):
     return jsonify(error=str(e))
+
+@users.route('/list')
+def user_list():
+    return render_template('list.html')

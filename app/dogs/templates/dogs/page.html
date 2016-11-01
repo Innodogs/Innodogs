@@ -1,16 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %} Dog page {% endblock %}
+{% block title %} Page for {{ dog.name }} {% endblock %}
 
 {% block content %}
 
 
-    <div class="section"></div>
+  <div class="section"></div>
 
-
-    <div class="row"
+    <div class="row  z-depth-1"
          style="padding: 20px;    background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
-        <form class="col s12">
+        <div class="col s12">
             <div class="row">
                 <div class="input-field col s4">
                     <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
@@ -19,12 +18,22 @@
 
                 </div>
                 <div class="col s8">
-                    <div>
+
+                    <div class="col s8">
                         <label>First Name</label>
-                        <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> Don Pedro
+                        <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">Don
+                            Pedro
                         </div>
 
                     </div>
+                    <div class="col s4">
+                        <label>Date of add</label>
+                        <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">
+                            10.11.12
+                        </div>
+
+                    </div>
+
 
                     <div class="row">
                         <div class="col s4">
@@ -39,7 +48,7 @@
                         </div>
                         <div class=" col s4">
                             <label>Sex</label><br>
-                            <div style="    margin-top: 16px;    border-bottom: 1px solid gainsboro;"> macho
+                            <div style="    margin-top: 16px;    border-bottom: 1px solid gainsboro;">Male
                             </div>
                         </div>
                     </div>
@@ -54,7 +63,7 @@
                         <div class="col s6">
                             <label>Commentary</label>
                             <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">
-                                The real dog
+                                djfnsgma;sfl ;lsdkgsl;dfk ;lsdfkl dfskld gl;sgksl;dfk lss
                             </div>
 
                         </div>
@@ -64,7 +73,100 @@
             </div>
 
 
-        </form>
+
+
+        </div>
+
+
+
+    </div>
+    <div class="row">
+        <div class="col s6">
+            <ul class="collection with-header z-depth-1">
+                <li class="collection-header" style="text-align: center"><h5>Finantial events</h5></li>
+                <li class="plus collection-item ">
+                    <div>
+
+                        <span style="    font-weight: bold; font-size: 17px;">+</span>
+                        10800$ <span style="color: gray;"> |</span> <span>Date: 21.10.2015</span>
+                        <span style="color: gray;"> |</span><span> User: Hide</span>
+                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
+                    </div>
+                </li>
+                <li class="collection-item plus">
+                    <div>
+
+                        <span style="    font-weight: bold; font-size: 17px;">+</span>
+                        10800$ <span style="color: gray;"> |</span> <span>Date: 21.10.2015</span>
+                        <span style="color: gray;"> |</span><span> User: Petr Petrov</span>
+                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
+                    </div>
+                </li>
+                <li class="collection-item plus">
+                    <div>
+                        <span style="    font-weight: bold; font-size: 17px;">+</span> 10800$
+                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
+                    </div>
+                </li>
+                <li class="collection-item minus">
+                    <div>
+                        <span style="    font-weight: bold; font-size: 17px;">-</span> 10800$
+                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
+                    </div>
+                </li>
+            </ul>
+            <center>
+                <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
+                    more</a>
+            </center>
+        </div>
+        <div class="col s6">
+            <ul class="collection with-header z-depth-1">
+                <li class="collection-header" style="text-align: center"><h5>Events</h5></li>
+                <li class="plus collection-item ">
+                    <div>
+
+                        <span> User: Petr Petrov</span>
+                        <span style="color: gray;"> |</span>
+                        <span>Date: 21.10.2015</span>
+
+                    </div>
+                </li>
+                <li class="collection-item plus">
+                    <div>
+
+                        <span> User: Petr Petrov</span>
+                        <span style="color: gray;"> |</span>
+                        <span>Date: 21.10.2015</span>
+
+
+                    </div>
+                </li>
+                <li class="collection-item plus">
+                    <div>
+                        <span> User: Petr Petrov</span>
+                        <span style="color: gray;"> |</span>
+                        <span>Date: 21.10.2015</span>
+                    </div>
+                </li>
+                <li class="collection-item minus">
+                    <div>
+                        <span> User: Petr Petrov</span>
+                        <span style="color: gray;"> |</span>
+                        <span>Date: 21.10.2015</span>
+                    </div>
+                    <div>
+                        kdklksjfskldf
+                        fsdfs;ldkf
+                        adasddddddddddddddddddddddddddddd ddddddddddddddddasdasdadsasd
+                    </div>
+                </li>
+            </ul>
+            <center>
+                <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
+                    more</a>
+            </center>
+        </div>
     </div>
 
 {% endblock %}

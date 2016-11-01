@@ -15,6 +15,7 @@ def requests_list():
 def requests_add():
     return render_template('dogs/add.html')
 
-@dogs.route('/page', methods=['GET','POST'])
-def requests_page():
-    return render_template('dogs/page.html')
+@dogs.route('/page/<int:dog_id>', methods=['GET','POST'])
+def requests_page(dog_id):
+    dog_data = DogsRepository.get_dog_by_id(dog_id)
+    return render_template('dogs/page.html', dog=dog_data)
