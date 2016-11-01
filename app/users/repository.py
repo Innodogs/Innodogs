@@ -38,5 +38,16 @@ class UsersRepository:
         db.engine.execute(query.params(**params_dict))  # didn't find how to do it correctly with sqlalchemy :(
         return cls.get_user_by_google_id(user.google_id)
 
+    @classmethod
+    def get_all_users(cls):
+        """Return list of users in base"""
+        users_column_list = QueryHelper.get_columns_string(UserMapping, "u")
+        stmt = text('SELECT {cols} '
+                    'FROM "{users_table}" AS u'
+                    .format(cols=users_column_list, users_table=UserMapping.description))
+        user = db.session.query(User).from_statement(stmt).params().all()
+        return user
+
+
 
 

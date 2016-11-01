@@ -10,38 +10,17 @@
 
         <div class="col s8">
             <ul class="collection z-depth-1">
+                {% for user in users -%}
                 <li class="collection-item avatar">
                     <img src="noavatar.jpg" alt="" class="circle">
-                    <span class="title">Petrov Petr</span>
-                    <p>Status: user <br>
+                    <span class="title"> {{ user.name }}</span>
+                    <p>Status: {{ 'volunteer' if user.is_volunteer else 'user' }} <br>
                         Adding date: 21.11.2015
                     </p>
                     <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
                 </li>
-                <li class="collection-item avatar">
-                    <img src="noavatar.jpg" alt="" class="circle">
-                    <span class="title">asfgagasd</span>
-                    <p>Status: user <br>
-                        Adding date: 21.11.2015
-                    </p>
-                    <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
-                </li>
-                <li class="collection-item avatar">
-                    <img src="noavatar.jpg" alt="" class="circle">
-                    <span class="title">Ivanov Ivan</span>
-                    <p>Status: volontier <br>
-                        Adding date: 21.11.2015
-                    </p>
-                    <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
-                </li>
-                <li class="collection-item avatar">
-                    <img src="noavatar.jpg" alt="" class="circle">
-                    <span class="title">Petrov Petr</span>
-                    <p>Status: user <br>
-                        Adding date: 21.11.2015
-                    </p>
-                    <a href="#!" class="secondary-content"><i class="material-icons red-text">close</i></a>
-                </li>
+                {%- endfor %}
+
             </ul>
             <center>
                 <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load

@@ -52,7 +52,7 @@ class DogsRepository:
         dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
         location_columns_string = QueryHelper.get_columns_string(LocationMapping, "locations")
         stmt = text("SELECT {dog_columns}, {location_columns} FROM {dogs_table} AS dogs LEFT JOIN {locations_table} "
-                    "AS locations ON dogs.location_id = locations.id "
+                    "AS locations ON dogs.location_id = locations.id WHERE dogs.id = :id "
                     .format(dog_columns=dog_columns_string,
                             location_columns=location_columns_string,
                             dogs_table=DogMapping.description, locations_table=LocationMapping.description))
@@ -69,3 +69,15 @@ class DogsRepository:
         query = text("UPDATE %s SET %s WHERE id = :dog_id" % (DogMapping.description, update_clause))
         params_dict['dog_id'] = dog.id
         db.engine.execute(query.params(**params_dict))
+
+    @classmethod
+    def new_dog(cls, dog):
+        """Add new dog to database"""
+
+        columns, substitutions, params_dict = QueryHelper.get_insert_string_and_dict(DogMapping, dog,
+                                                                            fields_to_exclude=['id'])
+        quert = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
+                     table_name=DogMapping.description, columns=columns, substitutions=substitutions))
+        db.engine.execute(query.params(**params_dict))
+
+

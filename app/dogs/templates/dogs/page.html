@@ -20,10 +20,8 @@
                 <div class="col s8">
 
                     <div class="col s8">
-                        <label>First Name</label>
-                        <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">Don
-                            Pedro
-                        </div>
+                        <label>Name</label>
+                        <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">{{ dog.name }}</div>
 
                     </div>
                     <div class="col s4">
@@ -48,8 +46,7 @@
                         </div>
                         <div class=" col s4">
                             <label>Sex</label><br>
-                            <div style="    margin-top: 16px;    border-bottom: 1px solid gainsboro;">Male
-                            </div>
+                            <div style="    margin-top: 16px;    border-bottom: 1px solid gainsboro;">{{ dog.sex }}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -63,7 +60,7 @@
                         <div class="col s6">
                             <label>Commentary</label>
                             <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">
-                                djfnsgma;sfl ;lsdkgsl;dfk ;lsdfkl dfskld gl;sgksl;dfk lss
+                                {{ dog.description }}
                             </div>
 
                         </div>

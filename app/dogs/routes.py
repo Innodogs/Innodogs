@@ -1,4 +1,6 @@
-from flask import render_template
+from flask import render_template, request, redirect
+from flask_login import current_user
+from datetime import datetime
 
 from app.dogs.repository import DogsRepository
 from . import dogs
@@ -13,7 +15,17 @@ def requests_list():
 
 @dogs.route('/add', methods=['GET','POST'])
 def requests_add():
-    return render_template('dogs/add.html')
+    if request.method == 'POST':
+        dog = Dog()
+        dog.name = request.form['name']
+        dog.sex = request.form['sex']
+        dog.description = request.form['comment']
+        dog.is_hidden = false
+        dog.is_adopted = false
+        DogsRepository.new_dog(dog)
+        #abort(401)
+        return redirect('/dogs')
+    return render_template('dogs/add.html', date=datetime.now())
 
 @dogs.route('/page/<int:dog_id>', methods=['GET','POST'])
 def requests_page(dog_id):

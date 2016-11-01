@@ -17,25 +17,22 @@
                 </div>
                 <div class="col s8">
                     <label>User name</label>
-                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">Some people
+                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ current_user.name }}
                     </div>
                     <label>Date</label>
-                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">12.10.2016
+                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ date.strftime("%d.%m.%Y") }}
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col s12">
                     <label>Commentary</label>
-                    <div style="   margin-top: 16px; margin-bottom: 15px;">Some people
-                        jsdkhfskjfhdjsf'
-                        fsdifjlsflsdjfklsf
-                        sdfskjdfjskldfjsdklfjsdlflsjdfl;ldf
+                    <div style="   margin-top: 16px; margin-bottom: 15px;">
                     </div>
                 </div>
             </div>
         </div>
-        <form class="col s6" style="border-left: 1px solid gainsboro;">
+        <form class="col s6" style="border-left: 1px solid gainsboro;" method="post">
             <div class="row">
                 <div class="col s4">
                     <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
@@ -44,18 +41,18 @@
                 </div>
                 <div class="col s8">
                     <div>
-                        <label for="first_name">First Name</label>
-                        <input placeholder="Placeholder" id="first_name" type="text" class="validate">
+                        <label for="first_name">Name</label>
+                        <input placeholder="Placeholder" id="first_name" type="text" class="validate" name="name">
                     </div>
 
                     <div class="row">
                         <div class="input-field col s6">
-                            <input placeholder="Example: 5" id="age" type="number" class="validate">
+                            <input placeholder="Example: 5" id="age" type="number" class="validate" name="age">
                             <label for="age">Age</label>
                         </div>
                         <div class=" col s6">
                         <label>Sex</label>
-                        <select class="browser-default">
+                        <select class="browser-default" name="sex">
                             <option value="" disabled selected>Choose sex of dog</option>
                             <option value="male">male</option>
                             <option value="female">female</option>
@@ -75,8 +72,8 @@
                         <label>Location</label>
                         <select class="browser-default">
                             <option value="" disabled selected>Location</option>
-                            <option value="male">male</option>
-                            <option value="female">female</option>
+                            <option value="university">university</option>
+                            <option value="town">town</option>
                             <option value="none">none</option>
                         </select>
                     </div>
@@ -86,12 +83,11 @@
                     </div>
                     <div class="col s12">
                         <label for="commentary">Commentary</label>
-                        <textarea id="commentary" style="    padding: 0;" class="materialize-textarea"></textarea>
+                        <textarea id="commentary" style="    padding: 0;" class="materialize-textarea" name="comment"></textarea>
                     </div>
                 </div>
             <div class="row">
-                <a class="waves-effect waves-light btn" style="float: right;
-    margin-right: 20px;">Add</a>
+                <a href="" class="waves-effect waves-light btn" style="float: right;margin-right: 20px;">Add</a>
             </div>
             </div>
 

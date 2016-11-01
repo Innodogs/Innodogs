@@ -55,4 +55,5 @@ def login_failure_callback(e):
 
 @users.route('/list')
 def user_list():
-    return render_template('list.html')
+    users = UsersRepository.get_all_users()
+    return render_template('list.html',users=users)

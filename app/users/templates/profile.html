@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %} List of users {% endblock %}
+{% block title %} Profile of {{ current_user.name }} {% endblock %}
 
 {% block content %}
-    Profile of {{ current_user.name }}!
+
     <a href="{{ url_for('users.logout') }}">log out</a>
 
 <div class="section"></div>
@@ -23,17 +23,13 @@
                     <div class="row">
 
                         <div class="col s12">
-                            <label>First name</label>
+                            <label>Name</label>
                             <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">
-                                Petr
-                            </div>
-                            <label>Sure name</label>
-                            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">
-                                Petrov
+                                {{ current_user.name }}
                             </div>
                             <label>@mail</label>
                             <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">
-                                mail@gmail.com
+                                {{ current_user.email }}
                             </div>
 
                         </div>
