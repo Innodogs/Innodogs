@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %} Reject request {% endblock %}
+
+{% block content %}
+
+    <h4 class="header center red-text text-lighten-2">Reject request {{ req_id }}</h4>
+    <form action="{{ req_id }}/done" method="post">
+      <div>
+	<label for="tarea">Comment</label>
+        <textarea class="materialize-textarea" id="tarea" name="comment" required></textarea>
+        <input type="submit" value="Done" class="btn">
+      </div>
+    </form>
+
+{% endblock %}
