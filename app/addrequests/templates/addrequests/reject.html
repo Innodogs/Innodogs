@@ -1,14 +1,15 @@
 {% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
 
 {% block title %} Reject request {% endblock %}
 
 {% block content %}
 
     <h4 class="header center red-text text-lighten-2">Reject request {{ req_id }}</h4>
-    <form action="{{ req_id }}/done" method="post">
+    <form action="" method="post">
       <div>
-	<label for="tarea">Comment</label>
-        <textarea class="materialize-textarea" id="tarea" name="comment" required></textarea>
+        {{ form.csrf_token }}
+        {{ render_field(form.comment) }}
         <input type="submit" value="Done" class="btn">
       </div>
     </form>

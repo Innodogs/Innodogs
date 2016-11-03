@@ -12,3 +12,6 @@ class AddRequestForm(FlaskForm):
     pictures = FileField('Pictures', validators=[
         FileAllowed(['jpg', 'png'], 'Images only!')
     ])
+
+class RejectRequestForm(FlaskForm):
+    comment = TextAreaField('Comment', validators=[DataRequired()])

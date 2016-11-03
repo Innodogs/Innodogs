@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 import sqlalchemy.orm.exc
 
 from app.addrequests import add_requests
-from app.addrequests.forms import AddRequestForm
+from app.addrequests.forms import AddRequestForm, RejectRequestForm
 from app.addrequests.repository import AddRequestsRepository
 from app.addrequests.utils import add_request_form_to_domain
 from app.users.utils import requires_roles
@@ -24,7 +24,7 @@ def requests_list():
     r = AddRequestsRepository.get_all_add_requests()
     return render_template('addrequests/list.html', add_requests=r)
 
-@add_requests.route('/reject/<req_id>')
+@add_requests.route('/reject/<req_id>', methods=['GET','POST'])
 @login_required
 @requires_roles('volunteer')
 def requests_reject(req_id):
@@ -32,21 +32,13 @@ def requests_reject(req_id):
         req = AddRequestsRepository.get_add_request_by_id(req_id)
     except sqlalchemy.orm.exc.NoResultFound:
         abort(404)
-    return render_template('addrequests/reject.html', req_id=req_id)
-
-@add_requests.route('/reject/<req_id>/done', methods=['GET','POST'])
-@login_required
-@requires_roles('volunteer')
-def requests_reject_finish(req_id):
-    try:
-        req = AddRequestsRepository.get_add_request_by_id(req_id)
+    form = RejectRequestForm()
+    if form.validate_on_submit():
         req.status = 'rejected'
         req.comment = request.form['comment']
         AddRequestsRepository.update_add_request(req)
-    except sqlalchemy.orm.exc.NoResultFound:
-        abort(404)
-    return redirect('/add-requests/')
-
+        return redirect('/add-requests/')
+    return render_template('addrequests/reject.html', req_id=req_id, form=form)
 
 @add_requests.route('/', methods=['POST'])
 @login_required
