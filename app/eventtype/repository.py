@@ -18,12 +18,11 @@ class EventTypeRepository:
     def get_all_event_types(cls) -> List[EventType]:
         """Gets all types of events"""
 
-        et_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "eventtype")
+        et_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "event_type")
         stmt = text("SELECT {et_columns} FROM {et_table}"
                     .format(et_columns=et_columns_string,
                             et_table=EventTypeMapping.description))
-        result = db.session.query(Dog).from_statement(stmt).all()
-
+        result = db.session.query(EventType).from_statement(stmt).all()
         return result
 
     @classmethod

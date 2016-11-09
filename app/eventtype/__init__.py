@@ -6,6 +6,6 @@ from flask import Blueprint
 
 __author__ = 'Xomak'
 
-eventtype = Blueprint('eventtype', __name__, template_folder='templates', )
+event_type = Blueprint('eventtype', __name__, template_folder='templates', )
 
-#from . import routes
+from . import routes
