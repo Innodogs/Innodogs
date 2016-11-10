@@ -1,0 +1,1 @@
+INSERT INTO public.location (id, name, description, parent_id) VALUES (1, 'Иннополис', 'Где-то в Иннополисе', null);

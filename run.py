@@ -11,6 +11,17 @@ import psycopg2
 from app import create_app
 
 __author__ = 'Xomak'
+dump_order = ["innodogs_public_add_request.sql",
+              "innodogs_public_expenditure.sql",
+              "innodogs_public_adoption_request.sql",
+              "innodogs_public_comment.sql",
+              "innodogs_public_location.sql",
+              "innodogs_public_dog.sql",
+              "innodogs_public_dog_picture.sql",
+              "innodogs_public_event_type.sql",
+              "innodogs_public_event.sql",
+              "innodogs_public_inpayment.sql",
+              "innodogs_public_user.sql"]
 
 
 def drop_create_db(_app):
@@ -24,6 +35,11 @@ def drop_create_db(_app):
         connection.cursor().execute(f.read())
     with _app.open_resource('../create_db.sql', mode='r') as f:
         connection.cursor().execute(f.read())
+    for dump_file in dump_order:
+        with open(os.path.join(_app.root_path, '../dump/{}'.format(dump_file)), mode='r', encoding='utf-8') as f:
+            read = f.read()
+            if read:
+                connection.cursor().execute(read)
     connection.commit()
     print(' * Database has been successfully recreated')
 

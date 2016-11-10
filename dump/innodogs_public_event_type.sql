@@ -1,0 +1,2 @@
+INSERT INTO public.event_type (id, type_name, is_significant) VALUES (1, 'Тип очень важный', true);
+INSERT INTO public.event_type (id, type_name, is_significant) VALUES (2, 'Тип не очень важный', false);
