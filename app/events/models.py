@@ -27,7 +27,7 @@ class Event:
         self.dog_id = None
 
     def __str__(self):
-        return "Event # {} with type_id {} for dog_id {}".format(self.id, self.event_type_id, self.dog_id)
+        return "Event # {} for Dog # {} ({})".format(self.id, self.dog_id, self.description[:30])
 
 
 EventMapping = Table('event', metadata,

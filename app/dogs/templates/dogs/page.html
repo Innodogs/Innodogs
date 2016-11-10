@@ -112,57 +112,29 @@
                     </div>
                 </li>
             </ul>
-            <center>
+            <div style="text-align: center">
                 <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
                     more</a>
-            </center>
+            </div>
         </div>
         <div class="col s6">
             <ul class="collection with-header z-depth-1">
                 <li class="collection-header" style="text-align: center"><h5>Events</h5></li>
+                {% for event in dog.event_list %}
                 <li class="plus collection-item ">
                     <div>
-
-                        <span> User: Petr Petrov</span>
+                        <span>User: Petr Petrov</span>
                         <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-
+                        <span>Date: {{ event.datetime.date() }}</span>
+                        <p>{{ event.description }}</p>
                     </div>
                 </li>
-                <li class="collection-item plus">
-                    <div>
-
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-
-
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-                    </div>
-                </li>
-                <li class="collection-item minus">
-                    <div>
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-                    </div>
-                    <div>
-                        kdklksjfskldf
-                        fsdfs;ldkf
-                        adasddddddddddddddddddddddddddddd ddddddddddddddddasdasdadsasd
-                    </div>
-                </li>
+                {% endfor %}
             </ul>
-            <center>
+            <div style="text-align: center">
                 <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
                     more</a>
-            </center>
+            </div>
         </div>
     </div>
 
