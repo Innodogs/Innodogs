@@ -1,5 +1,4 @@
 """Models for dogs application"""
-import enum
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column
@@ -29,9 +28,11 @@ class Dog:
         self.is_adopted = None
         self.location_id = None
         self.location = None
+        self.event_list = None
 
     def __str__(self):
         return "Dog # %s (%s)" % (self.id, self.name)
+
 
 DogMapping = Table('dog', metadata,
                    Column('id', Integer, primary_key=True),

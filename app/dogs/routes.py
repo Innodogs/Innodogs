@@ -31,5 +31,5 @@ def requests_add(req_id):
 
 @dogs.route('/page/<int:dog_id>', methods=['GET','POST'])
 def requests_page(dog_id):
-    dog_data = DogsRepository.get_dog_by_id(dog_id)
+    dog_data = DogsRepository.get_dog_by_id_with_events(dog_id)
     return render_template('dogs/page.html', dog=dog_data)

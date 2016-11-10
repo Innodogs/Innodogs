@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 from app import db
 from app.dogs.models import Dog, DogMapping
+from app.events.models import EventMapping, Event
 from app.locations.models import LocationMapping, Location
 from app.utils.query_helper import QueryHelper
 
@@ -58,6 +59,30 @@ class DogsRepository:
                             dogs_table=DogMapping.description, locations_table=LocationMapping.description))
         dog_id = int(dog_id)
         result = db.session.query(Dog, Location).from_statement(stmt).params(id=dog_id).one()
+        return cls._tuple_to_dog_and_location(result)
+
+    @classmethod
+    def get_dog_by_id_with_events(cls, dog_id) -> Dog:
+        """Returns dog by given id or throws an exception"""
+
+        dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
+        location_columns_string = QueryHelper.get_columns_string(LocationMapping, "locations")
+        events_columns_string = QueryHelper.get_columns_string(EventMapping, "events")
+
+        stmt = text("SELECT {dog_columns}, {location_columns}, {event_columns} "
+                    "FROM {dogs_table} AS dogs "
+                    "LEFT JOIN {locations_table} AS locations ON dogs.location_id = locations.id "
+                    "JOIN {event_table} AS events ON dogs.id = events.dog_id "
+                    "WHERE dogs.id = :id "
+                    .format(dog_columns=dog_columns_string,
+                            location_columns=location_columns_string,
+                            event_columns=events_columns_string,
+                            dogs_table=DogMapping.description,
+                            locations_table=LocationMapping.description,
+                            event_table=EventMapping.description
+                            ))
+        dog_id = int(dog_id)
+        result = db.session.query(Dog, Location, Event).from_statement(stmt).params(id=dog_id).all()
         return cls._tuple_to_dog_and_location(result)
 
     @classmethod
