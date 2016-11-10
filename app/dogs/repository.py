@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Iterable
 
 from sqlalchemy import text
 
@@ -184,7 +184,162 @@ class DogsRepository:
         """Add new dog to database"""
 
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(DogMapping, dog,
-                                                                                     fields_to_exclude=['id'])
+                                                                                      fields_to_exclude=['id'])
         query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
             table_name=DogMapping.description, columns=columns, substitutions=substitutions))
         db.engine.execute(query.params(**params_dict))
+
+
+class DogPictureRepository:
+    """
+    Repository for dog's pictures
+    """
+
+    @classmethod
+    def get_picture_by_id(cls, picture_id) -> DogPicture:
+        """
+        Returns DogPicture by its id
+        :param picture_id: Picture_id
+        :return: Returns DogPicture with given id
+        """
+        picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
+        stmt = text("SELECT {picture_columns} FROM {pictures_table} WHERE id = :picture_id".format(
+            picture_columns=picture_columns,
+            pictures_table=DogPictureMapping.description
+        ))
+        return db.session.query(DogPicture).from_statement(stmt).params(picture_id=picture_id).one()
+
+    @classmethod
+    def get_pictures_by_dog_id(cls, dog_id) -> Iterable[DogPicture]:
+        """
+        Returns all DogPicture's by dog_id
+        :param dog_id: Dog id
+        :return: Iterable of DogPicture
+        """
+        picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
+        stmt = text("SELECT {picture_columns} FROM {pictures_table} WHERE dog_id = :dog_id".format(
+            picture_columns=picture_columns,
+            pictures_table=DogPictureMapping.description
+        ))
+        return db.session.query(DogPicture).from_statement(stmt).params(dog_id=dog_id).all()
+
+    @classmethod
+    def get_pictures_by_request_id(cls, request_id) -> Iterable[DogPicture]:
+        """
+        Returns all DogPicture's by request_id
+        :param request_id: Request id
+        :return: Iterable of DogPicture
+        """
+        picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
+        stmt = text("SELECT {picture_columns} FROM {pictures_table} WHERE request_id=:request_id".format(
+            picture_columns=picture_columns,
+            pictures_table=DogPictureMapping.description
+        ))
+        return db.session.query(DogPicture).from_statement(stmt).params(request_id=request_id).all()
+
+    @classmethod
+    def _check_main_picture_rule(cls, dog_id, connection=None) -> bool:
+        """
+        Checks, whether there is one and only one main picture for given dog_id, if
+        any other picture exists
+        :param dog_id: Dog id
+        :param connection: Connection to use. It is useful to perform checking, during the transaction
+        :return: True, if the rule is forced
+        """
+        if connection is None:
+            connection = db.engine
+        stmt = text(
+            "SELECT count(*) AS pictures_count FROM {pictures_table} "
+            "WHERE {dog_id_column} = :dog_id AND {is_main_column} = True".format(
+                pictures_table=DogPictureMapping.description,
+                dog_id_column=QueryHelper.get_column_by_key(DogPictureMapping, "dog_id"),
+                is_main_column=QueryHelper.get_column_by_key(DogPictureMapping, "is_main")
+            ))
+        result = connection.execute(stmt.params(dog_id=dog_id))
+        main_pictures_count = next(iter(result))['pictures_count']
+        not_main_pictures_count = 0
+        for row in result:
+            if row['is_main']:
+                main_pictures_count = row['pictures_count']
+            else:
+                not_main_pictures_count = row['pictures_count']
+
+        if not_main_pictures_count > 0 and main_pictures_count != 1:
+            return False
+        return True
+
+    @classmethod
+    def insert_picture(cls, picture) -> bool:
+        """
+        Adds picture to the database. Performs check before that.
+        :param picture: Picture to insert
+        :return: True, if insertion was successful, False - otherwise
+        """
+        connection = db.engine.connect()
+        trans = connection.begin()
+        db.session.begin(subtransactions=True)
+
+        columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(DogPictureMapping, picture,
+                                                                                      fields_to_exclude=['id'])
+        query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
+            table_name=DogPictureMapping.description, columns=columns, substitutions=substitutions))
+        connection.execute(query.params(**params_dict))
+        if picture.dog_id is None or cls._check_main_picture_rule(picture.dog_id, connection):
+            trans.commit()
+            return True
+        else:
+            trans.rollback()
+            return False
+
+    @classmethod
+    def safe_picture_update(cls, picture, new_main_picture_id):
+        raise NotImplementedError()
+        # connection = db.engine.connect()
+        # trans = connection.begin()
+        #TODO Implement
+
+    @classmethod
+    def _update_picture(cls, picture, connection):
+        """
+        Unconditionally updates given picture, using given connection
+        :param picture: Picture
+        :param connection: Connection
+        :return:
+        """
+        update_data, params_dict = QueryHelper.get_update_string_and_dict(DogPictureMapping, picture,
+                                                                          fields_to_exclude=['id'])
+        query = text("UPDATE {pictures_table} SET {update_data} WHERE id = :picture_id".format(
+            pictures_table=DogPictureMapping.description,
+            update_data=update_data
+        ))
+        params_dict['picture_id'] = picture.id
+
+        connection.execute(query.params(**params_dict))
+
+    @classmethod
+    def update_picture(cls, picture) -> bool:
+        """
+        Update picture in the database. Performs check before that.
+        :param picture: Picture to update
+        :return: True, if update was successful, False - otherwise
+        """
+        connection = db.engine.connect()
+        trans = connection.begin()
+        old_dog_id = None
+        if picture.dog_id is None:
+            old_dog_id = cls.get_picture_by_id(picture.id).dog_id
+
+        cls._update_picture(picture, connection)
+
+        if picture.dog_id is not None and picture.dog_id != old_dog_id:
+            if not cls._check_main_picture_rule(picture.dog_id, connection):
+                trans.rollback()
+                return False
+        if old_dog_id is not None and picture.dog_id != old_dog_id:
+            if not cls._check_main_picture_rule(old_dog_id, connection):
+                trans.rollback()
+                return False
+
+        trans.commit()
+        return True
+

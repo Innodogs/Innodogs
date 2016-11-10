@@ -16,6 +16,19 @@ class QueryHelper:
         return [column.name for column in mapping.get_children()]
 
     @classmethod
+    def get_column_by_key(cls, mapping: Table, key: str) -> str:
+        """
+        Returns column name by given key for mapping
+        :param mapping: Mapping
+        :param key: Key
+        :return: Column's name or None
+        """
+        for column in mapping.get_children():
+            if column.key == key:
+                return column.name
+        return None
+
+    @classmethod
     def get_columns_string(cls, mapping: Table, temporary_name=None) -> str:
         """
         Returns string of columns, which can be used in SQL statement, like:
