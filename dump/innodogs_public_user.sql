@@ -1,1 +1,1 @@
-INSERT INTO public."user" (id, google_id, is_volunteer, is_admin, name, email) VALUES (1, '106984022348283939691', true, false, 'Путилов Михаил (snowy)', 'post.snowy@gmail.com');
+INSERT INTO public."user" (id, google_id, is_volunteer, is_admin, is_active, name, email) VALUES (1, '106984022348283939691', true, false, true, 'Путилов Михаил (snowy)', 'post.snowy@gmail.com');

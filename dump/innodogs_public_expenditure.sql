@@ -1,2 +1,2 @@
-INSERT INTO public.expenditure (id, amount, comment) VALUES (1, 1000, 'Средство от блох');
-INSERT INTO public.expenditure (id, amount, comment) VALUES (2, 500, 'Средство от комаров');
+INSERT INTO public.expenditure (id, amount, datetime, comment) VALUES (1, 1000, '2016-11-10 11:35:14.503000', 'Средство от блох');
+INSERT INTO public.expenditure (id, amount, datetime, comment) VALUES (2, 500, '2016-11-10 11:35:14.503000', 'Средство от комаров');
