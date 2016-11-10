@@ -40,4 +40,7 @@ def create_app(config_name):
     from .users import users as user_blueprint
     app.register_blueprint(user_blueprint, url_prefix='/users')
 
+    from .events import events as events_blueprint
+    app.register_blueprint(events_blueprint, url_prefix='/events')
+
     return app

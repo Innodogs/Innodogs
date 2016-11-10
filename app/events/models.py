@@ -1,4 +1,4 @@
-"""Models for locations application"""
+"""Models for events"""
 
 from sqlalchemy import Column
 from sqlalchemy import DateTime

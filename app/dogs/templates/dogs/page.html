@@ -118,6 +118,9 @@
             </div>
         </div>
         <div class="col s6">
+            {% if current_user.is_volunteer %}
+                <a href="{{ url_for('events.new_event') }}">new</a>
+            {% endif %}
             <ul class="collection with-header z-depth-1">
                 <li class="collection-header" style="text-align: center"><h5>Events</h5></li>
                 {% for event in dog.event_list %}
@@ -127,6 +130,10 @@
                         <span style="color: gray;"> |</span>
                         <span>Date: {{ event.datetime.date() }}</span>
                         <p>{{ event.description }}</p>
+                        {%  if current_user.is_volunteer %}
+                            <a href="{{ url_for('events.edit_event', event_id=event.id) }}">edit</a>
+                            <a href="{{ url_for('events.delete_event', event_id=event.id) }}">delete</a> {#make this ajax "delete" request#}
+                        {% endif %}
                     </div>
                 </li>
                 {% endfor %}
