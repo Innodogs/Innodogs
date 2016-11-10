@@ -11,14 +11,14 @@
       <span class="title">{{ event.type_name }}</span>
       <p>Significant: {{ event.is_significant }}</p>
       <div class="secondary-content">
-        <a href=#><i>Edit</i></a><br>
-        <a href=#><i>Delete</i></a>
+        <a href="edit/{{ event.id }}"><i>Edit</i></a><br>
+        <a href="delete/{{ event.id }}"><i>Delete</i></a>
       </div>
     </li>
   {%- endfor %}
   </ul>
 
-  <a href=# class="btn-floating btn-large waves-effect waves-light red"
+  <a href="add" class="btn-floating btn-large waves-effect waves-light red"
      style="position: fixed; right: 20px;  bottom: 20px;}">
     <i class="material-icons">add</i></a>
 

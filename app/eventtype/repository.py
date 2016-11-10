@@ -24,12 +24,22 @@ class EventTypeRepository:
                             et_table=EventTypeMapping.description))
         result = db.session.query(EventType).from_statement(stmt).all()
         return result
+        
+    @classmethod
+    def get_event_type_by_id(cls, event_type_id):
+        """Get type of event"""
+        et_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "event_type")
+        stmt = text("SELECT {et_columns} FROM {et_table} WHERE id = :id"
+                    .format(et_columns=et_columns_string,
+                            et_table=EventTypeMapping.description))
+        result = db.session.query(EventType).from_statement(stmt).params(id=event_type_id).one()
+        return result                            
 
     @classmethod
     def add_new_event_type(cls, eventtype):
         """Add new type of events"""
-        columns, substitutions, params_dict = QueryHelper.get_insert_string_and_dict(EventTypeMapping, eventtype, fields_to_exclude=['id'])
-        quert = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
+        columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(EventTypeMapping, eventtype, fields_to_exclude=['id'])
+        query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
                      table_name=EventTypeMapping.description, columns=columns, substitutions=substitutions))
         db.engine.execute(query.params(**params_dict))
 
