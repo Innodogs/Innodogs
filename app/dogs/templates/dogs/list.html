@@ -11,15 +11,15 @@
         <div class="col s8">
             <ul class="collection " style="margin: 0 0 20px 0;">
                 {% for dog in dogs -%}
-                <li class="collection-item avatar" style="padding-left: 90px;">
-                    <img src="images/d1.jpg" alt="" style="width: 65px; height: 65px;" class="circle">
-                    <a href="page/{{ dog.id }}"><span class="title">{{ dog.name }}</span></a>
-                    <p>ID: {{ dog.id }}</p>
-                    <p>Sex: {{ dog.sex }}</p>
-                    <p> {{ dog.description }} </p>
-                </li>
-                <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
-                </li>
+                    <li class="collection-item avatar" style="padding-left: 90px;">
+                        <img src="{{ dog.main_picture.uri if dog.main_picture != None }}" alt="" style="width: 65px; height: 65px;" class="circle">
+                        <a href="page/{{ dog.id }}"><span class="title">{{ dog.name }}</span></a>
+                        <p>ID: {{ dog.id }}</p>
+                        <p>Sex: {{ dog.sex }}</p>
+                        <p> {{ dog.description }} </p>
+                    </li>
+                    <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
+                    </li>
                 {%- endfor %}
             </ul>
         </div>
@@ -34,7 +34,7 @@
 
 
                 <p>
-                    <input type="checkbox" id="isSterialize" />
+                    <input type="checkbox" id="isSterialize"/>
                     <label for="isSterialize" style="    color: black;">Sterialize</label>
                 </p>
                 <p>
@@ -57,8 +57,9 @@
 
     </div>
 
-    <a href='add' class="btn-floating btn-large waves-effect waves-light red" style="    position: fixed; right: 20px;  bottom: 20px;}">
-    <i class="material-icons">add</i></a>
+    <a href='add' class="btn-floating btn-large waves-effect waves-light red"
+       style="    position: fixed; right: 20px;  bottom: 20px;}">
+        <i class="material-icons">add</i></a>
 
 
     <br><br>

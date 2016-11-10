@@ -72,7 +72,9 @@ CREATE TABLE public.dog_picture (
   id         SERIAL PRIMARY KEY,
   uri        VARCHAR(1000) NOT NULL,
   dog_id     INTEGER REFERENCES dog (id), --dog has
-  request_id INTEGER REFERENCES add_request (id) --request has
+  request_id INTEGER REFERENCES add_request (id), --request has
+  is_main    BOOL NOT NULL
+  --TODO: Check query
 );
 
 CREATE TABLE public.comment (

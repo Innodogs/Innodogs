@@ -27,12 +27,26 @@ class Dog:
         self.description = None
         self.is_adopted = None
         self.location_id = None
+        # These fields are not presented in the model in case it was initialized by SQLAlchemy
         self.location = None
         self.event_list = None  # non financial
         self.financial_event_list = None
+        self.main_picture = None
+        self.pictures = None
 
     def __str__(self):
         return "Dog # %s (%s)" % (self.id, self.name)
+
+
+class DogPicture:
+    """DogPicture model"""
+
+    def __init__(self):
+        self.id = None
+        self.request_id = None
+        self.dog_id = None
+        self.uri = None
+        self.is_main = None
 
 
 DogMapping = Table('dog', metadata,
@@ -45,4 +59,13 @@ DogMapping = Table('dog', metadata,
                    Column('location_id', ForeignKey('location.id'))
                    )
 
+DogPictureMapping = Table('dog_picture', metadata,
+                          Column('id', Integer, primary_key=True),
+                          Column('request_id', Integer),
+                          Column('dog_id', Integer),
+                          Column('uri', String(255)),
+                          Column('is_main', Boolean)
+                          )
+
 mapper(Dog, DogMapping)
+mapper(DogPicture, DogPictureMapping)

@@ -13,7 +13,6 @@ def requests_list():
     all_dogs = DogsRepository.get_all_dogs()
     return render_template('dogs/list.html', dogs=all_dogs)
 
-
 @dogs.route('/approve-request/<req_id>', methods=['GET','POST'])
 def requests_add(req_id):
     if request.method == 'POST':

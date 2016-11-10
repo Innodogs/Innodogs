@@ -3,8 +3,8 @@ from typing import List, Tuple
 from sqlalchemy import text
 
 from app import db
-from app.dogs.models import Dog, DogMapping
 from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expenditure, FinancialEvent
+from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
 from app.locations.models import LocationMapping, Location
 from app.utils.query_helper import QueryHelper
 
@@ -18,21 +18,27 @@ class DogsRepository:
 
     @classmethod
     def get_all_dogs(cls) -> List[Dog]:
-        """Gets all dogs, joined with location"""
+        """Gets all dogs, joined with location and main_picture"""
 
         dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
         location_columns_string = QueryHelper.get_columns_string(LocationMapping, "locations")
+        picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
         stmt = text(
-            "SELECT {dog_columns}, {location_columns} FROM {dogs_table} AS dogs LEFT OUTER JOIN {locations_table} "
-            "AS locations ON dogs.location_id = locations.id "
-            .format(dog_columns=dog_columns_string,
-                    location_columns=location_columns_string,
-                    dogs_table=DogMapping.description, locations_table=LocationMapping.description))
-        result = db.session.query(Dog, Location).from_statement(stmt).all()
+            "SELECT {dog_columns}, {location_columns}, {picture_columns} FROM {dogs_table} AS dogs "
+            "LEFT OUTER JOIN {locations_table} AS locations ON dogs.location_id = locations.id "
+            "LEFT OUTER JOIN {pictures_table} AS dog_pictures ON dogs.id = dog_pictures.dog_id AND dog_pictures.is_main = true"
+                .format(dog_columns=dog_columns_string,
+                        location_columns=location_columns_string,
+                        picture_columns=picture_columns,
+                        dogs_table=DogMapping.description,
+                        locations_table=LocationMapping.description,
+                        pictures_table=DogPictureMapping.description
+                        ))
+        result = db.session.query(Dog, Location, DogPicture).from_statement(stmt).all()
 
         requests = []
         for join_tuple in result:
-            requests.append(cls._tuple_to_dog_and_location(join_tuple))
+            requests.append(cls._tuple_to_dog_and_location_and_picture(join_tuple))
         return requests
 
     @classmethod
@@ -44,6 +50,57 @@ class DogsRepository:
         """
         dog = join_tuple[0]
         dog.location = join_tuple[1]
+
+        return dog
+
+    @classmethod
+    def _tuple_to_dog_and_location_and_picture(cls, join_tuple):
+        """
+        Converts tuple (Dog, Location, DogPicture) to Dog with dog.location = location and
+        dog.main_picture = picture
+        :param join_tuple: Input tuple
+        :return: Dog with location and picture
+        """
+        dog = join_tuple[0]
+        dog.location = join_tuple[1]
+        dog.main_picture = join_tuple[2]
+
+        return dog
+
+    @classmethod
+    def get_dog_by_id_with_pictures(cls, dog_id) -> Dog:
+        """Returns dog by given id with pictures or throws an exception"""
+
+        dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
+        location_columns_string = QueryHelper.get_columns_string(LocationMapping, "locations")
+        picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
+        stmt = text(
+            "SELECT {dog_columns}, {location_columns}, {picture_columns} FROM {dogs_table} AS dogs "
+            "LEFT JOIN {locations_table} AS locations ON dogs.location_id = locations.id "
+            "LEFT JOIN {pictures_table} AS dog_pictures ON dogs.id = dog_pictures.dog_id "
+            "WHERE dogs.id = :id "
+                .format(dog_columns=dog_columns_string,
+                        location_columns=location_columns_string,
+                        picture_columns=picture_columns,
+                        pictures_table=DogPictureMapping.description,
+                        dogs_table=DogMapping.description, locations_table=LocationMapping.description))
+        dog_id = int(dog_id)
+        result_tuples = db.session.query(Dog, Location, DogPicture).from_statement(stmt).params(id=dog_id).all()
+        dog = None
+        for result_tuple in result_tuples:
+            if dog is None:
+                dog = result_tuple[0]
+                dog.pictures = []
+
+            if not hasattr(dog, "location"):
+                dog.location = result_tuple[1]
+
+            picture = result_tuple[2]
+            if picture is not None:
+                if picture.is_main:
+                    dog.main_picture = picture
+                else:
+                    dog.pictures.append(picture)
 
         return dog
 
