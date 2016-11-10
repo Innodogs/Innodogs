@@ -5,6 +5,7 @@ CREATE TABLE public."user" (
   google_id    VARCHAR(255) UNIQUE,
   is_volunteer BOOL         NOT NULL,
   is_admin     BOOL         NOT NULL,
+  is_active    BOOL         NOT NULL,
   name         VARCHAR(100) NOT NULL,
   email        VARCHAR(255) NOT NULL,
   UNIQUE (google_id),
@@ -31,23 +32,25 @@ CREATE TABLE public.dog (
 CREATE TABLE public.add_request (
   id          SERIAL PRIMARY KEY,
   description TEXT         NOT NULL,
-  datetime    TIMESTAMPTZ,
+  datetime    TIMESTAMPTZ  NOT NULL,
   status      VARCHAR(100) NOT NULL, -- Should be archived
   comment     TEXT,
   user_id     INTEGER      NOT NULL REFERENCES "user" (id) --submits
 );
 
 CREATE TABLE public.inpayment (
-  id      SERIAL PRIMARY KEY,
-  amount  MONEY NOT NULL,
-  comment TEXT,
-  user_id INTEGER REFERENCES "user" (id) -- was_done_by
+  id       SERIAL PRIMARY KEY,
+  amount   MONEY NOT NULL,
+  datetime TIMESTAMPTZ  NOT NULL,
+  comment  TEXT,
+  user_id  INTEGER REFERENCES "user" (id) -- was_done_by
 );
 
 CREATE TABLE public.expenditure (
-  id      SERIAL PRIMARY KEY,
-  amount  MONEY NOT NULL, -- add check if can be negative
-  comment TEXT
+  id       SERIAL PRIMARY KEY,
+  amount   MONEY NOT NULL, -- add check if can be negative
+  datetime TIMESTAMPTZ  NOT NULL,
+  comment  TEXT
 );
 
 CREATE TABLE public.event_type (
