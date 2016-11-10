@@ -40,3 +40,43 @@ EventMapping = Table('event', metadata,
                      )
 
 mapper(Event, EventMapping)
+
+
+class Expenditure:
+    """Standalone expenditure"""
+
+    def __init__(self):
+        super().__init__()
+        self.id = None
+        self.amount = None
+        self.comment = None
+
+    def __str__(self):
+        return "Expenditure # {} (amount={})".format(self.id, self.amount)
+
+
+ExpenditureEventMapping = Table('expenditure', metadata,
+                                Column('id', Integer, primary_key=True),
+                                Column('amount', Integer),
+                                Column('comment', Text)
+                                )
+
+mapper(Expenditure, ExpenditureEventMapping)
+
+
+class FinancialEvent(Event):
+    """Associated financial event for particular dog"""
+
+    def __init__(self, event: Event, expenditure: Expenditure):
+        super().__init__()
+        self.id = event.id
+        self.datetime = event.datetime
+        self.description = event.description
+        self.expenditure_id = event.expenditure_id
+        self.event_type_id = event.event_type_id
+        self.dog_id = event.dog_id
+
+        self.expenditure = expenditure
+
+    def __str__(self):
+        return "FinancialEvent # {} for Dog # {} ({})".format(self.id, self.dog_id, self.description)

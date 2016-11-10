@@ -28,7 +28,8 @@ class Dog:
         self.is_adopted = None
         self.location_id = None
         self.location = None
-        self.event_list = None
+        self.event_list = None  # non financial
+        self.financial_event_list = None
 
     def __str__(self):
         return "Dog # %s (%s)" % (self.id, self.name)

@@ -26,6 +26,37 @@ def new_event():
 
 
 # todo: исправить потом methods, после подключения javascript который будет пулять правильные методы для реквестов
+@events.route('/financial-delete/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def delete_financial_event(event_id: int):
+    if request.method == 'GET':
+        return "delete form"
+    elif request.method == 'POST':
+        return "deleted!"
+
+
+@events.route('/financial-edit/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def edit_financial_event(event_id: int):
+    if request.method == 'GET':
+        return "edit form" + str(event_id)
+    elif request.method == 'POST':
+        return "updated!"
+
+
+@events.route('/financial', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def new_financial_event():
+    if request.method == 'GET':
+        return "new form"
+    elif request.method == 'POST':
+        return "added!"
+
+
+# todo: исправить потом methods, после подключения javascript который будет пулять правильные методы для реквестов
 @events.route('/delete/<int:event_id>', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
