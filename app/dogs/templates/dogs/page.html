@@ -5,7 +5,7 @@
 {% block content %}
 
 
-  <div class="section"></div>
+    <div class="section"></div>
 
     <div class="row  z-depth-1"
          style="padding: 20px;    background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
@@ -70,99 +70,70 @@
             </div>
 
 
-
-
         </div>
-
 
 
     </div>
     <div class="row">
         <div class="col s6">
+            {% if current_user.is_volunteer %}
+                <a href="{{ url_for('events.new_financial_event') }}">new</a>
+            {% endif %}
             <ul class="collection with-header z-depth-1">
-                <li class="collection-header" style="text-align: center"><h5>Finantial events</h5></li>
-                <li class="plus collection-item ">
-                    <div>
-
-                        <span style="    font-weight: bold; font-size: 17px;">+</span>
-                        10800$ <span style="color: gray;"> |</span> <span>Date: 21.10.2015</span>
-                        <span style="color: gray;"> |</span><span> User: Hide</span>
-                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-
-                        <span style="    font-weight: bold; font-size: 17px;">+</span>
-                        10800$ <span style="color: gray;"> |</span> <span>Date: 21.10.2015</span>
-                        <span style="color: gray;"> |</span><span> User: Petr Petrov</span>
-                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-                        <span style="    font-weight: bold; font-size: 17px;">+</span> 10800$
-                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
-                    </div>
-                </li>
-                <li class="collection-item minus">
-                    <div>
-                        <span style="    font-weight: bold; font-size: 17px;">-</span> 10800$
-                        <a href="#!" class="secondary-content"><i class="material-icons">highlight_off</i></a>
-                    </div>
-                </li>
+                <li class="collection-header" style="text-align: center"><h5>Financial events</h5></li>
+                {% for event in dog.financial_event_list %}
+                    <li class="plus collection-item ">
+                        <div>
+                            <span style="    font-weight: bold; font-size: 17px;">+</span>
+                            {{ event.expenditure.amount }} <span style="color: gray;"> |</span>
+                            <span>Date: {{ event.datetime.date() }}</span>
+                            <span style="color: gray;"> |</span>
+                            {% if current_user.is_volunteer %}
+                                <a href="{{ url_for('events.delete_financial_event', event_id=event.id) }}" class="secondary-content"><i class="material-icons">highlight_off</i></a>
+                                {#todo: make this ajax "delete" request#}
+                            {% endif %}
+                            <p>comment:{{ event.expenditure.comment }}</p>
+                            <p>event descr:{{ event.description }}</p>
+                            {% if current_user.is_volunteer %}
+                                <a href="{{ url_for('events.edit_financial_event', event_id=event.id) }}">edit</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
             </ul>
-            <center>
+            <div style="text-align: center">
                 <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
                     more</a>
-            </center>
+            </div>
         </div>
         <div class="col s6">
+            {% if current_user.is_volunteer %}
+                <a href="{{ url_for('events.new_event') }}">new</a>
+            {% endif %}
             <ul class="collection with-header z-depth-1">
                 <li class="collection-header" style="text-align: center"><h5>Events</h5></li>
-                <li class="plus collection-item ">
-                    <div>
-
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-
-
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-                    </div>
-                </li>
-                <li class="collection-item minus">
-                    <div>
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-                    </div>
-                    <div>
-                        kdklksjfskldf
-                        fsdfs;ldkf
-                        adasddddddddddddddddddddddddddddd ddddddddddddddddasdasdadsasd
-                    </div>
-                </li>
+                {% for event in dog.event_list %}
+                    <li class="plus collection-item ">
+                        <div>
+                            <span>User: Petr Petrov</span>
+                            <span style="color: gray;"> |</span>
+                            <span>Date: {{ event.datetime.date() }}</span>
+                            {% if current_user.is_volunteer %}
+                                <a href="{{ url_for('events.delete_financial_event', event_id=event.id) }}" class="secondary-content"><i class="material-icons">highlight_off</i></a>
+                                {#todo: make this ajax "delete" request#}
+                            {% endif %}
+                            <p>{{ event.description }}</p>
+                            {% if current_user.is_volunteer %}
+                                <a href="{{ url_for('events.edit_event', event_id=event.id) }}">edit</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
             </ul>
-            <center>
+            <div style="text-align: center">
                 <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
                     more</a>
-            </center>
+            </div>
         </div>
     </div>
 

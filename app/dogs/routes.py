@@ -1,5 +1,4 @@
 from flask import render_template, request, redirect
-from flask_login import current_user
 from datetime import datetime
 
 from app.dogs.repository import DogsRepository
@@ -13,6 +12,7 @@ __author__ = 'Xomak'
 def requests_list():
     all_dogs = DogsRepository.get_all_dogs()
     return render_template('dogs/list.html', dogs=all_dogs)
+
 
 @dogs.route('/approve-request/<req_id>', methods=['GET','POST'])
 def requests_add(req_id):
@@ -29,7 +29,8 @@ def requests_add(req_id):
     req = AddRequestsRepository.get_add_request_by_id(req_id)
     return render_template('dogs/add.html', date=datetime.now(), req=req)
 
-@dogs.route('/page/<int:dog_id>', methods=['GET','POST'])
-def requests_page(dog_id):
-    dog_data = DogsRepository.get_dog_by_id(dog_id)
+
+@dogs.route('/page/<int:dog_id>', methods=['GET'])
+def page_about_dog(dog_id):
+    dog_data = DogsRepository.get_dog_by_id_with_events(dog_id)
     return render_template('dogs/page.html', dog=dog_data)

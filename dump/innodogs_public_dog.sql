@@ -1,0 +1,2 @@
+INSERT INTO public.dog (id, is_hidden, name, sex, description, is_adopted, location_id) VALUES (1, false, 'Шарик', 'male', 'Очень добрый и послушный', false, 1);
+INSERT INTO public.dog (id, is_hidden, name, sex, description, is_adopted, location_id) VALUES (2, false, 'Снежинка', 'female', 'Еще более добрая и белоснежная', false, 1);
