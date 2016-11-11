@@ -13,7 +13,7 @@
                 {% for dog in dogs -%}
                     <li class="collection-item avatar" style="padding-left: 90px;">
                         <img src="{{ dog.main_picture.uri if dog.main_picture != None }}" alt="" style="width: 65px; height: 65px;" class="circle">
-                        <a href="page/{{ dog.id }}"><span class="title">{{ dog.name }}</span></a>
+                        <a href="{{ url_for('dogs.page_about_dog', dog_id=dog.id) }}"><span class="title">{{ dog.name }}</span></a>
                         <p>ID: {{ dog.id }}</p>
                         <p>Sex: {{ dog.sex }}</p>
                         <p> {{ dog.description }} </p>

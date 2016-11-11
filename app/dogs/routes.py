@@ -1,3 +1,4 @@
+from flask import abort
 from flask import render_template, request, redirect
 from datetime import datetime
 
@@ -29,7 +30,9 @@ def requests_add(req_id):
     return render_template('dogs/add.html', date=datetime.now(), req=req)
 
 
-@dogs.route('/page/<int:dog_id>', methods=['GET'])
+@dogs.route('/<int:dog_id>', methods=['GET'])
 def page_about_dog(dog_id):
     dog_data = DogsRepository.get_dog_by_id_with_events(dog_id)
+    if dog_data is None:
+        abort(404)
     return render_template('dogs/page.html', dog=dog_data)
