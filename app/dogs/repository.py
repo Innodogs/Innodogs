@@ -263,15 +263,37 @@ class DogPictureRepository:
                 main_pictures_count = row['pictures_count']
             else:
                 not_main_pictures_count = row['pictures_count']
-
-        if not_main_pictures_count > 0 and main_pictures_count != 1:
+        if main_pictures_count > 1 or (not_main_pictures_count > 0 and main_pictures_count == 0):
             return False
         return True
 
     @classmethod
+    def _check_main_picture_rule_for_all(cls, connection=None) -> bool:
+        """
+        Check, if for every dog with picture there is one and only one main picture
+        :param connection: Connection, used for the query
+        :return: True, if rule is forced, False - otherwise
+        """
+        if connection is None:
+            connection = db.engine
+        stmt = text("SELECT DISTINCT {dog_id_column} FROM {dog_picture_table} WHERE {dog_id_column} NOT IN "
+                    "(SELECT {dog_id_column} FROM dog_picture WHERE {dog_id_column} IS NOT NULL "
+                    "GROUP BY {dog_id_column} HAVING count({is_main_column} = True or NULL) = 1)".format(
+            dog_id_column=QueryHelper.get_column_by_key(DogPictureMapping, "dog_id"),
+            dog_picture_table=DogPictureMapping.description,
+            is_main_column=QueryHelper.get_column_by_key(DogPictureMapping, "is_main")
+        ))
+        result = connection.execute(stmt)
+        if result.rowcount > 0:
+            return False
+        else:
+            return True
+
+    @classmethod
     def insert_picture(cls, picture) -> bool:
         """
-        Adds picture to the database. Performs check before that.
+        Adds picture to the database and sets proper id to id.
+        Performs check before that.
         :param picture: Picture to insert
         :return: True, if insertion was successful, False - otherwise
         """
@@ -283,20 +305,35 @@ class DogPictureRepository:
                                                                                       fields_to_exclude=['id'])
         query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
             table_name=DogPictureMapping.description, columns=columns, substitutions=substitutions))
-        connection.execute(query.params(**params_dict))
+        result = connection.execute(query.params(**params_dict))
         if picture.dog_id is None or cls._check_main_picture_rule(picture.dog_id, connection):
             trans.commit()
+            picture.id = result.fetchone()['id']
             return True
         else:
             trans.rollback()
             return False
 
     @classmethod
-    def safe_picture_update(cls, picture, new_main_picture_id):
-        raise NotImplementedError()
-        # connection = db.engine.connect()
-        # trans = connection.begin()
-        #TODO Implement
+    def transactional_pictures_update(cls, picture1, picture2):
+        """
+        Updates two pictures, during the one transaction.
+        It is required, if we want to change main picture for any dog.
+        :param picture1: First picture to update
+        :param picture2: Second picture to update
+        :return: True, if updates performed successfully, False - otherwise
+        """
+
+        connection = db.engine.connect()
+        trans = connection.begin()
+        cls._update_picture(picture1, connection)
+        cls._update_picture(picture2, connection)
+        if cls._check_main_picture_rule_for_all(connection):
+            trans.commit()
+            return True
+        else:
+            trans.rollback()
+            return False
 
     @classmethod
     def _update_picture(cls, picture, connection):
@@ -325,21 +362,12 @@ class DogPictureRepository:
         """
         connection = db.engine.connect()
         trans = connection.begin()
-        old_dog_id = None
-        if picture.dog_id is None:
-            old_dog_id = cls.get_picture_by_id(picture.id).dog_id
 
         cls._update_picture(picture, connection)
 
-        if picture.dog_id is not None and picture.dog_id != old_dog_id:
-            if not cls._check_main_picture_rule(picture.dog_id, connection):
-                trans.rollback()
-                return False
-        if old_dog_id is not None and picture.dog_id != old_dog_id:
-            if not cls._check_main_picture_rule(old_dog_id, connection):
-                trans.rollback()
-                return False
-
-        trans.commit()
-        return True
-
+        if cls._check_main_picture_rule_for_all(connection):
+            trans.commit()
+            return True
+        else:
+            trans.rollback()
+            return False
