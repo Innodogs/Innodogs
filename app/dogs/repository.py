@@ -120,7 +120,11 @@ class DogsRepository:
         dog.financial_event_list = []
         for record in join_tuples:
             if record[3]:
-                dog.financial_event_list.append(FinancialEvent(record[2], record[3]))
+                event = record[2]
+                expenditure = record[3]
+                fin_event = FinancialEvent()
+                fin_event.post_init(event, expenditure)
+                dog.financial_event_list.append(fin_event)
             else:
                 dog.event_list.append(record[2])
 

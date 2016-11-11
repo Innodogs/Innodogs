@@ -67,15 +67,17 @@ mapper(Expenditure, ExpenditureEventMapping)
 class FinancialEvent(Event):
     """Associated financial event for particular dog"""
 
-    def __init__(self, event: Event, expenditure: Expenditure):
+    def __init__(self):
         super().__init__()
+        self.expenditure = None
+
+    def post_init(self, event: Event, expenditure: Expenditure):
         self.id = event.id
         self.datetime = event.datetime
         self.description = event.description
         self.expenditure_id = event.expenditure_id
         self.event_type_id = event.event_type_id
         self.dog_id = event.dog_id
-
         self.expenditure = expenditure
 
     def __str__(self):
