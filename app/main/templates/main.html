@@ -13,6 +13,8 @@
 
     {% if current_user.is_authenticated %}
         Hi {{ current_user.name }}!
+        <a href="{{ url_for('users.logout') }}">log out</a>
+    {% else %}
+        <a href="{{ authorization_url }}">log in</a>
     {% endif %}
-    <a href="{{ authorization_url }}">log in</a>
 {% endblock %}

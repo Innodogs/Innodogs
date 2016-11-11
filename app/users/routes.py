@@ -37,7 +37,7 @@ def login_success_callback(token, user_info):
     if not from_db:
         from_db = UsersRepository.save_user(user)
 
-    login_user(from_db)
+    login_user(from_db, remember=True)
     session['token'] = json.dumps(token)
     return redirect(url_for('users.profile'))
 
