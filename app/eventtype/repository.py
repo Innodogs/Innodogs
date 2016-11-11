@@ -59,3 +59,10 @@ class EventTypeRepository:
         """Delete event type"""
         query = text("DELETE FROM {table_name} WHERE id = {id}".format(table_name=EventTypeMapping.description, id=type_id))
         db.engine.execute(query)
+    
+    @classmethod
+    def is_event_type_free(cls, type_id):
+        """Check if this type of events is used"""
+        query = text("SELECT id FROM event WHERE event_type_id = {id}".format(id=type_id))
+        result = db.engine.execute(query).fetchall()
+        return len(result) == 0

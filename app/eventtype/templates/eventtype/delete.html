@@ -6,12 +6,20 @@
 {% block content %} 
 
     <h4 class="header center red-text text-lighten-2">Delete event type</h4>
+    {% if free_type %}
     <form action="" method="post">
       <div>
         <p>Do you want to delete '{{ name }}'</p>
-
         <input type="submit" value="Delete" class="btn">
       </div>
     </form>
+    {% else %}
+    <form action="" method="post">
+      <div>
+        <p>Type '{{ name }}' is used and cannot be deleted</p>
+        <input type="submit" value="Back" class="btn">
+      </div>
+    </form>    
+    {% endif %}
 
 {% endblock %}
