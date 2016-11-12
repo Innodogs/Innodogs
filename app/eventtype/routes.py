@@ -31,7 +31,7 @@ def event_type_add():
         eventtype.type_name = form.type_name.data
         eventtype.is_significant = form.is_significant.data
         EventTypeRepository.add_new_event_type(eventtype)
-        return redirect('/events/')
+        return redirect(url_for('eventtype.event_type_list'))
     return render_template('eventtype/edit.html', form=form, title='Add')
 
 @event_type.route('/edit/<et_id>', methods=['GET','POST'])
@@ -47,7 +47,7 @@ def event_type_edit(et_id):
         etype.type_name = form.type_name.data
         etype.is_significant = form.is_significant.data
         EventTypeRepository.update_event_type(etype)
-        return redirect('/events/')   
+        return redirect(url_for('eventtype.event_type_list'))   
     form = EventTypeForm(type_name=etype.type_name, is_significant=etype.is_significant)
     return render_template('eventtype/edit.html', form=form, title='Edit')
 
@@ -63,7 +63,7 @@ def event_type_delete(et_id):
     if request.method == 'POST':
         if free_type:
             EventTypeRepository.delete_event_type(et_id)
-        return redirect('/events/')    
+        return redirect(url_for('eventtype.event_type_list')) 
     return render_template('eventtype/delete.html', name=etype.type_name,
                            free_type=free_type)
     
