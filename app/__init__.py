@@ -43,4 +43,7 @@ def create_app(config_name):
     from .events import events as events_blueprint
     app.register_blueprint(events_blueprint, url_prefix='/events')
 
+    from .eventtype import event_type as event_type_blueprint
+    app.register_blueprint(event_type_blueprint, url_prefix='/event-types')
+
     return app

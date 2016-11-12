@@ -21,10 +21,9 @@ def requests_add(req_id):
         dog.name = request.form['name']
         dog.sex = request.form['sex']
         dog.description = request.form['comment']
-        dog.is_hidden = false
-        dog.is_adopted = false
-        DogsRepository.new_dog(dog)
-        #abort(401)
+        dog.is_hidden = False
+        dog.is_adopted = False
+        DogsRepository.new_dog(dog)        
         return redirect('/dogs')
     req = AddRequestsRepository.get_add_request_by_id(req_id)
     return render_template('dogs/add.html', date=datetime.now(), req=req)

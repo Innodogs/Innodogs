@@ -188,9 +188,11 @@ class DogsRepository:
         """Add new dog to database"""
 
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(DogMapping, dog,
+
                                                                                       fields_to_exclude=['id'])
         query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
             table_name=DogMapping.description, columns=columns, substitutions=substitutions))
+
         db.engine.execute(query.params(**params_dict))
 
 
