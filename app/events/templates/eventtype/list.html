@@ -5,20 +5,20 @@
 {% block content %}
   <h3 class="header center red-text text-lighten-2">List of event types</h3>
   <ul class="collection">
-  {% for event in event_types -%}
+  {% for event in event_types|sort(attribute='id', reverse=True) -%}
     <li class="collection-item avatar">
       <i class="material-icon circle red lighten-1">{{ event.id }}</i>
       <span class="title">{{ event.type_name }}</span>
       <p>Significant: {{ event.is_significant }}</p>
       <div class="secondary-content">
-        <a href="edit/{{ event.id }}"><i>Edit</i></a><br>
-        <a href="delete/{{ event.id }}"><i>Delete</i></a>
+        <a href="{{ url_for(".event_type_edit", et_id=event.id) }}"><i>Edit</i></a><br>
+        <a href="{{ url_for(".event_type_delete", et_id=event.id) }}"><i>Delete</i></a>
       </div>
     </li>
   {%- endfor %}
   </ul>
 
-  <a href="add" class="btn-floating btn-large waves-effect waves-light red"
+  <a href="{{ url_for(".event_type_add") }}" class="btn-floating btn-large waves-effect waves-light red"
      style="position: fixed; right: 20px;  bottom: 20px;}">
     <i class="material-icons">add</i></a>
 

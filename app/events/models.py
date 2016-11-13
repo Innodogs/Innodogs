@@ -1,10 +1,11 @@
 """Models for events"""
-
+from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import MetaData
+from sqlalchemy import String
 from sqlalchemy import Table
 from sqlalchemy import Text
 from sqlalchemy.orm import mapper
@@ -82,3 +83,25 @@ class FinancialEvent(Event):
 
     def __str__(self):
         return "FinancialEvent # {} for Dog # {} ({})".format(self.id, self.dog_id, self.description)
+
+
+class EventType:
+    """Event type model"""
+
+    def __init__(self):
+        super().__init__()
+        self.id = None
+        self.type_name = None
+        self.is_significant = None
+
+    def __str__(self):
+        return "EventType # %s (%s)" % (self.id, self.type_name)
+
+
+EventTypeMapping = Table('event_type', metadata,
+                         Column('id', Integer, primary_key=True),
+                         Column('type_name', String(255)),
+                         Column('is_significant', Boolean)
+                         )
+
+mapper(EventType, EventTypeMapping)
