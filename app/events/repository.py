@@ -3,8 +3,8 @@ from typing import List
 from sqlalchemy import text
 
 from app import db
-from app.eventtype.models import EventType, EventTypeMapping
 from app.utils.query_helper import QueryHelper
+from .models import EventType, EventTypeMapping
 
 __author__ = 'Xomak'
 
@@ -24,7 +24,7 @@ class EventTypeRepository:
                             et_table=EventTypeMapping.description))
         result = db.session.query(EventType).from_statement(stmt).all()
         return result
-        
+
     @classmethod
     def get_event_type_by_id(cls, event_type_id):
         """Get type of event"""
@@ -33,16 +33,18 @@ class EventTypeRepository:
                     .format(et_columns=et_columns_string,
                             et_table=EventTypeMapping.description))
         result = db.session.query(EventType).from_statement(stmt).params(id=event_type_id).one()
-        return result                            
+        return result
 
     @classmethod
     def add_new_event_type(cls, eventtype):
         """Add new type of events"""
-        columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(EventTypeMapping, eventtype, fields_to_exclude=['id'])
+        columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(EventTypeMapping, eventtype,
+                                                                                      fields_to_exclude=['id'])
         query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
-                     table_name=EventTypeMapping.description, columns=columns, substitutions=substitutions))
+            table_name=EventTypeMapping.description,
+            columns=columns,
+            substitutions=substitutions))
         db.engine.execute(query.params(**params_dict))
-
 
     @classmethod
     def update_event_type(cls, eventtype):
@@ -57,9 +59,10 @@ class EventTypeRepository:
     @classmethod
     def delete_event_type(cls, type_id):
         """Delete event type"""
-        query = text("DELETE FROM {table_name} WHERE id = {id}".format(table_name=EventTypeMapping.description, id=type_id))
+        query = text(
+            "DELETE FROM {table_name} WHERE id = {id}".format(table_name=EventTypeMapping.description, id=type_id))
         db.engine.execute(query)
-    
+
     @classmethod
     def is_event_type_free(cls, type_id):
         """Check if this type of events is used"""
