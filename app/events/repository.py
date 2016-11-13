@@ -4,7 +4,7 @@ from sqlalchemy import text
 
 from app import db
 from app.utils.query_helper import QueryHelper
-from .models import EventType, EventTypeMapping
+from .models import EventType, EventTypeMapping, EventMapping
 
 __author__ = 'Xomak'
 
@@ -60,12 +60,15 @@ class EventTypeRepository:
     def delete_event_type(cls, type_id):
         """Delete event type"""
         query = text(
-            "DELETE FROM {table_name} WHERE id = {id}".format(table_name=EventTypeMapping.description, id=type_id))
+            "DELETE FROM {table_name} AS e WHERE e.id = {id}".format(table_name=EventTypeMapping.description,
+                                                                     id=type_id))
         db.engine.execute(query)
 
     @classmethod
     def is_event_type_free(cls, type_id):
         """Check if this type of events is used"""
-        query = text("SELECT id FROM event WHERE event_type_id = {id}".format(id=type_id))
+        query = text("SELECT e.id FROM {event_table_name} AS e WHERE event_type_id = {id}".format(
+            event_table_name=EventMapping.description,
+            id=type_id))
         result = db.engine.execute(query).fetchall()
         return len(result) == 0

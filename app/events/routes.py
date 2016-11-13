@@ -96,7 +96,7 @@ def event_type_add():
     return render_template('eventtype/edit.html', form=form, title='Add')
 
 
-@events.route('/types/edit/<et_id>', methods=['GET', 'POST'])
+@events.route('/types/<et_id>/edit', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def event_type_edit(et_id):
@@ -115,7 +115,7 @@ def event_type_edit(et_id):
     return render_template('eventtype/edit.html', form=form, title='Edit')
 
 
-@events.route('/types/delete/<et_id>', methods=['GET', 'POST'])
+@events.route('/types/<et_id>/delete', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def event_type_delete(et_id):
