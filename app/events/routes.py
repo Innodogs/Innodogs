@@ -12,7 +12,7 @@ from .models import EventType
 from .repository import EventTypeRepository
 
 
-@events.route('/edit/<int:event_id>', methods=['GET', 'POST'])
+@events.route('/<int:event_id>/edit', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def edit_event(event_id: int):
@@ -22,7 +22,7 @@ def edit_event(event_id: int):
         return "updated!"
 
 
-@events.route('/', methods=['GET', 'POST'])
+@events.route('/add', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def new_event():
@@ -32,8 +32,7 @@ def new_event():
         return "added!"
 
 
-# todo: исправить потом methods, после подключения javascript который будет пулять правильные методы для реквестов
-@events.route('/financial-delete/<int:event_id>', methods=['GET', 'POST'])
+@events.route('/financial/<int:event_id>/delete', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def delete_financial_event(event_id: int):
@@ -43,7 +42,7 @@ def delete_financial_event(event_id: int):
         return "deleted!"
 
 
-@events.route('/financial-edit/<int:event_id>', methods=['GET', 'POST'])
+@events.route('/financial/<int:event_id>/edit', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def edit_financial_event(event_id: int):
@@ -53,7 +52,7 @@ def edit_financial_event(event_id: int):
         return "updated!"
 
 
-@events.route('/financial', methods=['GET', 'POST'])
+@events.route('/financial/add', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def new_financial_event():
@@ -64,7 +63,7 @@ def new_financial_event():
 
 
 # todo: исправить потом methods, после подключения javascript который будет пулять правильные методы для реквестов
-@events.route('/delete/<int:event_id>', methods=['GET', 'POST'])
+@events.route('/<int:event_id>/delete', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def delete_event(event_id: int):
@@ -96,10 +95,10 @@ def event_type_add():
     return render_template('eventtype/edit.html', form=form, title='Add')
 
 
-@events.route('/types/<et_id>/edit', methods=['GET', 'POST'])
+@events.route('/types/<int:et_id>/edit', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
-def event_type_edit(et_id):
+def event_type_edit(et_id: int):
     try:
         etype = EventTypeRepository.get_event_type_by_id(et_id)
     except NoResultFound:
@@ -115,10 +114,10 @@ def event_type_edit(et_id):
     return render_template('eventtype/edit.html', form=form, title='Edit')
 
 
-@events.route('/types/<et_id>/delete', methods=['GET', 'POST'])
+@events.route('/types/<int:et_id>/delete', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
-def event_type_delete(et_id):
+def event_type_delete(et_id: int):
     try:
         etype = EventTypeRepository.get_event_type_by_id(et_id)
     except NoResultFound:
