@@ -24,7 +24,12 @@ class User(UserMixin):
         self.google_id = str(kwargs.get('google_id'))
         self.is_volunteer = kwargs.get('is_volunteer', False)
         self.is_admin = kwargs.get('is_admin', False)
+        self._is_active = kwargs.get('is_active', kwargs.get('_is_active', True))
         self.email = kwargs.get('email')
+
+    @property
+    def is_active(self):
+        return self._is_active
 
     def get_roles(self):
         roles = []
@@ -49,6 +54,7 @@ UserMapping = Table('user', metadata,
                     Column('google_id', BigInteger),
                     Column('is_volunteer', Boolean),
                     Column('is_admin', Boolean),
+                    Column('_is_active', Boolean),
                     Column('name', String(100)),
                     Column('email', String(255))
                     )

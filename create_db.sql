@@ -5,7 +5,7 @@ CREATE TABLE public."user" (
   google_id    VARCHAR(255) UNIQUE,
   is_volunteer BOOL         NOT NULL,
   is_admin     BOOL         NOT NULL,
-  is_active    BOOL         NOT NULL,
+  _is_active    BOOL         NOT NULL,
   name         VARCHAR(100) NOT NULL,
   email        VARCHAR(255) NOT NULL,
   UNIQUE (google_id),
