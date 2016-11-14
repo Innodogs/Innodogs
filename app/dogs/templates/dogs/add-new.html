@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %} Add dog {% endblock %}
+
+{% macro fancy_render_field(field, placeholder='') %}
+    {% set class_ = '' %}
+    {{ field.label }}
+    {% if placeholder %}
+        {{ field(placeholder=placeholder)|safe }}
+    {% else %}
+        {% if field.type == 'TextAreaField' %}
+            {% set class_ = ' materialize-textarea' %}
+        {% endif %}
+        {% if field.type in ('SelectField', 'BooleanField') %}
+            {% set class_ = ' browser-default' %}
+        {% endif %}
+
+        {{ field(placeholder=field.description, class=class_)|safe }}
+    {% endif %}
+    {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for err in field.errors %}
+                <p>{{ err|e }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+
+    <div class="section"></div>
+
+    <div class="row"
+         style="padding: 20px; width: 110%;     margin-left: -5%;   background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
+        <div class="col s6">
+            <div class="row">
+                <div class="col s4">
+                    <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
+                         height="auto"
+                         src="1366695174.png">
+                </div>
+                <div class="col s8">
+                    <label>User name</label>
+                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ current_user.name }}
+                    </div>
+                    <label>Date</label>
+                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ date.strftime("%d.%m.%Y") }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form class="col s6 approve-form" style="border-left: 1px solid gainsboro;" method="post"
+              action="{{ url_for(".add_dog_without_request") }}">
+            {{ add_dog_form.csrf_token }}
+            <div class="row">
+                <div class="col s4">
+                    <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
+                         height="auto"
+                         src="1366695174.png">
+                </div>
+                <div class="col s8">
+                    <div>
+                        {{ fancy_render_field(add_dog_form.name) }}
+                    </div>
+
+                    <div class="row">
+                        <div class="input-field col s6">
+                            {{ fancy_render_field(add_dog_form.is_adopted) }}
+                        </div>
+                        <div class="col s6"> {#todo: inputfield класс добавить после того как поправить fancy_render_field#}
+                            {{ fancy_render_field(add_dog_form.sex) }}
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+                <div class="col s12">
+
+                    <div class=" col s6">
+                        {{ fancy_render_field(add_dog_form.location) }}
+                    </div>
+                    <div class="input-field col s6">
+                    </div>
+                    <div class="col s12">
+                        {{ fancy_render_field(add_dog_form.description) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <input type="submit" class="waves-effect waves-light btn" style="float: right;margin-right: 20px;"
+                           value="Add"/>
+                </div>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}
