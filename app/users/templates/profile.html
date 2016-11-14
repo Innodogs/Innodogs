@@ -4,8 +4,6 @@
 
 {% block content %}
 
-    <a href="{{ url_for('users.logout') }}">log out</a>
-
 <div class="section"></div>
 
 
@@ -81,7 +79,7 @@
 
                         <span style="    font-weight: bold; font-size: 17px;">+</span>
                         10800$ <span style="color: gray;"> |</span> <span>Date: 21.10.2015</span>
-                        <span style="color: gray;"> |</span><span> User: Hide</span>
+                        <span style="color: gray;"> |</span><span> User:  {{ current_user.email }}</span>
 
                     </div>
                 </li>
@@ -118,7 +116,7 @@
                 <li class="plus collection-item ">
                     <div>
 
-                        <span> User: Petr Petrov</span>
+                        <span> User: {{ current_user.email }}</span>
                         <span style="color: gray;"> |</span>
                         <span>Date: 21.10.2015</span>
 
