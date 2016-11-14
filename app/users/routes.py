@@ -1,3 +1,4 @@
+from flask import flash
 from flask import json, jsonify
 from flask import redirect
 from flask import render_template
@@ -37,9 +38,13 @@ def login_success_callback(token, user_info):
     if not from_db:
         from_db = UsersRepository.save_user(user)
 
-    login_user(from_db, remember=True)
-    session['token'] = json.dumps(token)
-    return redirect(url_for('users.profile'))
+    is_logged = login_user(from_db, remember=True)
+    if is_logged:
+        session['token'] = json.dumps(token)
+        return redirect(url_for('users.profile'))
+    else:
+        flash('Cannot log in. You are inactive user. Please, contact your system administrator', 'info')
+        return redirect(url_for('main.index'))
 
 
 @users.route("/logout")
@@ -53,7 +58,8 @@ def logout():
 def login_failure_callback(e):
     return jsonify(error=str(e))
 
+
 @users.route('/list')
 def user_list():
     users = UsersRepository.get_all_users()
-    return render_template('list.html',users=users)
+    return render_template('list.html', users=users)
