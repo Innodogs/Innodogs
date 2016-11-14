@@ -1,4 +1,5 @@
 from flask import abort, url_for
+from flask import flash
 from flask import redirect
 from flask import render_template
 from flask import request
@@ -7,6 +8,9 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app.users.utils import requires_roles
 from . import events
+from .finance.forms import InpaymentEventForm
+from .finance.models import Inpayment
+from .finance.repository import InpaymentRepository
 from .forms import EventTypeForm
 from .models import EventType
 from .repository import EventTypeRepository
@@ -129,3 +133,33 @@ def event_type_delete(et_id: int):
         return redirect(url_for('.event_type_list'))
     return render_template('eventtype/delete.html', name=etype.type_name,
                            free_type=free_type)
+
+
+@events.route('/inpayments/add', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def add_inpayment():
+    form = InpaymentEventForm()
+    if form.validate_on_submit():
+        inpayment = Inpayment()
+        form.populate_obj(inpayment)
+        InpaymentRepository.add_new_inpayment(inpayment)
+        flash('Inpayment added!', 'info')
+        return redirect(url_for('.add_inpayment'))
+    return render_template('finance/inpayment_form.html', form=form, title='Add inpayment', action='.add_inpayment')
+
+
+@events.route('/inpayments/<int:id>/edit', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def edit_inpayment(id: int):
+    inpayment = InpaymentRepository.get_inpayment_by_id(id)
+    form = InpaymentEventForm(obj=inpayment)
+    if form.validate_on_submit():
+        inpayment = Inpayment()
+        form.populate_obj(inpayment)
+        InpaymentRepository.update_inpayment(inpayment)
+        flash('Inpayment updated!', 'info')
+        return redirect(url_for('.edit_inpayment', id=inpayment.id))
+    return render_template('finance/inpayment_form.html', form=form, title='Edit inpayment', action='.edit_inpayment', id=inpayment.id)
+
