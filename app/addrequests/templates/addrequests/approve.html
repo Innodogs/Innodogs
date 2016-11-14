@@ -2,6 +2,30 @@
 
 {% block title %} Add dog {% endblock %}
 
+{% macro fancy_render_field(field, placeholder='') %}
+    {% set class_ = '' %}
+    {{ field.label }}
+    {% if placeholder %}
+        {{ field(placeholder=placeholder)|safe }}
+    {% else %}
+        {% if field.type == 'TextAreaField' %}
+            {% set class_ = ' materialize-textarea' %}
+        {% endif %}
+        {% if field.type in ('SelectField', 'BooleanField') %}
+            {% set class_ = ' browser-default' %}
+        {% endif %}
+
+        {{ field(placeholder=field.description, class=class_)|safe }}
+    {% endif %}
+    {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for err in field.errors %}
+                <p>{{ err|e }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}
+
 {% block content %}
 
     <div class="section"></div>
@@ -28,12 +52,14 @@
                 <div class="col s12">
                     <label>Description</label>
                     <div style="   margin-top: 16px; margin-bottom: 15px;">
-                    {{ req.description }}
+                        {{ req.description }}
                     </div>
                 </div>
             </div>
         </div>
-        <form class="col s6" style="border-left: 1px solid gainsboro;" method="post">
+        <form class="col s6 approve-form" style="border-left: 1px solid gainsboro;" method="post"
+              action="{{ url_for(".add_dog_by_approving_request", req_id=req.id) }}">
+            {{ approve_request_form.csrf_token }}
             <div class="row">
                 <div class="col s4">
                     <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
@@ -42,57 +68,39 @@
                 </div>
                 <div class="col s8">
                     <div>
-                        <label for="first_name">Name</label>
-                        <input placeholder="Placeholder" id="first_name" type="text" class="validate" name="name">
+                        {{ fancy_render_field(approve_request_form.name) }}
                     </div>
 
                     <div class="row">
                         <div class="input-field col s6">
-                            <input placeholder="Example: 5" id="age" type="number" class="validate" name="age">
-                            <label for="age">Age</label>
+                            {{ fancy_render_field(approve_request_form.is_adopted) }}
                         </div>
-                        <div class=" col s6">
-                        <label>Sex</label>
-                        <select class="browser-default" name="sex">
-                            <option value="" disabled selected>Choose sex of dog</option>
-                            <option value="male">male</option>
-                            <option value="female">female</option>
-                            <option value="none">none</option>
-                        </select>
-                    </div>
+                        <div class="col s6"> {#todo: inputfield класс добавить после того как поправить fancy_render_field#}
+                            {{ fancy_render_field(approve_request_form.sex) }}
+                        </div>
 
 
                     </div>
-
 
 
                 </div>
                 <div class="col s12">
 
                     <div class=" col s6">
-                        <label>Location</label>
-                        <select class="browser-default">
-                            <option value="" disabled selected>Location</option>
-                            <option value="university">university</option>
-                            <option value="town">town</option>
-                            <option value="none">none</option>
-                        </select>
+                        {{ fancy_render_field(approve_request_form.location) }}
                     </div>
                     <div class="input-field col s6">
-                        <input placeholder="example: 124234234" id="chipNumber" type="text" class="validate">
-                        <label for="chipNumber">Chip number</label>
                     </div>
                     <div class="col s12">
-                        <label for="commentary">Commentary</label>
-                        <textarea id="commentary" style="    padding: 0;" class="materialize-textarea" name="comment"></textarea>
+                        {{ fancy_render_field(approve_request_form.description) }}
                     </div>
                 </div>
-            <div class="row">
-                <a href="" class="waves-effect waves-light btn" style="float: right;margin-right: 20px;">Add</a>
-            </div>
+                <div class="row">
+                    <input type="submit" class="waves-effect waves-light btn" style="float: right;margin-right: 20px;"
+                           value="Add"/>
+                </div>
             </div>
 
         </form>
     </div>
-
 {% endblock %}

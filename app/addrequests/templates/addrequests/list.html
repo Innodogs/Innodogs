@@ -15,9 +15,9 @@
         </a>
         <div class="secondary-content">
           <p>{{ request.status }}<p>
-          <a href="/dogs/approve-request/{{ request.id }}"><i>Approve</i></a> <br>
+          <a href="{{ url_for(".add_dog_by_approving_request", req_id=request.id) }}"><i>Approve</i></a> <br>
 	  {% if request.status != 'rejected' %}
-          <a href="reject/{{ request.id }}"><i>Reject</i></a>
+          <a href="{{ url_for(".requests_reject", req_id=request.id) }}"><i>Reject</i></a>
 	  {% endif %}
         </div>
       </li>
