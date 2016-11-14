@@ -5,22 +5,25 @@
 {% block content %}
     <h3 class="header center red-text text-lighten-2">List of requests</h3>
     <ul class="collection">
-    {% for request in add_requests -%}
-      <li class="collection-item avatar">
-        <i class="material-icon circle red lighten-1">{{ request.id }}</i>
-        <a href="#">
-        <span class="title"><b>{{ request.user.name }}</b>: {{ request.description }}</span>
-        <p>Comment: {{ request.comment }}</p>
-        <p><i>From: {{ request.datetime.strftime("%d %b %Y") if request.datetime else '' }}</i></p>
-        </a>
-        <div class="secondary-content">
-          <p>{{ request.status }}<p>
-          <a href="{{ url_for(".add_dog_by_approving_request", req_id=request.id) }}"><i>Approve</i></a> <br>
-	  {% if request.status != 'rejected' %}
-          <a href="{{ url_for(".requests_reject", req_id=request.id) }}"><i>Reject</i></a>
-	  {% endif %}
-        </div>
-      </li>
-    {%- endfor %}
+        {% for request in add_requests -%}
+            <li class="collection-item avatar">
+                <i class="material-icon circle red lighten-1">{{ request.id }}</i>
+                <a href="#">
+                    <span class="title"><b>{{ request.user.name }}</b>: {{ request.description }}</span>
+                    <p>Comment: {{ request.comment }}</p>
+                    <p><i>From: {{ request.datetime.strftime("%d %b %Y") if request.datetime else '' }}</i></p>
+                </a>
+                <div class="secondary-content">
+                    <p>{{ request.status }}</p>
+                    {% if request.status != 'approved' %}
+                        <a href="{{ url_for(".add_dog_by_approving_request", req_id=request.id) }}"><i>Approve</i></a>
+                        <br>
+                    {% endif %}
+                    {% if request.status not in ('rejected', 'approved') %}
+                        <a href="{{ url_for(".requests_reject", req_id=request.id) }}"><i>Reject</i></a>
+                    {% endif %}
+                </div>
+            </li>
+        {%- endfor %}
     </ul>
 {% endblock %}

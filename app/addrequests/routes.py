@@ -10,12 +10,11 @@ from werkzeug.utils import secure_filename
 
 from app.dogs.models import Dog
 from app.dogs.repository import DogsRepository
-from app.locations.repository import LocationsRepository
 from app.users.utils import requires_roles
 from . import add_requests
 from .forms import AddRequestForm, RejectRequestForm, ApproveRequestForm
 from .repository import AddRequestsRepository
-from .utils import add_request_form_to_domain, convert_locations_to_select_choices
+from .utils import add_request_form_to_domain
 
 __author__ = 'Xomak'
 
@@ -71,18 +70,14 @@ def add_request_form():
 @add_requests.route('/approve/<int:req_id>', methods=['GET', 'POST'])
 def add_dog_by_approving_request(req_id: int):
     approve_request_form = ApproveRequestForm()
-    locations = LocationsRepository.get_all_locations()
-    approve_request_form.location.choices = convert_locations_to_select_choices(locations)
-
     if approve_request_form.validate_on_submit():
         dog = Dog()
-        dog.name = approve_request_form.name.data
-        dog.sex = approve_request_form.sex.data
-        dog.description = approve_request_form.description.data
-        dog.is_hidden = approve_request_form.is_hidden.data
-        dog.is_adopted = approve_request_form.is_adopted.data
-        dog.location_id = approve_request_form.location.data
+        approve_request_form.populate_obj(dog)
         DogsRepository.new_dog(dog)
+
+        req = AddRequestsRepository.get_add_request_by_id(req_id)
+        req.status = 'approved'
+        AddRequestsRepository.update_add_request(req)  # its not efficient, but it is effective. Do not change that
         return redirect(url_for('.requests_list'))
     req = AddRequestsRepository.get_add_request_by_id(req_id)
     return render_template('addrequests/approve.html', date=datetime.now(), req=req,

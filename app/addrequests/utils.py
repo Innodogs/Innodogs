@@ -1,11 +1,9 @@
 from datetime import datetime
-from typing import List
 
 from flask_login import current_user
 
-from app.addrequests.forms import AddRequestForm
-from app.addrequests.models import AddRequest
-from app.locations.models import Location
+from .forms import AddRequestForm
+from .models import AddRequest
 
 
 def add_request_form_to_domain(form: AddRequestForm) -> AddRequest:
@@ -15,7 +13,3 @@ def add_request_form_to_domain(form: AddRequestForm) -> AddRequest:
     domain.status = 'new'
     domain.user_id = current_user.id
     return domain
-
-
-def convert_locations_to_select_choices(locations: List[Location]):
-    return [(loc.id, loc.name) for loc in locations]

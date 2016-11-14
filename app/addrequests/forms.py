@@ -3,6 +3,8 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import TextAreaField, StringField, SelectField, BooleanField
 from wtforms.validators import DataRequired, Length
 
+from app.locations.repository import LocationsRepository
+
 
 class AddRequestForm(FlaskForm):
     description = TextAreaField('Description', validators=[
@@ -34,4 +36,9 @@ class ApproveRequestForm(FlaskForm):
     is_adopted = BooleanField('Is adopted', validators=[
         # DataRequired()
     ])
-    location = SelectField('Location', choices=[], coerce=int)
+    location_id = SelectField('Location', choices=[], coerce=int)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        all_locations = LocationsRepository.get_all_locations()
+        self.location_id.choices = [(location.id, location.name) for location in all_locations]

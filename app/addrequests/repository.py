@@ -22,8 +22,8 @@ class AddRequestsRepository:
         requests_column_list = QueryHelper.get_columns_string(AddRequestMapping, "requests")
         users_column_list = QueryHelper.get_columns_string(UserMapping, "users")
         stmt = text("SELECT %s, %s FROM %s AS requests INNER JOIN \"%s\" AS users ON requests.user_id = users.id " %
-                                   (requests_column_list, users_column_list, AddRequestMapping.description,
-                                    UserMapping.description))
+                    (requests_column_list, users_column_list, AddRequestMapping.description,
+                     UserMapping.description))
         result = db.session.query(AddRequest, User).from_statement(stmt).all()
 
         requests = []
@@ -58,7 +58,6 @@ class AddRequestsRepository:
         query = text("UPDATE %s SET %s WHERE id = :request_id" % (AddRequestMapping.description, update_clause))
         params_dict['request_id'] = add_request.id
         db.engine.execute(query.params(**params_dict))
-
 
     @classmethod
     def save_add_request(cls, add_request: AddRequest):
