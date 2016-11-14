@@ -125,7 +125,7 @@ class DogsRepository:
                 fin_event = FinancialEvent()
                 fin_event.post_init(event, expenditure)
                 dog.financial_event_list.append(fin_event)
-            else:
+            elif record[2]:
                 dog.event_list.append(record[2])
 
         return dog
@@ -157,7 +157,7 @@ class DogsRepository:
         stmt = text("SELECT {dog_columns}, {location_columns}, {event_columns}, {expenditure_columns} "
                     "FROM {dogs_table} AS dogs "
                     "LEFT JOIN {locations_table} AS locations ON dogs.location_id = locations.id "
-                    "JOIN {event_table} AS events ON dogs.id = events.dog_id "
+                    "LEFT JOIN {event_table} AS events ON dogs.id = events.dog_id "
                     "LEFT JOIN {expenditure_table} AS expenditures ON events.expenditure_id = expenditures.id "
                     "WHERE dogs.id = :id "
                     .format(dog_columns=dog_columns_string,
@@ -188,7 +188,6 @@ class DogsRepository:
         """Add new dog to database"""
 
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(DogMapping, dog,
-
                                                                                       fields_to_exclude=['id'])
         query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
             table_name=DogMapping.description, columns=columns, substitutions=substitutions))

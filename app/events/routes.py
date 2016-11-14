@@ -62,7 +62,6 @@ def new_financial_event():
         return "added!"
 
 
-# todo: исправить потом methods, после подключения javascript который будет пулять правильные методы для реквестов
 @events.route('/<int:event_id>/delete', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')

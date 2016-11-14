@@ -1,32 +1,16 @@
 from flask import abort
-from flask import render_template, request, redirect
-from datetime import datetime
+from flask import render_template
 
-from app.dogs.repository import DogsRepository
-from app.addrequests.repository import AddRequestsRepository
 from . import dogs
+from .repository import DogsRepository
 
 __author__ = 'Xomak'
 
 
 @dogs.route('/', methods=['GET', 'POST'])
-def requests_list():
+def dogs_list():
     all_dogs = DogsRepository.get_all_dogs()
     return render_template('dogs/list.html', dogs=all_dogs)
-
-@dogs.route('/approve-request/<req_id>', methods=['GET','POST'])
-def requests_add(req_id):
-    if request.method == 'POST':
-        dog = Dog()
-        dog.name = request.form['name']
-        dog.sex = request.form['sex']
-        dog.description = request.form['comment']
-        dog.is_hidden = False
-        dog.is_adopted = False
-        DogsRepository.new_dog(dog)        
-        return redirect('/dogs')
-    req = AddRequestsRepository.get_add_request_by_id(req_id)
-    return render_template('dogs/add.html', date=datetime.now(), req=req)
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])

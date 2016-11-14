@@ -35,7 +35,7 @@ class AddRequestsRepository:
 
     @classmethod
     def get_add_request_by_id(cls, add_request_id) -> AddRequest:
-        """Returns add_request by given id or thorws an exception"""
+        """Returns add_request by given id or throws an exception"""
 
         requests_column_list = QueryHelper.get_columns_string(AddRequestMapping, "requests")
         users_column_list = QueryHelper.get_columns_string(UserMapping, "users")

@@ -53,7 +53,7 @@
 
                         <div class=" col s6">
                             <label>Location</label>
-                            <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">Innopolis
+                            <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">{{ dog.location.name if dog and dog.location }}
                             </div>
 
                         </div>
@@ -86,7 +86,7 @@
                         <div>
                             <span style="    font-weight: bold; font-size: 17px;">+</span>
                             {{ event.expenditure.amount }} <span style="color: gray;"> |</span>
-                            <span>Date: {{ event.datetime.date() }}</span>
+                            <span>Date: {{ event.datetime.date() if event}}</span>
                             <span style="color: gray;"> |</span>
                             {% if current_user.is_volunteer %}
                                 <a href="{{ url_for('events.delete_financial_event', event_id=event.id) }}" class="secondary-content"><i class="material-icons">highlight_off</i></a>
@@ -117,7 +117,7 @@
                         <div>
                             <span>User: Petr Petrov</span>
                             <span style="color: gray;"> |</span>
-                            <span>Date: {{ event.datetime.date() }}</span>
+                            <span>Date: {{ event.datetime.date() if event }}</span>
                             {% if current_user.is_volunteer %}
                                 <a href="{{ url_for('events.delete_financial_event', event_id=event.id) }}" class="secondary-content"><i class="material-icons">highlight_off</i></a>
                                 {#todo: make this ajax "delete" request#}
