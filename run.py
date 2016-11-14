@@ -11,17 +11,19 @@ import psycopg2
 from app import create_app
 
 __author__ = 'Xomak'
-dump_order = ["innodogs_public_add_request.sql",
-              "innodogs_public_expenditure.sql",
-              "innodogs_public_adoption_request.sql",
-              "innodogs_public_comment.sql",
-              "innodogs_public_location.sql",
-              "innodogs_public_dog.sql",
-              "innodogs_public_dog_picture.sql",
-              "innodogs_public_event_type.sql",
-              "innodogs_public_event.sql",
-              "innodogs_public_inpayment.sql",
-              "innodogs_public_user.sql"]
+dump_order = [
+    "innodogs_public_user.sql",
+    "innodogs_public_add_request.sql",
+    "innodogs_public_expenditure.sql",
+    "innodogs_public_adoption_request.sql",
+    "innodogs_public_comment.sql",
+    "innodogs_public_location.sql",
+    "innodogs_public_dog.sql",
+    "innodogs_public_dog_picture.sql",
+    "innodogs_public_event_type.sql",
+    "innodogs_public_event.sql",
+    "innodogs_public_inpayment.sql",
+]
 
 
 def drop_create_db(_app):
