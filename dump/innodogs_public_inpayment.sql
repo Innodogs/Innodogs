@@ -1,0 +1,1 @@
+INSERT INTO public.inpayment (amount, datetime, comment, user_id) VALUES (2134, '2016-11-14 06:23:36.000000 +03:00', 'comment111', 1);

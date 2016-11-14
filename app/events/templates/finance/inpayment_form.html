@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
+    {% if action == '.edit_inpayment' %}
+        <form action="{{ url_for(action, id=id) }}" method="post">
+    {% else %}
+        <form action="{{ url_for(action) }}" method="post">
+    {% endif %}
+      <div>
+        {{ form.id }}
+        {{ form.csrf_token }}
+        {{ render_field(form.amount) }}
+        {{ render_field(form.datetime) }}
+        {{ render_field(form.user_id) }}
+        {{ render_field(form.comment) }}
+        <input type="submit" value="Submit" class="btn"/>
+      </div>
+    </form>
+
+{% endblock %}
