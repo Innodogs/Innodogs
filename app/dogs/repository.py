@@ -397,7 +397,7 @@ class DogsRepository:
         db.engine.execute(query.params(**params_dict))
 
     @classmethod
-    def new_dog(cls, dog):
+    def new_dog(cls, dog: Dog) -> Dog:
         """Add new dog to database"""
 
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(DogMapping, dog,
@@ -405,7 +405,9 @@ class DogsRepository:
         query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
             table_name=DogMapping.description, columns=columns, substitutions=substitutions))
 
-        db.engine.execute(query.params(**params_dict))
+        result = db.engine.execute(query.params(**params_dict))
+        id = next(iter(result))[0]
+        return cls.get_dog_by_id(id)
 
 
 class DogPictureRepository:
@@ -421,10 +423,12 @@ class DogPictureRepository:
         :return: Returns DogPicture with given id
         """
         picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
-        stmt = text("SELECT {picture_columns} FROM {pictures_table} WHERE id = :picture_id".format(
-            picture_columns=picture_columns,
-            pictures_table=DogPictureMapping.description
-        ))
+        stmt = text("SELECT {picture_columns} "
+                    "FROM {pictures_table} dog_pictures "
+                    "WHERE dog_pictures.id = :picture_id"
+                    .format(picture_columns=picture_columns,
+                            pictures_table=DogPictureMapping.description
+                            ))
         return db.session.query(DogPicture).from_statement(stmt).params(picture_id=picture_id).one()
 
     @classmethod

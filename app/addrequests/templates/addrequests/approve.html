@@ -70,11 +70,12 @@
         <form class="col s6 approve-form" style="border-left: 1px solid gainsboro;" method="post"
               action="{{ url_for(".add_dog_by_approving_request", req_id=req.id) }}">
             {{ approve_request_form.csrf_token }}
+            {{ approve_request_form.main_picture_id }}
             <div class="row">
                 <div class="col s4">
                     {% if pictures %}
                         {% for pic in pictures %}
-                            <img class="materialboxed"
+                            <img class="materialboxed pic{{ pic.id }}"
                                  data-caption="picture of a dog"
                                  width="100%"
                                  height="auto"

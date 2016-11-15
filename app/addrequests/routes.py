@@ -78,13 +78,21 @@ def add_dog_by_approving_request(req_id: int):
     if approve_request_form.validate_on_submit():
         dog = Dog()
         approve_request_form.populate_obj(dog)
-        DogsRepository.new_dog(dog)
+        saved = DogsRepository.new_dog(dog)
 
         req = AddRequestsRepository.get_add_request_by_id(req_id)
+
+        chosen_main_picture = DogPictureRepository.get_picture_by_id(approve_request_form.main_picture_id.data)
+        chosen_main_picture.is_main = True
+        chosen_main_picture.dog_id = saved.id
+        DogPictureRepository.update_picture(chosen_main_picture)
+
         req.status = 'approved'
         AddRequestsRepository.update_add_request(req)  # its not efficient, but it is effective. Do not change that
         return redirect(url_for('.requests_list'))
     req = AddRequestsRepository.get_add_request_by_id(req_id)
     pictures = DogPictureRepository.get_pictures_by_request_id(req_id)
+    if pictures:
+        approve_request_form.main_picture_id.data = next(iter(pictures)).id
     return render_template('addrequests/approve.html', date=datetime.now(), req=req, pictures=pictures,
                            approve_request_form=approve_request_form)

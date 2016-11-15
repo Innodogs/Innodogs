@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import TextAreaField, StringField, SelectField, BooleanField
+from wtforms.fields.simple import HiddenField
 from wtforms.validators import DataRequired, Length
 
 from app.locations.repository import LocationsRepository
@@ -37,6 +38,7 @@ class ApproveRequestForm(FlaskForm):
         # DataRequired()
     ])
     location_id = SelectField('Location', choices=[], coerce=int)
+    main_picture_id = HiddenField('Main picture id out of all pictures')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
