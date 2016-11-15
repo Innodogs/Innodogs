@@ -23,35 +23,7 @@
             </ul>
         </div>
         <div class="col s4 ">
-
-
-            <form action="#" class="z-depth-1" style="background: rgba(177, 220, 251, 0.36);     padding: 15px;">
-                <div class="input-field">
-                    <input value="Alvin" id="first_name2" type="text" class="validate">
-                    <label class="active" for="first_name2">Dog name</label>
-                </div>
-
-
-                <p>
-                    <input type="checkbox" id="isSterialize"/>
-                    <label for="isSterialize" style="    color: black;">Sterialize</label>
-                </p>
-                <p>
-                    <input type="checkbox" id="isChiping" style="    color: black;"/>
-                    <label for="isChiping" style="    color: black;">Chipping</label>
-                </p>
-                <p>
-                    <label>Sex</label>
-                    <select class="browser-default">
-                        <option value="" disabled selected>Choose sex of dog</option>
-                        <option value="1">Male</option>
-                        <option value="2">Female</option>
-                    </select>
-
-                </p>
-
-
-            </form>
+            {% include "dogs/filters-block.html" %}
         </div>
 
     </div>
