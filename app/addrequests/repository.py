@@ -60,7 +60,7 @@ class AddRequestsRepository:
         db.engine.execute(query.params(**params_dict))
 
     @classmethod
-    def save_add_request(cls, add_request: AddRequest):
+    def save_add_request(cls, add_request: AddRequest) -> AddRequest:
         """Saves given request and returns it with id"""
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(AddRequestMapping, add_request,
                                                                                       fields_to_exclude=['id'])

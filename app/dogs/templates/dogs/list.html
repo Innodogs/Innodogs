@@ -13,7 +13,7 @@
             <ul class="collection " style="margin: 0 0 20px 0;">
                 {% for dog_with_event in dogs_with_events -%}
                     <li class="collection-item avatar" style="padding-left: 90px;">
-                        <img src="{{ dog_with_event.dog.main_picture.uri if dog_with_event.dog.main_picture != None }}"
+                        <img src="{{ dog_with_event.dog.main_picture.resolved_uri if dog_with_event.dog.main_picture != None }}"
                              alt=""
                              style="width: 65px; height: 65px;" class="circle">
                         <a href="{{ url_for('dogs.page_about_dog', dog_id=dog_with_event.dog.id) }}"><span

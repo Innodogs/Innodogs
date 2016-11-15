@@ -8,6 +8,8 @@ from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expe
     EventTypeMapping, EventType
 from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
 from app.events.proxy_models import EventWithEventType
+from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
+from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expenditure, FinancialEvent
 from app.locations.models import LocationMapping, Location
 from app.utils.query_helper import QueryHelper
 
@@ -308,6 +310,14 @@ class DogsRepository:
         return dog
 
     @classmethod
+    def get_dog_by_id_and_pics_and_events_and_location(cls, dog_id: int) -> Dog:
+        dog = cls.get_dog_by_id_with_events(dog_id)
+        pictures = DogPictureRepository.get_pictures_by_dog_id(dog_id)
+        dog.main_picture = next(pic for pic in pictures if pic.is_main)
+        dog.pictures = [pic for pic in pictures if not pic.is_main]
+        return dog
+
+    @classmethod
     def _tuple_to_dog_and_location_and_events(cls, join_tuples: List[Tuple[Dog, Location, Event, Expenditure]]):
         """
         Converts tuple (Dog, Location, Event, Expenditure) to Dog with dog.location = location
@@ -425,10 +435,12 @@ class DogPictureRepository:
         :return: Iterable of DogPicture
         """
         picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
-        stmt = text("SELECT {picture_columns} FROM {pictures_table} WHERE dog_id = :dog_id".format(
-            picture_columns=picture_columns,
-            pictures_table=DogPictureMapping.description
-        ))
+        stmt = text("SELECT {picture_columns} "
+                    "FROM {pictures_table} dog_pictures "
+                    "WHERE dog_pictures.dog_id = :dog_id"
+                    .format(picture_columns=picture_columns,
+                            pictures_table=DogPictureMapping.description
+                            ))
         return db.session.query(DogPicture).from_statement(stmt).params(dog_id=dog_id).all()
 
     @classmethod
@@ -438,11 +450,13 @@ class DogPictureRepository:
         :param request_id: Request id
         :return: Iterable of DogPicture
         """
-        picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
-        stmt = text("SELECT {picture_columns} FROM {pictures_table} WHERE request_id=:request_id".format(
-            picture_columns=picture_columns,
-            pictures_table=DogPictureMapping.description
-        ))
+        picture_columns = QueryHelper.get_columns_string(DogPictureMapping, "dp")
+        stmt = text("SELECT {picture_columns} "
+                    "FROM {pictures_table} dp "
+                    "WHERE dp.request_id = :request_id"
+                    .format(picture_columns=picture_columns,
+                            pictures_table=DogPictureMapping.description
+                            ))
         return db.session.query(DogPicture).from_statement(stmt).params(request_id=request_id).all()
 
     @classmethod
