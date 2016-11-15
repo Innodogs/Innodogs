@@ -61,7 +61,7 @@ class DogsRepository:
         if bind_values is not None:
             query_params = {**bind_values, **query_params}
 
-        if dogs_statement is None:
+        if dogs_statement is None or len(dogs_statement) == 0:
             dogs_statement = ""
         else:
             dogs_statement = " WHERE id IN (%s)" % dogs_statement
@@ -138,7 +138,7 @@ class DogsRepository:
         :return: List of DogWithSignificantEvents, satisfying given criteria
         """
         stmt, bind_values = cls._get_query_part_for_criteria(name, is_adopted, sex, event_types_ids)
-        cls.get_dogs_with_significant_events(stmt, bind_values)
+        return cls.get_dogs_with_significant_events(stmt, bind_values)
 
     @classmethod
     def _get_limit_query_part(cls, from_row, number_of_rows=None) -> Tuple[str, Dict]:
@@ -172,7 +172,7 @@ class DogsRepository:
         where_clause = ""
         bind_values = {}
 
-        if event_types_ids is not None:
+        if event_types_ids is not None and len(event_types_ids) > 0:
             event_index = 0
             for event_type_id in event_types_ids:
                 if len(in_substitutes_string) > 0:
