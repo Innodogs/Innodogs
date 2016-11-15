@@ -1,7 +1,9 @@
+import re
 from datetime import datetime
 
 from flask import abort
 from flask import render_template, url_for, redirect
+from flask import request
 
 from app.events.repository import EventTypeRepository
 from . import dogs
@@ -16,9 +18,30 @@ __author__ = 'Xomak'
 
 @dogs.route('/', methods=['GET', 'POST'])
 def dogs_list():
-    all_dogs = DogsRepository.get_all_dogs()
+    event_types_ids = []
+    filter_args = {}
+    significant_event_regexp = re.compile(r"^event_(\d+)$")
+
+    for arg_tuple in request.args:
+        key = arg_tuple
+        value = request.args.get(key)
+
+        if key == 'sex' or key == 'name':
+            filter_args[key] = value
+
+        if key == 'is_adopted':
+            filter_args[key] = True
+
+        match_result = significant_event_regexp.match(key)
+        if match_result:
+            event_types_ids.append(match_result.group(1))
+
+    if len(event_types_ids) > 0:
+        filter_args['event_types_ids'] = event_types_ids
+
+    all_dogs = DogsRepository.get_dogs_with_significant_events_by_criteria(**filter_args)
     significant_event_types = EventTypeRepository.get_significant_event_types()
-    return render_template('dogs/list.html', dogs=all_dogs, significant_event_types=significant_event_types)
+    return render_template('dogs/list.html', dogs_with_events=all_dogs, significant_event_types=significant_event_types)
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])

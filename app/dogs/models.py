@@ -37,6 +37,11 @@ class Dog:
     def __str__(self):
         return "Dog # %s (%s)" % (self.id, self.name)
 
+    def __cmp__(self, other):
+        if other is not Dog:
+            return False
+        return self.id == other.id
+
 
 class DogPicture:
     """DogPicture model"""
