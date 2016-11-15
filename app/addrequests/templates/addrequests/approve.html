@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% from "_formhelpers.html" import simple_render_errors %}
 {% block title %} Add dog {% endblock %}
 
 {% macro fancy_render_field(field, placeholder='') %}
@@ -71,7 +71,15 @@
               action="{{ url_for(".add_dog_by_approving_request", req_id=req.id) }}">
             {{ approve_request_form.csrf_token }}
             {{ approve_request_form.main_picture_id }}
+            {{ simple_render_errors(approve_request_form.main_picture_id) }}
             {{ approve_request_form.deleted_picture_ids }}
+            {{ simple_render_errors(approve_request_form.deleted_picture_ids) }}
+
+            {% if approve_request_form.deleted_picture_ids.errors %}
+                {% for err in approve_request_form.deleted_picture_ids.errors %}
+                    {{ err }}
+                {% endfor %}
+            {% endif %}
             <div class="row">
                 <div class="col s4">
                     {% if pictures %}

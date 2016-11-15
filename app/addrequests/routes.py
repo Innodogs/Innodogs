@@ -22,6 +22,7 @@ __author__ = 'Xomak'
 
 @add_requests.route('/', methods=['GET'])
 @login_required
+@requires_roles('volunteer')
 def requests_list():
     r = AddRequestsRepository.get_all_add_requests()
     return render_template('addrequests/list.html', add_requests=r)
@@ -73,11 +74,14 @@ def submit_add_request_form():
 
 
 @add_requests.route('/<int:req_id>/approve', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
 def add_dog_by_approving_request(req_id: int):
     approve_request_form = ApproveRequestForm()
 
     if approve_request_form.validate_on_submit():
-        deleted_pic_ids = [int(_id) for _id in approve_request_form.deleted_picture_ids.data.split(",")]
+        deleted_pic_ids = [int(_id) for _id in approve_request_form.deleted_picture_ids.data.split(',') if _id]
+        main_pic_id = int(approve_request_form.main_picture_id.data)
         dog = Dog()
         approve_request_form.populate_obj(dog)
         saved = DogsRepository.new_dog(dog)
@@ -86,7 +90,7 @@ def add_dog_by_approving_request(req_id: int):
 
         pictures = DogPictureRepository.get_pictures_by_request_id(req_id)
         for pic in pictures:
-            pic.is_main = pic.id == int(approve_request_form.main_picture_id.data)
+            pic.is_main = pic.id == main_pic_id
             pic.dog_id = saved.id if pic.id not in deleted_pic_ids else None
             DogPictureRepository.update_picture(pic)
 

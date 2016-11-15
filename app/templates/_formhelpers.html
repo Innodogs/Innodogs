@@ -10,6 +10,13 @@
         {% endif %}
     </dd>
 {% endmacro %}
+{% macro simple_render_errors(field) %}
+    {% if field.errors %}
+        {% for err in field.errors %}
+            {{ err }}<br>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
 
 {% macro flashed_messages(messages=None, container=True, transform={
   'critical': 'danger',
