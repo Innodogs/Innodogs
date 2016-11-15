@@ -39,6 +39,7 @@ class ApproveRequestForm(FlaskForm):
     ])
     location_id = SelectField('Location', choices=[], coerce=int)
     main_picture_id = HiddenField('Main picture id out of all pictures')
+    deleted_picture_ids = HiddenField('Deleted picture ids')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

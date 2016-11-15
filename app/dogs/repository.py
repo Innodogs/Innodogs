@@ -313,8 +313,11 @@ class DogsRepository:
     def get_dog_by_id_and_pics_and_events_and_location(cls, dog_id: int) -> Dog:
         dog = cls.get_dog_by_id_with_events(dog_id)
         pictures = DogPictureRepository.get_pictures_by_dog_id(dog_id)
-        dog.main_picture = next(pic for pic in pictures if pic.is_main)
-        dog.pictures = [pic for pic in pictures if not pic.is_main]
+        try:
+            dog.main_picture = next(pic for pic in pictures if pic.is_main)
+            dog.pictures = [pic for pic in pictures if not pic.is_main]
+        except Exception:
+            print("No main picture for do with {id}!".format(id=dog_id))
         return dog
 
     @classmethod

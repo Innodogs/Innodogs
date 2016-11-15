@@ -71,6 +71,7 @@
               action="{{ url_for(".add_dog_by_approving_request", req_id=req.id) }}">
             {{ approve_request_form.csrf_token }}
             {{ approve_request_form.main_picture_id }}
+            {{ approve_request_form.deleted_picture_ids }}
             <div class="row">
                 <div class="col s4">
                     {% if pictures %}

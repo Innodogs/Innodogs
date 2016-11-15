@@ -75,17 +75,20 @@ def submit_add_request_form():
 @add_requests.route('/<int:req_id>/approve', methods=['GET', 'POST'])
 def add_dog_by_approving_request(req_id: int):
     approve_request_form = ApproveRequestForm()
+
     if approve_request_form.validate_on_submit():
+        deleted_pic_ids = [int(_id) for _id in approve_request_form.deleted_picture_ids.data.split(",")]
         dog = Dog()
         approve_request_form.populate_obj(dog)
         saved = DogsRepository.new_dog(dog)
 
         req = AddRequestsRepository.get_add_request_by_id(req_id)
 
-        chosen_main_picture = DogPictureRepository.get_picture_by_id(approve_request_form.main_picture_id.data)
-        chosen_main_picture.is_main = True
-        chosen_main_picture.dog_id = saved.id
-        DogPictureRepository.update_picture(chosen_main_picture)
+        pictures = DogPictureRepository.get_pictures_by_request_id(req_id)
+        for pic in pictures:
+            pic.is_main = pic.id == int(approve_request_form.main_picture_id.data)
+            pic.dog_id = saved.id if pic.id not in deleted_pic_ids else None
+            DogPictureRepository.update_picture(pic)
 
         req.status = 'approved'
         AddRequestsRepository.update_add_request(req)  # its not efficient, but it is effective. Do not change that
