@@ -4,7 +4,9 @@ from datetime import datetime
 from flask import abort
 from flask import render_template, url_for, redirect
 from flask import request
+from wtforms import BooleanField
 
+from app.dogs.forms import DogsFilterForm
 from app.events.repository import EventTypeRepository
 from . import dogs
 from .repository import DogsRepository
@@ -16,32 +18,49 @@ from app.locations.repository import LocationsRepository
 __author__ = 'Xomak'
 
 
-@dogs.route('/', methods=['GET', 'POST'])
+@dogs.route('/', methods=['GET'])
 def dogs_list():
     event_types_ids = []
     filter_args = {}
     significant_event_regexp = re.compile(r"^event_(\d+)$")
 
-    for arg_tuple in request.args:
-        key = arg_tuple
-        value = request.args.get(key)
+    significant_event_types = EventTypeRepository.get_significant_event_types()
 
-        if key == 'sex' or key == 'name':
-            filter_args[key] = value
+    class FilterForm(DogsFilterForm):
+        pass
 
-        if key == 'is_adopted':
-            filter_args[key] = True
+    for event_type in significant_event_types:
+        setattr(FilterForm, "event_%s" % event_type.id, BooleanField(event_type.type_name))
 
-        match_result = significant_event_regexp.match(key)
-        if match_result:
-            event_types_ids.append(match_result.group(1))
+    filter_form = FilterForm(request.args, csrf_enabled=False)
+    if filter_form.validate():
+        for field in filter_form:
+            key = field.name
+            value = field.data
+
+            if (key == 'sex' or key == 'name') and len(value) > 0:
+                filter_args[key] = value
+
+            if key == 'is_adopted' and value:
+                filter_args[key] = True
+
+            match_result = significant_event_regexp.match(key)
+            if match_result and value:
+                event_types_ids.append(match_result.group(1))
 
     if len(event_types_ids) > 0:
         filter_args['event_types_ids'] = event_types_ids
 
     all_dogs = DogsRepository.get_dogs_with_significant_events_by_criteria(**filter_args)
-    significant_event_types = EventTypeRepository.get_significant_event_types()
-    return render_template('dogs/list.html', dogs_with_events=all_dogs, significant_event_types=significant_event_types)
+    for dog in all_dogs:
+        distinct_events_list = set()
+        for event in dog.events:
+            if event.event_type.type_name in distinct_events_list:
+                dog.events.remove(event)
+            else:
+                distinct_events_list.add(event.event_type.type_name)
+
+    return render_template('dogs/list.html', dogs_with_events=all_dogs, significant_event_types=significant_event_types, filter_form=filter_form)
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])
