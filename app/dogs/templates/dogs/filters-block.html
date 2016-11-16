@@ -1,8 +1,8 @@
-{% from "_formhelpers.html" import render_field %}
+{% from "_formhelpers.html" import render_page_link_item %}
 
 <form class="z-depth-1" style="background: rgba(177, 220, 251, 0.36); padding: 15px;" method="GET" action="">
     {% for field in filter_form %}
-        {% if field.short_name != "csrf_token" %}
+        {% if field.short_name not in ["csrf_token", "page"] %}
             {% if field.short_name == "name" %}
                 <div class="input-field">
                     {{ field }} {{ field.label(class_="active") }}

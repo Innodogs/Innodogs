@@ -45,10 +45,18 @@ class DogsRepository:
         return requests
 
     @classmethod
-    def get_dogs_with_significant_events(cls, dogs_statement: str=None, bind_values: Dict=None) -> List[DogWithSignificantEvents]:
+    def get_dogs_count_satisfying_criteria(cls, **kwargs):
+        stmt, bind_values = cls._get_query_part_for_criteria(**kwargs, fields_to_select=['count(*)'])
+        return db.engine.execute(text(stmt).params(bind_values)).fetchone()[0]
+
+    @classmethod
+    def get_dogs_with_significant_events(cls, dogs_statement: str=None, bind_values: Dict=None,
+                                         from_row: int=None, rows_count: int=None) -> List[DogWithSignificantEvents]:
         """
         Get DogWithSignificantEvents proxy model list, containing dog and related significant event.
         Query string could be passed to filter this list.
+        :param rows_count: Number of dogs
+        :param from_row: Get dogs from given row number
         :param dogs_statement: String with query, returning ids of dogs,
         that should be included in result list
         :param bind_values: Dictionary with values, which should be binded to this query
@@ -65,6 +73,11 @@ class DogsRepository:
             dogs_statement = ""
         else:
             dogs_statement = " WHERE id IN (%s)" % dogs_statement
+
+        if from_row is not None:
+            limit_statement, limit_params = cls._get_limit_query_part(from_row, rows_count)
+            dogs_statement += limit_statement
+            query_params = {**limit_params, **query_params}
 
         dog_columns_string_prefixed = QueryHelper.get_columns_string(DogMapping, "dogs")
         event_columns_string_prefixed = QueryHelper.get_columns_string(EventMapping, "events")
@@ -126,7 +139,8 @@ class DogsRepository:
         return dogs
 
     @classmethod
-    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex :str=None, event_types_ids: List[int] = None) -> List[
+    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex :str=None,
+                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None) -> List[
         DogWithSignificantEvents]:
         """
         Get DogWithSignificantEvents list, satisfying given criteria
@@ -138,10 +152,10 @@ class DogsRepository:
         :return: List of DogWithSignificantEvents, satisfying given criteria
         """
         stmt, bind_values = cls._get_query_part_for_criteria(name, is_adopted, sex, event_types_ids)
-        return cls.get_dogs_with_significant_events(stmt, bind_values)
+        return cls.get_dogs_with_significant_events(stmt, bind_values, from_row=from_row, rows_count=rows_count)
 
     @classmethod
-    def _get_limit_query_part(cls, from_row, number_of_rows=None) -> Tuple[str, Dict]:
+    def _get_limit_query_part(cls, from_row=None, number_of_rows=None) -> Tuple[str, Dict]:
         """
         Returns limit query part like
         LIMIT 0, 30
@@ -150,15 +164,20 @@ class DogsRepository:
         :return: Query string and params' dict
         """
         query_params = {}
-        limit_query_string = "LIMIT :limit_from_row"
-        query_params['limit_from_row'] = from_row
+        limit_query_string = ""
         if number_of_rows is not None:
-            limit_query_string += ", :limit_number_of_rows"
+            limit_query_string = "LIMIT :limit_number_of_rows"
             query_params['limit_number_of_rows'] = number_of_rows
+
+        if number_of_rows is not None:
+            if len(limit_query_string) > 0:
+                limit_query_string += " "
+            limit_query_string += "OFFSET :limit_from_row"
+            query_params['limit_from_row'] = from_row
         return limit_query_string, query_params
 
     @classmethod
-    def _get_query_part_for_criteria(cls, name: str = None, is_adopted: bool = None, sex :str=None, event_types_ids: List[int] = None) -> Tuple[str, Dict]:
+    def _get_query_part_for_criteria(cls, name: str = None, is_adopted: bool = None, sex :str=None, event_types_ids: List[int] = None, fields_to_select: List[str]=None) -> Tuple[str, Dict]:
         """
         Get query, which finds all dogs' ids, satisfying given criteria
         :param name: Dog's name (LIKE query is used)
@@ -185,6 +204,9 @@ class DogsRepository:
         else:
             event_types_ids = []
 
+        if fields_to_select is None:
+            fields_to_select = ['dogs.id']
+
         if name is not None:
             where_clause = " dogs.name LIKE :dog_name"
             bind_values['dog_name'] = '%'+name+'%'
@@ -201,21 +223,20 @@ class DogsRepository:
             where_clause += " dogs.is_adopted = :is_adopted"
             bind_values['is_adopted'] = is_adopted
 
-        stmt = ""
-        if len(where_clause) > 0 or len(event_types_ids) > 0:
-            stmt = "SELECT dogs.id FROM {dogs_table} AS dogs"
-            if len(event_types_ids) > 0:
-                stmt += " INNER JOIN (SELECT DISTINCT(event_type_id), dog_id FROM {events_table}) " \
-                        "AS events ON events.dog_id = dog.id AND events.event_type_id IN ({in_substitutes})"
-            if len(where_clause) > 0:
-                stmt += " WHERE {where_clause}"
-            if len(event_types_ids) > 0:
-                stmt += " GROUP BY dogs.id HAVING count(*) = :dog_lines_count"
+        stmt = "SELECT {fields_to_select} FROM {dogs_table} AS dogs"
+        if len(event_types_ids) > 0:
+            stmt += " INNER JOIN (SELECT DISTINCT(event_type_id), dog_id FROM {events_table}) " \
+                    "AS events ON events.dog_id = dog.id AND events.event_type_id IN ({in_substitutes})"
+        if len(where_clause) > 0:
+            stmt += " WHERE {where_clause}"
+        if len(event_types_ids) > 0:
+            stmt += " GROUP BY dogs.id HAVING count(*) = :dog_lines_count"
         stmt = stmt.format(
             dogs_table=DogMapping.description,
             events_table=EventMapping.description,
             where_clause=where_clause,
-            in_substitutes=in_substitutes_string
+            in_substitutes=in_substitutes_string,
+            fields_to_select=', '.join(fields_to_select)
         )
 
         return stmt, bind_values

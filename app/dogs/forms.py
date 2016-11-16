@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SelectField
+from wtforms import StringField, BooleanField, SelectField, IntegerField
+from wtforms.validators import Optional
 
 __author__ = 'Xomak'
 
@@ -10,5 +11,6 @@ class DogsFilterForm(FlaskForm):
     """
 
     name = StringField("Dog's name")
-    sex = SelectField("Sex", choices=(("", "Choose sex of dog"), ("male", "Male"), ("female", "Female")))
+    sex = SelectField("Sex", [Optional()], choices=(("", "Choose sex of dog"), ("male", "Male"), ("female", "Female")))
     is_adopted = BooleanField("Is adopted")
+    page = IntegerField("Page")
