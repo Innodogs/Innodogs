@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import abort
 from flask import render_template, url_for, redirect
 
+from app import google_login
 from . import dogs
 from .repository import DogsRepository
 from .models import Dog
@@ -16,7 +17,7 @@ __author__ = 'Xomak'
 @dogs.route('/', methods=['GET', 'POST'])
 def dogs_list():
     all_dogs = DogsRepository.get_all_dogs()
-    return render_template('dogs/list.html', dogs=all_dogs)
+    return render_template('dogs/list.html', dogs=all_dogs, authorization_url=google_login.authorization_url())
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])
