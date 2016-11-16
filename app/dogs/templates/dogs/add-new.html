@@ -3,19 +3,24 @@
 {% block title %} Add dog {% endblock %}
 
 {% macro fancy_render_field(field, placeholder='') %}
-    {% set class_ = '' %}
-    {{ field.label }}
-    {% if placeholder %}
-        {{ field(placeholder=placeholder)|safe }}
-    {% else %}
-        {% if field.type == 'TextAreaField' %}
-            {% set class_ = ' materialize-textarea' %}
-        {% endif %}
-        {% if field.type in ('SelectField', 'BooleanField') %}
-            {% set class_ = ' browser-default' %}
-        {% endif %}
-
+    {% if field.type=="BooleanField" %}
         {{ field(placeholder=field.description, class=class_)|safe }}
+        {{ field.label }}
+    {% else %}
+        {% set class_ = '' %}
+        {{ field.label }}
+        {% if placeholder %}
+            {{ field(placeholder=placeholder)|safe }}
+        {% else %}
+            {% if field.type == 'TextAreaField' %}
+                {% set class_ = ' materialize-textarea' %}
+            {% endif %}
+            {% if field.type in ('SelectField', 'BooleanField') %}
+                {% set class_ = ' browser-default' %}
+            {% endif %}
+
+            {{ field(placeholder=field.description, class=class_)|safe }}
+        {% endif %}
     {% endif %}
     {% if field.errors %}
         <div class="alert alert-danger" role="alert">
@@ -64,13 +69,13 @@
                     </div>
 
                     <div class="row">
-                        <div class="input-field col s6">
+                        <div class="col s6">
                             {{ fancy_render_field(add_dog_form.is_adopted) }}
                         </div>
-                        <div class="col s6"> {#todo: inputfield класс добавить после того как поправить fancy_render_field#}
-                            {{ fancy_render_field(add_dog_form.sex) }}
+                        <div class="col s6">
+                            {#todo: inputfield класс добавить после того как поправить fancy_render_field#}
+                            {{ fancy_render_field(add_dog_form.is_hidden) }}
                         </div>
-
 
                     </div>
 
@@ -81,7 +86,8 @@
                     <div class=" col s6">
                         {{ fancy_render_field(add_dog_form.location) }}
                     </div>
-                    <div class="input-field col s6">
+                    <div class=" col s6">
+                        {{ fancy_render_field(add_dog_form.sex) }}
                     </div>
                     <div class="col s12">
                         {{ fancy_render_field(add_dog_form.description) }}
