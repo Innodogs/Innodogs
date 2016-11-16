@@ -3,13 +3,12 @@ from datetime import datetime
 from flask import abort
 from flask import render_template, url_for, redirect
 
-from app import google_login
-from . import dogs
-from .repository import DogsRepository
-from .models import Dog
 from app.addrequests.forms import ApproveRequestForm
 from app.addrequests.utils import convert_locations_to_select_choices
 from app.locations.repository import LocationsRepository
+from . import dogs
+from .models import Dog
+from .repository import DogsRepository
 
 __author__ = 'Xomak'
 
@@ -17,7 +16,7 @@ __author__ = 'Xomak'
 @dogs.route('/', methods=['GET', 'POST'])
 def dogs_list():
     all_dogs = DogsRepository.get_all_dogs()
-    return render_template('dogs/list.html', dogs=all_dogs, authorization_url=google_login.authorization_url())
+    return render_template('dogs/list.html', dogs=all_dogs)
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])
@@ -27,7 +26,8 @@ def page_about_dog(dog_id):
         abort(404)
     return render_template('dogs/page.html', dog=dog_data)
 
-@dogs.route('/add', methods=['GET','POST'])
+
+@dogs.route('/add', methods=['GET', 'POST'])
 def add_dog_without_request():
     add_dog_form = ApproveRequestForm()
     locations = LocationsRepository.get_all_locations()
@@ -42,4 +42,3 @@ def add_dog_without_request():
         DogsRepository.new_dog(dog)
         return redirect(url_for('.dogs_list'))
     return render_template('dogs/add-new.html', date=datetime.now(), add_dog_form=add_dog_form)
-
