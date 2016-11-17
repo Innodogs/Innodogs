@@ -16,6 +16,7 @@ users_count = 500
 inpayments_count = 250
 expenditures_count = 500
 add_requests_count = 100
+folder = "big_dump"
 
 
 def clear_folder(folder):
@@ -29,7 +30,7 @@ def clear_folder(folder):
 
 
 def add_to_file(filename, line):
-    with open("big_dump/%s.sql" % filename, "a") as text_file:
+    with open("{}/{}.sql".format(folder, filename), "a") as text_file:
         text_file.write(line + "\n")
 
 
@@ -89,7 +90,7 @@ def generate_inpayment(payment_index, user_id, datetime):
 
 
 def generate_event_type(type_name, is_significant):
-    query = "INSERT INTO public.event_type (type_name, is_significant) VALUES ('{type_name}', {is_significant});"\
+    query = "INSERT INTO public.event_type (type_name, is_significant) VALUES ('{type_name}', {is_significant});" \
         .format(
         type_name=type_name,
         is_significant=is_significant
@@ -98,7 +99,7 @@ def generate_event_type(type_name, is_significant):
 
 
 def generate_expenditure(expenditure_index, datetime):
-    query = "INSERT INTO public.expenditure (amount, datetime, comment) VALUES ({amount}, '{datetime}', '{comment}');"\
+    query = "INSERT INTO public.expenditure (amount, datetime, comment) VALUES ({amount}, '{datetime}', '{comment}');" \
         .format(
         amount=random.randint(1, 5000),
         datetime=datetime,
@@ -141,8 +142,22 @@ def random_increase(date):
                             minutes=random.randint(0, 59))
 
 
+class RandomPicture:
+    count = 12
+    url_template = "http://xomak.net/files/innodogs/{}.jpg"
+
+    def __init__(self):
+        self.given = []
+
+    def get_picture(self):
+        picture_id = random.randint(1, self.count)
+        while picture_id in self.given:
+            picture_id = random.randint(1, self.count)
+        return self.url_template.format(picture_id)
+
+
 def generate_all():
-    clear_folder('dump2')
+    clear_folder(folder)
     start_date = datetime.strptime("2014-01-01 00:00:00", "%Y-%m-%d %H:%M:%S")
     generate_event_type("Registered", "FALSE")  # 1
     generate_event_type("Sterilized", "TRUE")  # 2
@@ -175,6 +190,10 @@ def generate_all():
     date = start_date
     for add_request_index in range(1, add_requests_count):
         date = random_increase(date)
+        pictures = RandomPicture()
+        for picture_index in range(1, 3):
+            generate_dog_picture(pictures.get_picture(), "NULL", add_request_index, "FALSE")
+
         generate_add_request(add_request_index, date, random.randint(1, users_count - 1))
 
     for dog_index in range(1, dogs_count):
@@ -182,6 +201,7 @@ def generate_all():
         location_id = random.randint(1, locations_count - 1)
         generate_dog(dog_index, is_adopted, location_id)
         date = random_increase(start_date)
+        pictures = RandomPicture()
 
         def get_expenditure_id():
             return random.randint(1, expenditures_count - 1) if get_rand_bool() else "NULL"
@@ -193,6 +213,10 @@ def generate_all():
         if get_rand_bool():
             date = random_increase(date)
             generate_event(dog_index, 3, get_expenditure_id(), date)
+
+        generate_dog_picture(pictures.get_picture(), dog_index, "NULL", "TRUE")
+        for picture_index in range(1, 5):
+            generate_dog_picture(pictures.get_picture(), dog_index, "NULL", "FALSE")
 
         for event_index in range(1, 5):
             if get_rand_bool():
