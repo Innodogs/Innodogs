@@ -40,16 +40,12 @@
     </div>
     <div class="row">
         <ul class="pagination">
-            {{ render_page_link_item(current_page, current_page-1, "<i class=\"material-icons\">chevron_left</i>", True, request_args) }}
-            <li class="active"><a href="#!">1</a></li>
-            <li class="waves-effect"><a href="#!">2</a></li>
-            <li class="waves-effect"><a href="#!">3</a></li>
-            <li class="waves-effect"><a href="#!">4</a></li>
-            <li class="waves-effect"><a href="#!">5</a></li>
-            <li class="waves-effect {{ 'disabled' if current_page == pages_number}}"><a href=""><i class="material-icons">chevron_right</i></a></li>
+            {{ render_page_link_item(current_page, (current_page - 1), "<i class=\"material-icons\">chevron_left</i>", current_page == 1, request_args) }}
+            {%  for page in pages_list %}
+                {{ render_page_link_item(current_page, page, page, False, request_args) }}
+            {% endfor %}
+            {{ render_page_link_item(current_page, (current_page + 1), "<i class=\"material-icons\">chevron_right</i>", current_page == pages_number or pages_number == 0, request_args) }}
         </ul>
-
-        {{ current_page }}/{{ pages_number }}
     </div>
     <a href='add' class="btn-floating btn-large waves-effect waves-light red"
        style="    position: fixed; right: 20px;  bottom: 20px;}">

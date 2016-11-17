@@ -46,7 +46,7 @@ class DogsRepository:
 
     @classmethod
     def get_dogs_count_satisfying_criteria(cls, **kwargs):
-        stmt, bind_values = cls._get_query_part_for_criteria(**kwargs, fields_to_select=['count(*)'])
+        stmt, bind_values = cls._get_query_part_for_criteria(**kwargs, fields_to_select=['count(*) OVER()'])
         return db.engine.execute(text(stmt).params(bind_values)).fetchone()[0]
 
     @classmethod
@@ -226,7 +226,7 @@ class DogsRepository:
         stmt = "SELECT {fields_to_select} FROM {dogs_table} AS dogs"
         if len(event_types_ids) > 0:
             stmt += " INNER JOIN (SELECT DISTINCT(event_type_id), dog_id FROM {events_table}) " \
-                    "AS events ON events.dog_id = dog.id AND events.event_type_id IN ({in_substitutes})"
+                    "AS events ON events.dog_id = dogs.id AND events.event_type_id IN ({in_substitutes})"
         if len(where_clause) > 0:
             stmt += " WHERE {where_clause}"
         if len(event_types_ids) > 0:

@@ -74,12 +74,17 @@ def dogs_list():
             else:
                 distinct_events_list.add(event.event_type.type_name)
 
+    pages_list = [1]
+    for current_page in range(page_number-3, page_number+3):
+        if 0 < current_page <= pages_number and current_page not in pages_list:
+                pages_list.append(current_page)
+
     request_args = dict(request.args)
     if 'page' in request_args:
         del request_args['page']
 
-
-    return render_template('dogs/list.html', dogs_with_events=all_dogs, filter_form=filter_form, pages_number=pages_number, current_page=page_number, request_args=request_args)
+    return render_template('dogs/list.html', dogs_with_events=all_dogs, filter_form=filter_form,
+                           pages_number=pages_number, current_page=page_number, request_args=request_args, pages_list=pages_list)
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])
