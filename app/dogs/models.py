@@ -1,5 +1,6 @@
 """Models for dogs application"""
-
+import validators
+from flask import url_for
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import ForeignKey
@@ -46,12 +47,18 @@ class Dog:
 class DogPicture:
     """DogPicture model"""
 
-    def __init__(self):
-        self.id = None
-        self.request_id = None
-        self.dog_id = None
-        self.uri = None
-        self.is_main = None
+    def __init__(self, **kwargs):
+        self.id = kwargs.get('id', None)
+        self.request_id = kwargs.get('request_id', None)
+        self.dog_id = kwargs.get('dog_id', None)
+        self.uri = kwargs.get('uri', None)
+        self.is_main = kwargs.get('is_main', None)
+
+    @property
+    def resolved_uri(self):
+        if validators.url(self.uri):
+            return self.uri
+        return url_for('static', filename=self.uri)  # must be local resource in static folder
 
 
 DogMapping = Table('dog', metadata,

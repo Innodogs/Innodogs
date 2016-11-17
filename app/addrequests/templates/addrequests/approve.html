@@ -1,30 +1,6 @@
 {% extends "base.html" %}
-
+{% from "_formhelpers.html" import simple_render_errors, fancy_render_field %}
 {% block title %} Add dog {% endblock %}
-
-{% macro fancy_render_field(field, placeholder='') %}
-    {% set class_ = '' %}
-    {{ field.label }}
-    {% if placeholder %}
-        {{ field(placeholder=placeholder)|safe }}
-    {% else %}
-        {% if field.type == 'TextAreaField' %}
-            {% set class_ = ' materialize-textarea' %}
-        {% endif %}
-        {% if field.type in ('SelectField', 'BooleanField') %}
-            {% set class_ = ' browser-default' %}
-        {% endif %}
-
-        {{ field(placeholder=field.description, class=class_)|safe }}
-    {% endif %}
-    {% if field.errors %}
-        <div class="alert alert-danger" role="alert">
-            {% for err in field.errors %}
-                <p>{{ err|e }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endmacro %}
 
 {% block content %}
 
@@ -35,9 +11,19 @@
         <div class="col s6">
             <div class="row">
                 <div class="col s4">
-                    <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
-                         height="auto"
-                         src="1366695174.png">
+                    {% if pictures %}
+                        {% for pic in pictures %}
+                            <img class="materialboxed"
+                                 data-caption="picture of a dog"
+                                 width="100%"
+                                 height="auto"
+                                 src="{{ pic.resolved_uri }}"/>
+                        {% endfor %}
+                    {% else %}
+                        <img width="100%"
+                             height="auto" src="{{ url_for('static', filename='dogs/no.image.available.png') }}"
+                             alt="unknown"/>
+                    {% endif %}
                 </div>
                 <div class="col s8">
                     <label>User name</label>
@@ -59,24 +45,44 @@
         </div>
         <form class="col s6 approve-form" style="border-left: 1px solid gainsboro;" method="post"
               action="{{ url_for(".add_dog_by_approving_request", req_id=req.id) }}">
-            {{ approve_request_form.csrf_token }}
+            {{ form.csrf_token }}
+            {{ form.main_picture_id }}
+            {{ simple_render_errors(form.main_picture_id) }}
+            {{ form.deleted_picture_ids }}
+            {{ simple_render_errors(form.deleted_picture_ids) }}
+
+            {% if form.deleted_picture_ids.errors %}
+                {% for err in form.deleted_picture_ids.errors %}
+                    {{ err }}
+                {% endfor %}
+            {% endif %}
             <div class="row">
                 <div class="col s4">
-                    <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
-                         height="auto"
-                         src="1366695174.png">
+                    {% if pictures %}
+                        {% for pic in pictures %}
+                            <img class="materialboxed pic{{ pic.id }}"
+                                 data-caption="picture of a dog"
+                                 width="100%"
+                                 height="auto"
+                                 src="{{ pic.resolved_uri }}"/>
+                        {% endfor %}
+                    {% else %}
+                        <img width="100%"
+                                 height="auto" src="{{ url_for('static', filename='dogs/no.image.available.png') }}" alt="unknown"/>
+                    {% endif %}
                 </div>
                 <div class="col s8">
                     <div>
-                        {{ fancy_render_field(approve_request_form.name) }}
+                        {{ fancy_render_field(form.name) }}
                     </div>
 
                     <div class="row">
                         <div class="input-field col s6">
-                            {{ fancy_render_field(approve_request_form.is_adopted) }}
+                            {{ fancy_render_field(form.is_adopted) }}
                         </div>
-                        <div class="col s6"> {#todo: inputfield класс добавить после того как поправить fancy_render_field#}
-                            {{ fancy_render_field(approve_request_form.sex) }}
+                        <div class="col s6">
+                            {#todo: inputfield класс добавить после того как поправить fancy_render_field#}
+                            {{ fancy_render_field(form.sex) }}
                         </div>
 
 
@@ -87,12 +93,12 @@
                 <div class="col s12">
 
                     <div class=" col s6">
-                        {{ fancy_render_field(approve_request_form.location) }}
+                        {{ fancy_render_field(form.location_id) }}
                     </div>
                     <div class="input-field col s6">
                     </div>
                     <div class="col s12">
-                        {{ fancy_render_field(approve_request_form.description) }}
+                        {{ fancy_render_field(form.description) }}
                     </div>
                 </div>
                 <div class="row">

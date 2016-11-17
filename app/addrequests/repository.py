@@ -5,7 +5,7 @@ from sqlalchemy import text
 from app import db
 from app.addrequests.models import AddRequest, AddRequestMapping
 from app.users.models import UserMapping, User
-from app.utils.query_helper import QueryHelper
+from app.utils.helpers import QueryHelper
 
 __author__ = 'Xomak'
 
@@ -22,8 +22,8 @@ class AddRequestsRepository:
         requests_column_list = QueryHelper.get_columns_string(AddRequestMapping, "requests")
         users_column_list = QueryHelper.get_columns_string(UserMapping, "users")
         stmt = text("SELECT %s, %s FROM %s AS requests INNER JOIN \"%s\" AS users ON requests.user_id = users.id " %
-                                   (requests_column_list, users_column_list, AddRequestMapping.description,
-                                    UserMapping.description))
+                    (requests_column_list, users_column_list, AddRequestMapping.description,
+                     UserMapping.description))
         result = db.session.query(AddRequest, User).from_statement(stmt).all()
 
         requests = []
@@ -59,9 +59,8 @@ class AddRequestsRepository:
         params_dict['request_id'] = add_request.id
         db.engine.execute(query.params(**params_dict))
 
-
     @classmethod
-    def save_add_request(cls, add_request: AddRequest):
+    def save_add_request(cls, add_request: AddRequest) -> AddRequest:
         """Saves given request and returns it with id"""
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(AddRequestMapping, add_request,
                                                                                       fields_to_exclude=['id'])

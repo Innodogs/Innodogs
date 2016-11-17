@@ -21,7 +21,10 @@ def create_app(config_name):
     app.config.from_pyfile(cfg)
     loaded = app.config.from_envvar('LOCAL_CONFIG', silent=True)
     if loaded:
-        print(' * Local config is loaded')
+        app.config['UPLOAD_FOLDER_ABSOLUTE'] = os.path.join(app.static_folder, app.config['UPLOAD_FOLDER'])
+        print(' * Local config is loaded:')
+        print(' *   UPLOAD_FOLDER_ABSOLUTE=' + app.config['UPLOAD_FOLDER_ABSOLUTE'])
+        print(' *   UPLOAD_FOLDER=' + app.config['UPLOAD_FOLDER'])
 
     db.init_app(app)
     google_login.init_app(app)

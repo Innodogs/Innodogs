@@ -1,7 +1,7 @@
 from sqlalchemy import text
 
 from app import db
-from app.utils.query_helper import QueryHelper
+from app.utils.helpers import QueryHelper
 from .models import UserMapping, User
 
 __author__ = 'Xomak'

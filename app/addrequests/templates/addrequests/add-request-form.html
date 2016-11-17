@@ -2,10 +2,10 @@
 {% from "_formhelpers.html" import render_field %}
 
 {% block content %}
-    <form class="add-requests-form" method="POST" action="{{ url_for('.submit_add_request_form') }}" enctype="multipart/form-data">
+    <form class="add-requests-form" method="post" action="{{ url_for('.submit_add_request_form') }}" enctype="multipart/form-data">
         {{ form.csrf_token }}
         {{ render_field(form.description) }}
-        {{ render_field(form.pictures) }}
+        {{ render_field(form.pictures, multiple="") }}
         <div><input type="submit" value="Submit"></div>
     </form>
 {% endblock %}

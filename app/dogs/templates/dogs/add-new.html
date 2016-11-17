@@ -1,30 +1,6 @@
 {% extends "base.html" %}
-
+{% from "_formhelpers.html" import fancy_render_field %}
 {% block title %} Add dog {% endblock %}
-
-{% macro fancy_render_field(field, placeholder='') %}
-    {% set class_ = '' %}
-    {{ field.label }}
-    {% if placeholder %}
-        {{ field(placeholder=placeholder)|safe }}
-    {% else %}
-        {% if field.type == 'TextAreaField' %}
-            {% set class_ = ' materialize-textarea' %}
-        {% endif %}
-        {% if field.type in ('SelectField', 'BooleanField') %}
-            {% set class_ = ' browser-default' %}
-        {% endif %}
-
-        {{ field(placeholder=field.description, class=class_)|safe }}
-    {% endif %}
-    {% if field.errors %}
-        <div class="alert alert-danger" role="alert">
-            {% for err in field.errors %}
-                <p>{{ err|e }}</p>
-            {% endfor %}
-        </div>
-    {% endif %}
-{% endmacro %}
 
 {% block content %}
 
@@ -79,7 +55,7 @@
                 <div class="col s12">
 
                     <div class=" col s6">
-                        {{ fancy_render_field(add_dog_form.location) }}
+                        {{ fancy_render_field(add_dog_form.location_id) }}
                     </div>
                     <div class="input-field col s6">
                     </div>

@@ -2,20 +2,18 @@ import re
 from datetime import datetime
 
 from flask import abort
+from flask import current_app
 from flask import render_template, url_for, redirect
 from flask import request
-from flask import current_app
 from wtforms import BooleanField
 
-from . import dogs
-from .repository import DogsRepository
-from .models import Dog
+from app.dogs.forms import DogForm
 from app.dogs.forms import DogsFilterForm
 from app.events.repository import EventTypeRepository
 from app.utils.pages_helper import Pages
-from app.addrequests.forms import ApproveRequestForm
-from app.addrequests.utils import convert_locations_to_select_choices
-from app.locations.repository import LocationsRepository
+from . import dogs
+from .models import Dog
+from .repository import DogsRepository
 
 __author__ = 'Xomak'
 
@@ -63,7 +61,9 @@ def dogs_list():
     except ValueError:
         abort(404)
 
-    all_dogs = DogsRepository.get_dogs_with_significant_events_by_criteria(**filter_args, from_row=pages.get_start_row(), rows_count=pages.get_rows_number())
+    all_dogs = DogsRepository.get_dogs_with_significant_events_by_criteria(**filter_args,
+                                                                           from_row=pages.get_start_row(),
+                                                                           rows_count=pages.get_rows_number())
     for dog in all_dogs:
         distinct_events_list = set()
         for event in dog.events:
@@ -76,18 +76,16 @@ def dogs_list():
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])
-def page_about_dog(dog_id):
-    dog_data = DogsRepository.get_dog_by_id_with_events(dog_id)
-    if dog_data is None:
+def page_about_dog(dog_id: int):
+    dog = DogsRepository.get_dog_by_id_and_pics_and_events_and_location(dog_id)
+    if dog is None:
         abort(404)
-    return render_template('dogs/page.html', dog=dog_data)
+    return render_template('dogs/page.html', dog=dog)
 
 
 @dogs.route('/add', methods=['GET', 'POST'])
 def add_dog_without_request():
-    add_dog_form = ApproveRequestForm()
-    locations = LocationsRepository.get_all_locations()
-    add_dog_form.location.choices = convert_locations_to_select_choices(locations)
+    add_dog_form = DogForm()
     if add_dog_form.validate_on_submit():
         dog = Dog()
         dog.name = add_dog_form.name.data
@@ -98,3 +96,23 @@ def add_dog_without_request():
         DogsRepository.new_dog(dog)
         return redirect(url_for('.dogs_list'))
     return render_template('dogs/add-new.html', date=datetime.now(), add_dog_form=add_dog_form)
+
+
+@dogs.route('/<int:dog_id>/edit', methods=['POST', 'GET'])
+def edit(dog_id: int):
+    if request.method == 'GET':
+        dog = DogsRepository.get_dog_by_id_with_pictures(dog_id)
+        form = DogForm(obj=dog)
+        form.main_picture_id.data = dog.main_picture.id if dog.main_picture else None
+        return render_template('dogs/edit.html', form=form, dog=dog)
+
+    form = DogForm()
+    if form.validate_on_submit():
+        dog = Dog()
+        form.populate_obj(dog)
+        DogsRepository.update_dog(dog)
+        return redirect(url_for('.edit', dog_id=dog_id))
+    dog = DogsRepository.get_dog_by_id_with_pictures(dog_id)
+    form = DogForm(obj=dog)
+    form.main_picture_id.data = dog.main_picture.id if dog.main_picture else None
+    return render_template('dogs/edit.html', form=form, dog=dog)
