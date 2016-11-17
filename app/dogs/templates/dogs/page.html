@@ -6,7 +6,11 @@
 
 
     <div class="section"></div>
-
+    {% if current_user.is_volunteer %}
+        <div id="editblock" style="position:absolute;margin-left: -80px">
+            <a href="{{ url_for('.edit', dog_id=dog.id) }}" class="btn-floating btn-large waves-effect waves-light red"><i class="large material-icons">mode_edit</i></a>
+        </div>
+    {% endif %}
     <div class="row  z-depth-1"
          style="padding: 20px;    background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
         <div class="col s12">
@@ -14,18 +18,20 @@
                 <div class="input-field col s4">
                     {% if dog.main_picture %}
                         <img src="{{ dog.main_picture.resolved_uri }}" width="100%"
-                             height="auto" alt="a main picture of the dog" class="materialboxed"/>
+                             id="main_pic_{{ dog.main_picture.id }}"
+                             height="auto" alt="a main picture of the dog" class="materialboxed dog_pic"/>
                     {% else %}
-                        <img width="100%"
+                        <img width="100%" id="main_pic_unavailable"
                              height="auto" src="{{ url_for('static', filename='dogs/no.image.available.png') }}"
                              alt="unknown"/>
                     {% endif %}
                     {% for pic in dog.pictures %}
-                        <img class="materialboxed"
+                        <img class="materialboxed dog_pic"
                              data-caption="picture of a dog"
                              width="33%"
                              height="auto"
                              style="float:left; margin: 0.5em"
+                             id="pic_{{ pic.id }}"
                              src="{{ pic.resolved_uri }}"/>
                     {% endfor %}
                 </div>

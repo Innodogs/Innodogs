@@ -1,6 +1,11 @@
+import os
+import uuid
+from collections import namedtuple
 from typing import List, Dict, Tuple
 
+from flask import current_app
 from sqlalchemy import Table
+from werkzeug.utils import secure_filename
 
 __author__ = 'Xomak'
 
@@ -45,7 +50,7 @@ class QueryHelper:
         """
 
         def get_column_description(column):
-            return temporary_name+"."+column+" AS "+mapping.description+"_"+column
+            return temporary_name + "." + column + " AS " + mapping.description + "_" + column
 
         columns = cls.get_columns_list(mapping)
 
@@ -134,3 +139,19 @@ class QueryHelper:
         substitutions = ", ".join([":" + column for column in column_names])
         columns = ", ".join(column_names)
         return columns, substitutions, params_dict
+
+SavedFile = namedtuple('SavedFile', ['abspath', 'relpath'])
+
+
+def save_pictures(request, list_name='pictures') -> List[SavedFile]:
+    images = request.files.getlist(list_name)
+    saved = []
+    if images:
+        for img in images:
+            # Create Images
+            file_name = str(uuid.uuid4()) + secure_filename(img.filename)
+            abspath_image_file = os.path.join(current_app.config['UPLOAD_FOLDER_ABSOLUTE'], file_name)
+            relpath_image_file = os.path.join(current_app.config['UPLOAD_FOLDER'], file_name)
+            img.save(abspath_image_file)
+            saved.append(SavedFile(abspath_image_file, relpath_image_file))
+    return saved

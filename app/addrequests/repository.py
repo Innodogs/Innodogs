@@ -5,7 +5,7 @@ from sqlalchemy import text
 from app import db
 from app.addrequests.models import AddRequest, AddRequestMapping
 from app.users.models import UserMapping, User
-from app.utils.query_helper import QueryHelper
+from app.utils.helpers import QueryHelper
 
 __author__ = 'Xomak'
 

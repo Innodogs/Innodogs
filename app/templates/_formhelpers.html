@@ -50,3 +50,27 @@
         {% endif -%}
     {% endwith -%}
 {% endmacro -%}
+
+{% macro fancy_render_field(field, placeholder='') %}
+    {% set class_ = '' %}
+    {{ field.label }}
+    {% if placeholder %}
+        {{ field(placeholder=placeholder)|safe }}
+    {% else %}
+        {% if field.type == 'TextAreaField' %}
+            {% set class_ = ' materialize-textarea' %}
+        {% endif %}
+        {% if field.type in ('SelectField', 'BooleanField') %}
+            {% set class_ = ' browser-default' %}
+        {% endif %}
+
+        {{ field(placeholder=field.description, class=class_)|safe }}
+    {% endif %}
+    {% if field.errors %}
+        <div class="alert alert-danger" role="alert">
+            {% for err in field.errors %}
+                <p>{{ err|e }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endmacro %}

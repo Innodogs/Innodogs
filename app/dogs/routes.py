@@ -7,7 +7,7 @@ from flask import render_template, url_for, redirect
 from flask import request
 from wtforms import BooleanField
 
-from app.addrequests.forms import ApproveRequestForm
+from app.dogs.forms import DogForm
 from app.dogs.forms import DogsFilterForm
 from app.events.repository import EventTypeRepository
 from app.utils.pages_helper import Pages
@@ -76,7 +76,7 @@ def dogs_list():
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])
-def page_about_dog(dog_id):
+def page_about_dog(dog_id: int):
     dog = DogsRepository.get_dog_by_id_and_pics_and_events_and_location(dog_id)
     if dog is None:
         abort(404)
@@ -85,7 +85,7 @@ def page_about_dog(dog_id):
 
 @dogs.route('/add', methods=['GET', 'POST'])
 def add_dog_without_request():
-    add_dog_form = ApproveRequestForm()
+    add_dog_form = DogForm()
     if add_dog_form.validate_on_submit():
         dog = Dog()
         dog.name = add_dog_form.name.data
@@ -96,3 +96,23 @@ def add_dog_without_request():
         DogsRepository.new_dog(dog)
         return redirect(url_for('.dogs_list'))
     return render_template('dogs/add-new.html', date=datetime.now(), add_dog_form=add_dog_form)
+
+
+@dogs.route('/<int:dog_id>/edit', methods=['POST', 'GET'])
+def edit(dog_id: int):
+    if request.method == 'GET':
+        dog = DogsRepository.get_dog_by_id_with_pictures(dog_id)
+        form = DogForm(obj=dog)
+        form.main_picture_id.data = dog.main_picture.id if dog.main_picture else None
+        return render_template('dogs/edit.html', form=form, dog=dog)
+
+    form = DogForm()
+    if form.validate_on_submit():
+        dog = Dog()
+        form.populate_obj(dog)
+        DogsRepository.update_dog(dog)
+        return redirect(url_for('.edit', dog_id=dog_id))
+    dog = DogsRepository.get_dog_by_id_with_pictures(dog_id)
+    form = DogForm(obj=dog)
+    form.main_picture_id.data = dog.main_picture.id if dog.main_picture else None
+    return render_template('dogs/edit.html', form=form, dog=dog)

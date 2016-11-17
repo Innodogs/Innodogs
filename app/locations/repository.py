@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import text
 
 from app import db
-from app.utils.query_helper import QueryHelper
+from app.utils.helpers import QueryHelper
 from .models import LocationMapping, Location
 
 

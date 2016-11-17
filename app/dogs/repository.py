@@ -11,7 +11,7 @@ from app.events.proxy_models import EventWithEventType
 from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
 from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expenditure, FinancialEvent
 from app.locations.models import LocationMapping, Location
-from app.utils.query_helper import QueryHelper
+from app.utils.helpers import QueryHelper
 
 __author__ = 'Xomak'
 
