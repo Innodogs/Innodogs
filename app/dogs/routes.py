@@ -4,15 +4,15 @@ from datetime import datetime
 from flask import abort
 from flask import render_template, url_for, redirect
 from flask import request
+from flask import current_app
 from wtforms import BooleanField
 
+from . import dogs
+from .repository import DogsRepository
+from .models import Dog
 from app.dogs.forms import DogsFilterForm
 from app.events.repository import EventTypeRepository
 from app.utils.pages_helper import Pages
-from . import dogs
-from flask import current_app
-from .repository import DogsRepository
-from .models import Dog
 from app.addrequests.forms import ApproveRequestForm
 from app.addrequests.utils import convert_locations_to_select_choices
 from app.locations.repository import LocationsRepository
