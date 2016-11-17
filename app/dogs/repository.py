@@ -295,6 +295,7 @@ class DogsRepository:
         for result_tuple in result_tuples:
             if dog is None:
                 dog = result_tuple[0]
+                dog.main_picture = None
                 dog.pictures = []
 
             if not hasattr(dog, "location"):
