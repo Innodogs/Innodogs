@@ -81,6 +81,28 @@ class QueryHelper:
         return ", ".join(updates), params_dict
 
     @classmethod
+    def get_limit_query_part(cls, from_row=None, number_of_rows=None) -> Tuple[str, Dict]:
+        """
+        Returns limit query part like
+        LIMIT 0, 30
+        :param from_row: From row
+        :param number_of_rows: Number of rows
+        :return: Query string and params' dict
+        """
+        query_params = {}
+        limit_query_string = ""
+        if number_of_rows is not None:
+            limit_query_string = "LIMIT :limit_number_of_rows"
+            query_params['limit_number_of_rows'] = number_of_rows
+
+        if number_of_rows is not None:
+            if len(limit_query_string) > 0:
+                limit_query_string += " "
+            limit_query_string += "OFFSET :limit_from_row"
+            query_params['limit_from_row'] = from_row
+        return limit_query_string, query_params
+
+    @classmethod
     def get_insert_strings_and_dict(cls, mapping: Table, data_object, fields_to_insert=[], fields_to_exclude=[]) \
             -> Tuple[str, str, Dict]:
         """

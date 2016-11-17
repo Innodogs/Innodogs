@@ -1,7 +1,6 @@
 import re
 from datetime import datetime
 
-import math
 from flask import abort
 from flask import render_template, url_for, redirect
 from flask import request
@@ -9,6 +8,7 @@ from wtforms import BooleanField
 
 from app.dogs.forms import DogsFilterForm
 from app.events.repository import EventTypeRepository
+from app.utils.pages_helper import Pages
 from . import dogs
 from flask import current_app
 from .repository import DogsRepository
@@ -24,9 +24,9 @@ __author__ = 'Xomak'
 def dogs_list():
     event_types_ids = []
     filter_args = {}
-    significant_event_regexp = re.compile(r"^event_(\d+)$")
     page_number = 1
 
+    significant_event_regexp = re.compile(r"^event_(\d+)$")
     significant_event_types = EventTypeRepository.get_significant_event_types()
 
     class FilterForm(DogsFilterForm):
@@ -57,15 +57,13 @@ def dogs_list():
     if len(event_types_ids) > 0:
         filter_args['event_types_ids'] = event_types_ids
 
-
-    rows_count = current_app.config['DOGS_PER_PAGE']
     dogs_number = DogsRepository.get_dogs_count_satisfying_criteria(**filter_args)
-    current_start_row = (page_number-1)*current_app.config['DOGS_PER_PAGE']
-    pages_number = math.ceil(dogs_number/rows_count)
-    if current_start_row < 0 or current_start_row > dogs_number:
+    try:
+        pages = Pages('.dogs_list', current_app.config['DOGS_PER_PAGE'], page_number, dogs_number, request.args)
+    except ValueError:
         abort(404)
 
-    all_dogs = DogsRepository.get_dogs_with_significant_events_by_criteria(**filter_args, from_row=current_start_row, rows_count=rows_count)
+    all_dogs = DogsRepository.get_dogs_with_significant_events_by_criteria(**filter_args, from_row=pages.get_start_row(), rows_count=pages.get_rows_number())
     for dog in all_dogs:
         distinct_events_list = set()
         for event in dog.events:
@@ -74,17 +72,7 @@ def dogs_list():
             else:
                 distinct_events_list.add(event.event_type.type_name)
 
-    pages_list = [1]
-    for current_page in range(page_number-3, page_number+3):
-        if 0 < current_page <= pages_number and current_page not in pages_list:
-                pages_list.append(current_page)
-
-    request_args = dict(request.args)
-    if 'page' in request_args:
-        del request_args['page']
-
-    return render_template('dogs/list.html', dogs_with_events=all_dogs, filter_form=filter_form,
-                           pages_number=pages_number, current_page=page_number, request_args=request_args, pages_list=pages_list)
+    return render_template('dogs/list.html', dogs_with_events=all_dogs, filter_form=filter_form, pages=pages)
 
 
 @dogs.route('/<int:dog_id>', methods=['GET'])

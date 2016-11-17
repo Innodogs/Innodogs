@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "dogs/_pages_macro.html" import render_page_link_item %}
+{% from "_pagination_helpers.html" import render_pagination %}
 
 {% block title %} Dogs list {% endblock %}
 
@@ -39,13 +39,7 @@
 
     </div>
     <div class="row">
-        <ul class="pagination">
-            {{ render_page_link_item(current_page, (current_page - 1), "<i class=\"material-icons\">chevron_left</i>", current_page == 1, request_args) }}
-            {%  for page in pages_list %}
-                {{ render_page_link_item(current_page, page, page, False, request_args) }}
-            {% endfor %}
-            {{ render_page_link_item(current_page, (current_page + 1), "<i class=\"material-icons\">chevron_right</i>", current_page == pages_number or pages_number == 0, request_args) }}
-        </ul>
+        {{ render_pagination(pages) }}
     </div>
     <a href='add' class="btn-floating btn-large waves-effect waves-light red"
        style="    position: fixed; right: 20px;  bottom: 20px;}">

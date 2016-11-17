@@ -45,13 +45,24 @@ class DogsRepository:
         return requests
 
     @classmethod
-    def get_dogs_count_satisfying_criteria(cls, **kwargs):
+    def get_dogs_count_satisfying_criteria(cls, **kwargs) -> int:
+        """
+        Returns count of dogs, satisfying given criteria.
+        See get_dogs_with_significant_events method for criteria
+        :param kwargs: Criteria
+        :return: Dogs' count
+        """
         stmt, bind_values = cls._get_query_part_for_criteria(**kwargs, fields_to_select=['count(*) OVER()'])
-        return db.engine.execute(text(stmt).params(bind_values)).fetchone()[0]
+        result = db.engine.execute(text(stmt).params(bind_values)).fetchone()
+        if result is not None:
+            return result[0]
+        else:
+            return 0
 
     @classmethod
-    def get_dogs_with_significant_events(cls, dogs_statement: str=None, bind_values: Dict=None,
-                                         from_row: int=None, rows_count: int=None) -> List[DogWithSignificantEvents]:
+    def get_dogs_with_significant_events(cls, dogs_statement: str = None, bind_values: Dict = None,
+                                         from_row: int = None, rows_count: int = None) -> List[
+        DogWithSignificantEvents]:
         """
         Get DogWithSignificantEvents proxy model list, containing dog and related significant event.
         Query string could be passed to filter this list.
@@ -75,7 +86,7 @@ class DogsRepository:
             dogs_statement = " WHERE id IN (%s)" % dogs_statement
 
         if from_row is not None:
-            limit_statement, limit_params = cls._get_limit_query_part(from_row, rows_count)
+            limit_statement, limit_params = QueryHelper.get_limit_query_part(from_row, rows_count)
             dogs_statement += limit_statement
             query_params = {**limit_params, **query_params}
 
@@ -139,11 +150,13 @@ class DogsRepository:
         return dogs
 
     @classmethod
-    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex :str=None,
-                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None) -> List[
-        DogWithSignificantEvents]:
+    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
+                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None)\
+            -> List[DogWithSignificantEvents]:
         """
         Get DogWithSignificantEvents list, satisfying given criteria
+        :param rows_count: Maximum count of dogs
+        :param from_row: Start row
         :param name: Dog's name (LIKE query is used)
         :param is_adopted: Is dog adopted
         :param sex: Dog's sex
@@ -155,29 +168,9 @@ class DogsRepository:
         return cls.get_dogs_with_significant_events(stmt, bind_values, from_row=from_row, rows_count=rows_count)
 
     @classmethod
-    def _get_limit_query_part(cls, from_row=None, number_of_rows=None) -> Tuple[str, Dict]:
-        """
-        Returns limit query part like
-        LIMIT 0, 30
-        :param from_row: From row
-        :param number_of_rows: Number of rows
-        :return: Query string and params' dict
-        """
-        query_params = {}
-        limit_query_string = ""
-        if number_of_rows is not None:
-            limit_query_string = "LIMIT :limit_number_of_rows"
-            query_params['limit_number_of_rows'] = number_of_rows
-
-        if number_of_rows is not None:
-            if len(limit_query_string) > 0:
-                limit_query_string += " "
-            limit_query_string += "OFFSET :limit_from_row"
-            query_params['limit_from_row'] = from_row
-        return limit_query_string, query_params
-
-    @classmethod
-    def _get_query_part_for_criteria(cls, name: str = None, is_adopted: bool = None, sex :str=None, event_types_ids: List[int] = None, fields_to_select: List[str]=None) -> Tuple[str, Dict]:
+    def _get_query_part_for_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
+                                     event_types_ids: List[int] = None, fields_to_select: List[str] = None) -> Tuple[
+        str, Dict]:
         """
         Get query, which finds all dogs' ids, satisfying given criteria
         :param name: Dog's name (LIKE query is used)
@@ -209,7 +202,7 @@ class DogsRepository:
 
         if name is not None:
             where_clause = " dogs.name LIKE :dog_name"
-            bind_values['dog_name'] = '%'+name+'%'
+            bind_values['dog_name'] = '%' + name + '%'
 
         if sex is not None:
             if len(where_clause) > 0:
