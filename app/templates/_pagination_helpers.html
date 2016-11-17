@@ -1,0 +1,26 @@
+{% macro render_page_link_item(current_page, target_page, content, is_disabled, context, endpoint) %}
+    {% if current_page == target_page %}
+        {% set is_active = True %}
+    {% else %}
+        {% set is_active = False %}
+    {% endif %}
+    <li class="{{ 'disabled' if is_disabled else 'waves-effect' }} {{ 'active' if is_active }}">
+        {% if not is_disabled %}
+            <a href="{{ url_for(endpoint, page=target_page, **context) }}">
+        {% endif %}
+        {{ content|safe }}
+        {% if not is_disabled %}
+            </a>
+        {% endif %}
+    </li>
+{% endmacro %}
+
+{% macro render_pagination(pages) %}
+        <ul class="pagination">
+            {{ render_page_link_item(pages.current_page, (pages.current_page - 1), "<i class=\"material-icons\">chevron_left</i>", not pages.has_previous(), pages.request_args, pages.endpoint) }}
+            {% for page in pages.get_pages_list() %}
+                {{ render_page_link_item(pages.current_page, page, page, False, pages.request_args, pages.endpoint) }}
+            {% endfor %}
+            {{ render_page_link_item(pages.current_page, (pages.current_page + 1), "<i class=\"material-icons\">chevron_right</i>", not pages.has_next(), pages.request_args, pages.endpoint) }}
+        </ul>
+{% endmacro %}

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_pagination_helpers.html" import render_pagination %}
 
 {% block title %} Dogs list {% endblock %}
 
@@ -10,52 +11,36 @@
     <div class="row">
         <div class="col s8">
             <ul class="collection " style="margin: 0 0 20px 0;">
-                {% for dog in dogs -%}
+                {% for dog_with_event in dogs_with_events -%}
                     <li class="collection-item avatar" style="padding-left: 90px;">
-                        <img src="{{ dog.main_picture.uri if dog.main_picture != None }}" alt="" style="width: 65px; height: 65px;" class="circle">
-                        <a href="{{ url_for('dogs.page_about_dog', dog_id=dog.id) }}"><span class="title">{{ dog.name }}</span></a>
-                        <p>ID: {{ dog.id }}</p>
-                        <p>Sex: {{ dog.sex }}</p>
-                        <p> {{ dog.description }} </p>
+                        <img src="{{ dog_with_event.dog.main_picture.uri if dog_with_event.dog.main_picture != None }}"
+                             alt=""
+                             style="width: 65px; height: 65px;" class="circle">
+                        <a href="{{ url_for('dogs.page_about_dog', dog_id=dog_with_event.dog.id) }}"><span
+                                class="title">{{ dog_with_event.dog.name }}</span></a>
+                        <p>ID: {{ dog_with_event.dog.id }}</p>
+                        <p>Sex: {{ dog_with_event.dog.sex }}</p>
+                        <p> {{ dog_with_event.dog.description }} </p>
+                        <p>
+                            {% for significant_event in dog_with_event.events %}
+                                <div class="chip">
+                                    {{ significant_event.event_type.type_name }}
+                                </div>
+                            {% endfor %}
+                        </p>
                     </li>
                     <a href="#!" class="secondary-content"><i class="material-icons">grade</i></a>
                 {%- endfor %}
             </ul>
         </div>
         <div class="col s4 ">
-
-
-            <form action="#" class="z-depth-1" style="background: rgba(177, 220, 251, 0.36);     padding: 15px;">
-                <div class="input-field">
-                    <input value="Alvin" id="first_name2" type="text" class="validate">
-                    <label class="active" for="first_name2">Dog name</label>
-                </div>
-
-
-                <p>
-                    <input type="checkbox" id="isSterialize"/>
-                    <label for="isSterialize" style="    color: black;">Sterialize</label>
-                </p>
-                <p>
-                    <input type="checkbox" id="isChiping" style="    color: black;"/>
-                    <label for="isChiping" style="    color: black;">Chipping</label>
-                </p>
-                <p>
-                    <label>Sex</label>
-                    <select class="browser-default">
-                        <option value="" disabled selected>Choose sex of dog</option>
-                        <option value="1">Male</option>
-                        <option value="2">Female</option>
-                    </select>
-
-                </p>
-
-
-            </form>
+            {% include "dogs/filters-block.html" %}
         </div>
 
     </div>
-
+    <div class="row">
+        {{ render_pagination(pages) }}
+    </div>
     <a href='add' class="btn-floating btn-large waves-effect waves-light red"
        style="    position: fixed; right: 20px;  bottom: 20px;}">
         <i class="material-icons">add</i></a>

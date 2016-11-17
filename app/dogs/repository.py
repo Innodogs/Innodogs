@@ -1,10 +1,13 @@
-from typing import List, Tuple, Iterable
+from typing import List, Tuple, Iterable, Dict
 
 from sqlalchemy import text
 
 from app import db
-from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expenditure, FinancialEvent
+from app.dogs.proxy_models import DogWithSignificantEvents
+from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expenditure, FinancialEvent, \
+    EventTypeMapping, EventType
 from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
+from app.events.proxy_models import EventWithEventType
 from app.locations.models import LocationMapping, Location
 from app.utils.query_helper import QueryHelper
 
@@ -42,6 +45,196 @@ class DogsRepository:
         return requests
 
     @classmethod
+    def get_dogs_count_satisfying_criteria(cls, **kwargs) -> int:
+        """
+        Returns count of dogs, satisfying given criteria.
+        See get_dogs_with_significant_events method for criteria
+        :param kwargs: Criteria
+        :return: Dogs' count
+        """
+        stmt, bind_values = cls._get_query_part_for_criteria(**kwargs, fields_to_select=['count(*) OVER()'])
+        result = db.engine.execute(text(stmt).params(bind_values)).fetchone()
+        if result is not None:
+            return result[0]
+        else:
+            return 0
+
+    @classmethod
+    def get_dogs_with_significant_events(cls, dogs_statement: str = None, bind_values: Dict = None,
+                                         from_row: int = None, rows_count: int = None) -> List[
+        DogWithSignificantEvents]:
+        """
+        Get DogWithSignificantEvents proxy model list, containing dog and related significant event.
+        Query string could be passed to filter this list.
+        :param rows_count: Number of dogs
+        :param from_row: Get dogs from given row number
+        :param dogs_statement: String with query, returning ids of dogs,
+        that should be included in result list
+        :param bind_values: Dictionary with values, which should be binded to this query
+        :return: List of DogWithSignificantEvents, satisfying given query
+        """
+
+        dogs_limit_query_string = ""
+
+        query_params = {}
+        if bind_values is not None:
+            query_params = {**bind_values, **query_params}
+
+        if dogs_statement is None or len(dogs_statement) == 0:
+            dogs_statement = ""
+        else:
+            dogs_statement = " WHERE id IN (%s)" % dogs_statement
+
+        if from_row is not None:
+            limit_statement, limit_params = QueryHelper.get_limit_query_part(from_row, rows_count)
+            dogs_statement += limit_statement
+            query_params = {**limit_params, **query_params}
+
+        dog_columns_string_prefixed = QueryHelper.get_columns_string(DogMapping, "dogs")
+        event_columns_string_prefixed = QueryHelper.get_columns_string(EventMapping, "events")
+        event_type_columns_string_prefixed = QueryHelper.get_columns_string(EventTypeMapping, "event_types")
+        location_columns_string_prefixed = QueryHelper.get_columns_string(LocationMapping, "locations")
+        picture_columns_string_prefixed = QueryHelper.get_columns_string(DogPictureMapping, "dog_pictures")
+
+        dog_columns_string = ", ".join(QueryHelper.get_columns_list(DogMapping))
+        event_columns_string = ", ".join(QueryHelper.get_columns_list(EventMapping))
+        event_type_columns_string = ", ".join(QueryHelper.get_columns_list(EventTypeMapping))
+
+        stmt = text(
+            "SELECT {dog_columns_prefixed}, {location_columns_prefixed}, {picture_columns_prefixed}, events.* FROM "
+            "(SELECT {dog_columns} FROM {dogs_table}{dogs_statement}) AS dogs "
+            "LEFT JOIN (SELECT {event_columns_prefixed}, {event_type_columns_prefixed} FROM {events_table} AS events "
+            "INNER JOIN {event_types_table} AS event_types ON events.event_type_id = event_types.id AND event_types.is_significant = TRUE) AS events "
+            "ON events.event_dog_id = dogs.id "
+            "LEFT OUTER JOIN {locations_table} AS locations ON dogs.location_id = locations.id "
+            "LEFT OUTER JOIN {pictures_table} AS dog_pictures ON dogs.id = dog_pictures.dog_id "
+            "AND dog_pictures.is_main = true ORDER BY dogs.id"
+                .format(dog_columns_prefixed=dog_columns_string_prefixed,
+                        dog_columns=dog_columns_string,
+                        event_columns=event_columns_string,
+                        event_type_columns=event_type_columns_string,
+                        event_type_columns_prefixed=event_type_columns_string_prefixed,
+                        location_columns_prefixed=location_columns_string_prefixed,
+                        picture_columns_prefixed=picture_columns_string_prefixed,
+                        dogs_table=DogMapping.description,
+                        locations_table=LocationMapping.description,
+                        pictures_table=DogPictureMapping.description,
+                        events_table=EventMapping.description,
+                        event_types_table=EventTypeMapping.description,
+                        dogs_limit=dogs_limit_query_string,
+                        event_columns_prefixed=event_columns_string_prefixed,
+                        dogs_statement=dogs_statement
+                        ))
+        result = db.session.query(Dog, Location, DogPicture, Event, EventType).from_statement(stmt).params(
+            **query_params).all()
+
+        dogs = list()
+        active_dog = None
+        for join_tuple in result:
+            current_dog = join_tuple[0]
+            current_location = join_tuple[1]
+            current_picture = join_tuple[2]
+            current_event = join_tuple[3]
+            current_event_type = join_tuple[4]
+
+            if active_dog is None or current_dog != active_dog.dog:
+                if active_dog is not None:
+                    dogs.append(active_dog)
+                active_dog = DogWithSignificantEvents(
+                    cls._args_tuple_to_dog_and_location_and_picture(current_dog, current_location, current_picture))
+            if current_event is not None:
+                active_dog.add_event(EventWithEventType(current_event, current_event_type))
+
+        if active_dog is not None:
+            dogs.append(active_dog)
+        return dogs
+
+    @classmethod
+    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
+                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None)\
+            -> List[DogWithSignificantEvents]:
+        """
+        Get DogWithSignificantEvents list, satisfying given criteria
+        :param rows_count: Maximum count of dogs
+        :param from_row: Start row
+        :param name: Dog's name (LIKE query is used)
+        :param is_adopted: Is dog adopted
+        :param sex: Dog's sex
+        :param event_types_ids: List of event types' ids, such all of them should be presented in
+        dog's history
+        :return: List of DogWithSignificantEvents, satisfying given criteria
+        """
+        stmt, bind_values = cls._get_query_part_for_criteria(name, is_adopted, sex, event_types_ids)
+        return cls.get_dogs_with_significant_events(stmt, bind_values, from_row=from_row, rows_count=rows_count)
+
+    @classmethod
+    def _get_query_part_for_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
+                                     event_types_ids: List[int] = None, fields_to_select: List[str] = None) -> Tuple[
+        str, Dict]:
+        """
+        Get query, which finds all dogs' ids, satisfying given criteria
+        :param name: Dog's name (LIKE query is used)
+        :param is_adopted: Is dog adopted
+        :param sex: Dog's sex
+        :param event_types_ids: List of event types' ids, such all of them should be presented in
+        dog's history
+        :return: Query and Param's dict
+        """
+        in_substitutes_string = ""
+        where_clause = ""
+        bind_values = {}
+
+        if event_types_ids is not None and len(event_types_ids) > 0:
+            event_index = 0
+            for event_type_id in event_types_ids:
+                if len(in_substitutes_string) > 0:
+                    in_substitutes_string += " ,"
+                in_substitutes_string += ":event_type_id_%s" % event_index
+                bind_values["event_type_id_%s" % event_index] = event_type_id
+                event_index += 1
+
+            bind_values['dog_lines_count'] = len(event_types_ids)
+        else:
+            event_types_ids = []
+
+        if fields_to_select is None:
+            fields_to_select = ['dogs.id']
+
+        if name is not None:
+            where_clause = " dogs.name LIKE :dog_name"
+            bind_values['dog_name'] = '%' + name + '%'
+
+        if sex is not None:
+            if len(where_clause) > 0:
+                where_clause += " AND"
+            where_clause += " dogs.sex = :dog_sex"
+            bind_values['dog_sex'] = sex
+
+        if is_adopted is not None:
+            if len(where_clause) > 0:
+                where_clause += " AND"
+            where_clause += " dogs.is_adopted = :is_adopted"
+            bind_values['is_adopted'] = is_adopted
+
+        stmt = "SELECT {fields_to_select} FROM {dogs_table} AS dogs"
+        if len(event_types_ids) > 0:
+            stmt += " INNER JOIN (SELECT DISTINCT(event_type_id), dog_id FROM {events_table}) " \
+                    "AS events ON events.dog_id = dogs.id AND events.event_type_id IN ({in_substitutes})"
+        if len(where_clause) > 0:
+            stmt += " WHERE {where_clause}"
+        if len(event_types_ids) > 0:
+            stmt += " GROUP BY dogs.id HAVING count(*) = :dog_lines_count"
+        stmt = stmt.format(
+            dogs_table=DogMapping.description,
+            events_table=EventMapping.description,
+            where_clause=where_clause,
+            in_substitutes=in_substitutes_string,
+            fields_to_select=', '.join(fields_to_select)
+        )
+
+        return stmt, bind_values
+
+    @classmethod
     def _tuple_to_dog_and_location(cls, join_tuple: Tuple[Dog, Location]):
         """
         Converts tuple (Dog, Location) to Dog with dog.location = location
@@ -51,6 +244,19 @@ class DogsRepository:
         dog = join_tuple[0]
         dog.location = join_tuple[1]
 
+        return cls._args_tuple_to_dog_and_location_and_picture(join_tuple[0], join_tuple[1])
+
+    @classmethod
+    def _args_tuple_to_dog_and_location_and_picture(cls, dog, location=None, main_picture=None):
+        """
+        Sets given params as dog's properties
+        :param dog: Dog to set parameters on
+        :param location: Location
+        :param main_picture: Main picture
+        :return: Same dog
+        """
+        dog.location = location
+        dog.main_picture = main_picture
         return dog
 
     @classmethod
@@ -61,11 +267,8 @@ class DogsRepository:
         :param join_tuple: Input tuple
         :return: Dog with location and picture
         """
-        dog = join_tuple[0]
-        dog.location = join_tuple[1]
-        dog.main_picture = join_tuple[2]
 
-        return dog
+        return cls._args_tuple_to_dog_and_location_and_picture(join_tuple[0], join_tuple[1], join_tuple[2])
 
     @classmethod
     def get_dog_by_id_with_pictures(cls, dog_id) -> Dog:

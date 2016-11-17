@@ -26,6 +26,18 @@ class EventTypeRepository:
         return result
 
     @classmethod
+    def get_significant_event_types(cls) -> List[EventType]:
+        """Gets significant events types"""
+
+        et_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "event_type")
+        stmt = text("SELECT {et_columns} FROM {et_table} WHERE {is_significant_column} = TRUE"
+                    .format(et_columns=et_columns_string,
+                            et_table=EventTypeMapping.description,
+                            is_significant_column=QueryHelper.get_column_by_key(EventTypeMapping, 'is_significant')))
+        result = db.session.query(EventType).from_statement(stmt).all()
+        return result
+
+    @classmethod
     def get_event_type_by_id(cls, event_type_id):
         """Get type of event"""
         et_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "event_type")
