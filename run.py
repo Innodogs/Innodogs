@@ -38,10 +38,15 @@ def drop_create_db(_app):
     with _app.open_resource('../create_db.sql', mode='r') as f:
         connection.cursor().execute(f.read())
     for dump_file in dump_order:
-        with open(os.path.join(_app.root_path, '../dump/{}'.format(dump_file)), mode='r', encoding='utf-8') as f:
-            read = f.read()
-            if read:
-                connection.cursor().execute(read)
+        try:
+            path_to_file = os.path.join(_app.root_path, _app.config['SQL_DUMP_PATH'], dump_file)
+            with open(path_to_file, mode='r', encoding='utf-8') as f:
+                print(" * Executing %s" % path_to_file)
+                read = f.read()
+                if read:
+                    connection.cursor().execute(read)
+        except FileNotFoundError:
+            pass
     connection.commit()
     print(' * Database has been successfully recreated')
 
@@ -50,5 +55,6 @@ if __name__ == '__main__':
     config_name = os.environ.get('FLASK_CONFIG') or 'development'
     print(' * Loading configuration "{0}"'.format(config_name))
     app = create_app(config_name)
-    drop_create_db(app)
+    if len(app.config['SQL_DUMP_PATH']) > 0:
+        drop_create_db(app)
     app.run()
