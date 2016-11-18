@@ -8,10 +8,10 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app.users.utils import requires_roles
 from . import events
-from .finance.forms import InpaymentEventForm
+from .finance.forms import InpaymentEventForm, ExpenditureForm
 from .finance.models import Inpayment
 from .finance.repository import InpaymentRepository, ExpenditureRepository
-from .forms import EventTypeForm, ExpenditureForm
+from .forms import EventTypeForm
 from .models import EventType, Expenditure
 from .repository import EventTypeRepository
 

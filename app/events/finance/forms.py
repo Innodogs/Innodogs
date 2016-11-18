@@ -5,7 +5,7 @@ from wtforms import TextAreaField, DateField
 from wtforms.fields.core import SelectField
 from wtforms.fields.html5 import DateTimeField, IntegerField, DecimalField
 from wtforms.fields.simple import HiddenField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms.validators import DataRequired, NumberRange, InputRequired
 
 from app.users.repository import UsersRepository
 
@@ -22,3 +22,9 @@ class InpaymentEventForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user_id.choices = [(u.id, u.name) for u in UsersRepository.get_all_users()]
+
+
+class ExpenditureForm(FlaskForm):
+    amount = DecimalField('Amount', [NumberRange(min=0.1)])
+    datetime = DateTimeField('Operation date and time', default=lambda: datetime.now())
+    comment = TextAreaField('comment', [InputRequired()])
