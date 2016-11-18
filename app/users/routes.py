@@ -4,9 +4,10 @@ from flask import redirect
 from flask import render_template
 from flask import session
 from flask import url_for
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 
 from app import google_login
+from app.events.finance.repository import InpaymentRepository
 from . import users
 from .models import User
 from .repository import UsersRepository
@@ -16,7 +17,7 @@ from .utils import requires_roles
 @users.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    return render_template('profile.html')
+    return render_template('profile.html',finantial=InpaymentRepository.get_all_inpayments_by_user_id(current_user.id))
 
 
 # the order of the wrappers matters (!)
