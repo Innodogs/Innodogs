@@ -5,7 +5,7 @@ from sqlalchemy import text
 from app import db
 from app.events.models import Expenditure, ExpenditureEventMapping
 from app.users.models import UserMapping, User
-from app.utils.query_helper import QueryHelper
+from app.utils.helpers import QueryHelper
 from .models import Inpayment, InpaymentMapping, InpaymentAndExpenditure, InpaymentAndExpenditureMapping
 
 
