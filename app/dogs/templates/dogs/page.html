@@ -35,53 +35,42 @@
                              src="{{ pic.resolved_uri }}"/>
                     {% endfor %}
                 </div>
-                <div class="col s8">
-
-                    <div class="col s8">
-                        <label>Name</label>
-                        <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">{{ dog.name }}</div>
-
-                    </div>
-                    <div class="col s4">
-                        <label>Date of add</label>
-                        <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">
-                            10.11.12
-                        </div>
-
-                    </div>
-
-
+                <div class="col s9">
                     <div class="row">
-                        <div class="col s4">
-                            <label>Age</label>
-                            <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">10
-                            </div>
+                        <div class="col s6">
+                            <label>Name</label>
+                            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">{{ dog.name }}</div>
                         </div>
-                        <div class="col s4">
-                            <label>Chip number</label>
-                            <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">123123
-                            </div>
-                        </div>
-                        <div class=" col s4">
-                            <label>Sex</label><br>
+                        <div class=" col s3">
+                            <label>Sex</label>
                             <div style="    margin-top: 16px;    border-bottom: 1px solid gainsboro;">{{ dog.sex }}</div>
                         </div>
+                        <div class=" col s3">
+                            <label>Is adopted</label>
+                            <div style="    margin-top: 16px;    border-bottom: 1px solid gainsboro;">
+                                {% if dog.is_adopted %}
+                                    Yes
+                                {% else %}
+                                    No
+                                {% endif %}
+                            </div>
+                        </div>
+
                     </div>
                     <div class="row">
-
-                        <div class=" col s6">
+                        <div class=" col s4">
                             <label>Location</label>
                             <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">{{ dog.location.name if dog and dog.location }}
                             </div>
-
                         </div>
-                        <div class="col s6">
+                        <div class="col s8">
                             <label>Commentary</label>
                             <div style="   margin-top: 16px;    border-bottom: 1px solid gainsboro;">
                                 {{ dog.description }}
                             </div>
-
                         </div>
+
+
                     </div>
 
                 </div>
@@ -93,67 +82,96 @@
 
     </div>
     <div class="row">
-        <div class="col s6">
-            {% if current_user.is_volunteer %}
-                <a href="{{ url_for('events.new_financial_event') }}">new</a>
-            {% endif %}
-            <ul class="collection with-header z-depth-1">
-                <li class="collection-header" style="text-align: center"><h5>Financial events</h5></li>
+        <div class="col s7 z-depth-1 white">
+            <center>
+                <h5>Events</h5>
+                {% if current_user.is_volunteer %}
+                    <a href="{{ url_for('events.new_financial_event') }}">new</a>
+                {% endif %}
+            </center>
+            <table class="bordered">
+                <thead>
+                <tr>
+                    <th data-field="amount" width="20%">Money</th>
+                    <th data-field="date" width="20%">Date</th>
+                    <th data-field="comment">Comment</th>
+                    <th data-field="event">Event</th>
+                    {% if current_user.is_volunteer %}
+                        <th data-field="edit"><i class="material-icons">mode_edit</i></th>
+                        <th data-field="delite"><i class="material-icons">highlight_off</i></th>
+                    {% endif %}
+                </tr>
+                </thead>
+
+                <tbody>
                 {% for event in dog.financial_event_list %}
-                    <li class="plus collection-item ">
-                        <div>
-                            <span style="    font-weight: bold; font-size: 17px;">+</span>
-                            {{ event.expenditure.amount }} <span style="color: gray;"> |</span>
-                            <span>Date: {{ event.datetime.date() if event }}</span>
-                            <span style="color: gray;"> |</span>
-                            {% if current_user.is_volunteer %}
+                    <tr>
+                        <td>-{{ event.expenditure.amount }}$</td>
+                        <td> {{ event.datetime.date() if event }}</td>
+                        <td>{{ event.expenditure.comment }}</td>
+                        <td>{{ event.description }}</td>
+                        {% if current_user.is_volunteer %}
+                            <td>
+                                <a href="{{ url_for('events.edit_financial_event', event_id=event.id) }}">
+                                    <i class="material-icons">mode_edit</i>
+                                </a>
+                            </td>
+                            <td>
                                 <a href="{{ url_for('events.delete_financial_event', event_id=event.id) }}"
-                                   class="secondary-content"><i class="material-icons">highlight_off</i></a>
-                                {#todo: make this ajax "delete" request#}
-                            {% endif %}
-                            <p>comment:{{ event.expenditure.comment }}</p>
-                            <p>event descr:{{ event.description }}</p>
-                            {% if current_user.is_volunteer %}
-                                <a href="{{ url_for('events.edit_financial_event', event_id=event.id) }}">edit</a>
-                            {% endif %}
-                        </div>
-                    </li>
+                                   class="secondary-content"><i class="material-icons">highlight_off</i>
+                                </a>
+                            </td>
+                            {#todo: make this ajax "delete" request#}
+                        {% endif %}
+
+                    </tr>
                 {% endfor %}
-            </ul>
-            <div style="text-align: center">
-                <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
-                    more</a>
-            </div>
+                </tbody>
+            </table>
+
         </div>
-        <div class="col s6">
-            {% if current_user.is_volunteer %}
-                <a href="{{ url_for('events.new_event') }}">new</a>
-            {% endif %}
-            <ul class="collection with-header z-depth-1">
-                <li class="collection-header" style="text-align: center"><h5>Events</h5></li>
+        <div class="col s5 z-depth-1 white" style="width: 38%;  margin-left: 3%;">
+            <center>
+                <h5>Events</h5>
+                {% if current_user.is_volunteer %}
+                    <a href="{{ url_for('events.new_event') }}">new</a>
+                {% endif %}
+            </center>
+            <table class="bordered">
+                <thead>
+                <tr>
+                    <th data-field="date" width="25%">Date</th>
+                    <th data-field="comment">Comment</th>
+                    {% if current_user.is_volunteer %}
+                        <th data-field="edit"><i class="material-icons">mode_edit</i></th>
+                        <th data-field="delite"><i class="material-icons">highlight_off</i></th>
+                    {% endif %}
+                </tr>
+                </thead>
+
+                <tbody>
                 {% for event in dog.event_list %}
-                    <li class="plus collection-item ">
-                        <div>
-                            <span>User: Petr Petrov</span>
-                            <span style="color: gray;"> |</span>
-                            <span>Date: {{ event.datetime.date() if event }}</span>
-                            {% if current_user.is_volunteer %}
+                    <tr>
+                        <td> {{ event.datetime.date() if event }}</td>
+                        <td>{{ event.description }}</td>
+                        {% if current_user.is_volunteer %}
+                            <td>
+                                <a href="{{ url_for('events.edit_event', event_id=event.id) }}">
+                                    <i class="material-icons">mode_edit</i>
+                                </a>
+                            </td>
+                            <td>
                                 <a href="{{ url_for('events.delete_financial_event', event_id=event.id) }}"
-                                   class="secondary-content"><i class="material-icons">highlight_off</i></a>
-                                {#todo: make this ajax "delete" request#}
-                            {% endif %}
-                            <p>{{ event.description }}</p>
-                            {% if current_user.is_volunteer %}
-                                <a href="{{ url_for('events.edit_event', event_id=event.id) }}">edit</a>
-                            {% endif %}
-                        </div>
-                    </li>
+                                   class="secondary-content"><i class="material-icons">highlight_off</i>
+                                </a>
+                            </td>
+                            {#todo: make this ajax "delete" request#}
+                        {% endif %}
+
+                    </tr>
                 {% endfor %}
-            </ul>
-            <div style="text-align: center">
-                <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
-                    more</a>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
 

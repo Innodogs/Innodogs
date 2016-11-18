@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField
+from wtforms import TextAreaField, DateField
 from wtforms.fields.core import SelectField
 from wtforms.fields.html5 import DateTimeField, IntegerField, DecimalField
 from wtforms.fields.simple import HiddenField
@@ -14,7 +14,7 @@ class InpaymentEventForm(FlaskForm):
     id = HiddenField('Inpayment id')
     amount = DecimalField('Amount of money', description='How much money was donated',
                           validators=[DataRequired(), NumberRange()], places=0)
-    datetime = DateTimeField('When did it happen', description="When", validators=[DataRequired()],
+    datetime = DateField('When did it happen', description="When", validators=[DataRequired()],
                              default=datetime.today)
     user_id = SelectField('Who did it', choices=[], description="Who is a donor", coerce=int)
     comment = TextAreaField('Commentary', description="Example: thank you, our dear donor!")

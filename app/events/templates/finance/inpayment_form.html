@@ -5,21 +5,40 @@
 
 {% block content %}
 
-    <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
-    {% if action == '.edit_inpayment' %}
-        <form action="{{ url_for(action, id=id) }}" method="post">
-    {% else %}
-        <form action="{{ url_for(action) }}" method="post">
-    {% endif %}
-      <div>
-        {{ form.id }}
-        {{ form.csrf_token }}
-        {{ render_field(form.amount) }}
-        {{ render_field(form.datetime) }}
-        {{ render_field(form.user_id) }}
+        <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
+        {% if action == '.edit_inpayment' %}
+            <form action="{{ url_for(action, id=id) }}" method="post">
+        {% else %}
+            <form action="{{ url_for(action) }}" method="post">
+        {% endif %}
+
+        <div class="row">
+            {{ form.id }}
+            {{ form.csrf_token }}
+            <div class="col s4">
+                {{ render_field(form.amount) }}
+            </div>
+            <div class="col s4">
+                <dt>{{ form.datetime.label }}
+                <dd><input type="date" class="datepicker" value=" {{ form.datetime.data }}"/>
+                </dd>
+            </div>
+            <div class="col s4">
+                {{ render_field(form.user_id) }}
+            </div>
+        </div>
         {{ render_field(form.comment) }}
         <input type="submit" value="Submit" class="btn"/>
-      </div>
+    </div>
     </form>
+    <script>
+        $(document).ready(function () {
 
+
+            $('.datepicker').pickadate({
+                selectMonths: true, // Creates a dropdown to control month
+                selectYears: 15 // Creates a dropdown of 15 years to control year
+            });
+        });
+    </script>
 {% endblock %}

@@ -7,8 +7,31 @@
  */
 
 .icon-block {
-  padding: 0 15px;
+    padding: 0 15px;
 }
+
 .icon-block .material-icons {
-	font-size: inherit;
+    font-size: inherit;
+}
+
+#left_part_profile_page {
+    padding: 20px 20px 0px 20px;
+    margin-right: 20px;
+    background: white;
+    border-radius: 16px;
+    border: 2px solid gainsboro;
+}
+
+.field_text_profile_page {
+    margin-top: 16px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid gainsboro;
+}
+
+#right_part_profile_page {
+    padding: 0px 20px 10px 20px;
+    width: 37%;
+    background: white;
+    border-radius: 16px;
+    border: 2px solid gainsboro;
 }

@@ -4,157 +4,65 @@
 
 {% block content %}
 
-<div class="section"></div>
-
-
+    <div class="section"></div>
     <div class="row">
-        <div class="col s8 z-depth-1"
-             style="padding: 20px; margin-right: 20px;    background: white;   border-radius: 16px;    border: 2px solid gainsboro;">
+        <div class="col s7 z-depth-1" id="left_part_profile_page">
             <div class="row">
-                <div class="input-field col s5">
-                    <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
-                         height="250"
-                         src="http://th01.deviantart.net/fs70/PRE/i/2013/126/1/e/nature_portrait_by_pw_fotografie-d63tx0n.jpg">
-
+                <div class="input-field col s5" style="margin-top: 0">
+                    <img class="materialboxed" width="100%" height="250"
+                         src="https://transerfer.com/images/no_avatar.png">
                 </div>
                 <div class="col s7">
                     <div class="row">
-
                         <div class="col s12">
                             <label>Name</label>
-                            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">
-                                {{ current_user.name }}
-                            </div>
+                            <div class="field_text_profile_page"> {{ current_user.name }} </div>
                             <label>@mail</label>
-                            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">
-                                {{ current_user.email }}
+                            <div class="field_text_profile_page"> {{ current_user.email }} </div>
+                            <label>Status</label>
+                            <div class="field_text_profile_page">
+                                {% if current_user.is_volunteer %} Volonteer
+                                {% elif current_user.is_admin %} Admin
+                                {% else %} User
+                                {% endif %}
                             </div>
-
                         </div>
                     </div>
-
-
                 </div>
             </div>
-
-
         </div>
-        <div class="col s3 z-depth-1"
-             style="    padding: 0px 20px;     width: 30%;  background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
-            <div class="row" style="    margin-bottom: 12px;">
+        <div class="col s5 z-depth-1" id="right_part_profile_page">
+            <div class="row" style="margin-bottom: 5px;">
+                <ul class="collection with-header" style="border: none">
+                    <li class="collection-header" style="text-align: center"><h5>You inpayments</h5></li>
+                    <table class="centered">
+                        <thead>
+                        <tr>
+                            <th data-field="amount">Amount</th>
+                            <th data-field="date">Date</th>
+                            <th data-field="comment">Comment</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for fin in finantial %}
+                            <tr>
+                                <td> +{{ fin.amount }}$</td>
+                                <td>  {{ fin.datetime.strftime('%Y-%m-%d') }}</td>
+                                <td>  {{ fin.comment }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
 
 
-                    <form class="input-field col s12">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <input id="old_pass" type="text" class="validate">
-                                <label for="old_pass">Old password</label>
-                            </div>
-                            <div class="input-field col s12">
-                                <input id="new_pass" type="text" class="validate">
-                                <label for="new_pass">New password</label>
-                            </div>
-                            <div class="input-field col s12">
-                                <input id="r_new_pass" type="text" class="validate">
-                                <label for="r_new_pass">
-                                    Repeat new password</label>
-                            </div>
-
-                          <center>  <a class="waves-effect waves-light btn center">button</a></center>
-                        </div>
-
-                    </form>
-
+                </ul>
             </div>
-        </div>
-
-
-    </div>
-    <div class="row">
-        <div class="col s6">
-            <ul class="collection with-header z-depth-1" style="padding: 20px; background: white;   border-radius: 16px;    border: 2px solid gainsboro;">
-                <li class="collection-header" style="text-align: center"><h5>Money</h5></li>
-                <li class="plus collection-item ">
-                    <div>
-
-                        <span style="    font-weight: bold; font-size: 17px;">+</span>
-                        10800$ <span style="color: gray;"> |</span> <span>Date: 21.10.2015</span>
-                        <span style="color: gray;"> |</span><span> User:  {{ current_user.email }}</span>
-
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-
-                        <span style="    font-weight: bold; font-size: 17px;">+</span>
-                        10800$ <span style="color: gray;"> |</span> <span>Date: 21.10.2015</span>
-                        <span style="color: gray;"> |</span><span> User: Petr Petrov</span>
-
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-                        <span style="    font-weight: bold; font-size: 17px;">+</span> 10800$
-
-                    </div>
-                </li>
-                <li class="collection-item minus">
-                    <div>
-                        <span style="    font-weight: bold; font-size: 17px;">-</span> 10800$
-
-                    </div>
-                </li>
-            </ul>
             <center>
-                <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
-                    more</a>
-            </center>
-        </div>
-        <div class="col s6">
-            <ul class="collection with-header z-depth-1" style="padding: 20px;     background: white;   border-radius: 16px;    border: 2px solid gainsboro;">
-                <li class="collection-header" style="text-align: center"><h5>Waste</h5></li>
-                <li class="plus collection-item ">
-                    <div>
-
-                        <span> User: {{ current_user.email }}</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-
-
-                    </div>
-                </li>
-                <li class="collection-item plus">
-                    <div>
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-                    </div>
-                </li>
-                <li class="collection-item minus">
-                    <div>
-                        <span> User: Petr Petrov</span>
-                        <span style="color: gray;"> |</span>
-                        <span>Date: 21.10.2015</span>
-                    </div>
-                    <div>
-                        kdklksjfskldf
-                        fsdfs;ldkf
-                        adasddddddddddddddddddddddddddddd ddddddddddddddddasdasdadsasd
-                    </div>
-                </li>
-            </ul>
-            <center>
-                <a class="waves-effect waves-light light-blue btn"><i class="material-icons left">loop</i>Load
-                    more</a>
+                <a class="waves-effect waves-light light-blue btn">
+                    <i class="material-icons left">loop</i>
+                    Load more
+                </a>
             </center>
         </div>
     </div>

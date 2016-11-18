@@ -12,6 +12,7 @@
           media="screen,projection"/>
     <link href="{{ url_for('static', filename='css/style.css') }}" type="text/css" rel="stylesheet"
           media="screen,projection"/>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
 
     <style>
@@ -65,22 +66,50 @@
 <body>
 <nav>
     <div class="nav-wrapper" style="    margin: 0 16%;">
-        <a href="{{ url_for('main.index') }}"  style="color:black;">
+        <a href="{{ url_for('main.index') }}" style="color:black;">
             <img class="responsive-img" style="width: 50px; margin: 4px;"
                  src="{{ url_for('static', filename='icon.png') }}"/>
             <a href="{{ url_for('main.index') }}" class="brand-logo" style="color:black;">InnoDog</a></a>
-        <ul id="dropdown1" class="dropdown-content">
+
+        <ul id="user_menu" class="dropdown-content">
             <li><a href="{{ url_for('users.profile') }}">Profile</a></li>
             <li class="divider"></li>
             <li><a href="{{ url_for('users.logout') }}">log out</a></li>
         </ul>
+
+        <ul id="volunteer" class="dropdown-content">
+            <li><a href="#">Money</a></li>
+            <li class="divider"></li>
+        </ul>
+
+        <ul id="admin" class="dropdown-content">
+            <li><a href="#">Money</a></li>
+            <li class="divider"></li>
+        </ul>
+
         <ul id="nav-mobile" style="color:black;" class="right hide-on-med-and-down">
             <li><a href="{{ url_for('dogs.dogs_list') }}">Dogs</a></li>
-            <li><a href="#">Money</a></li>
+            {% if current_user.is_authenticated and current_user.is_volunteer %}
+                <li>
+                    <a class="dropdown-button" href="#!" data-activates="volunteer">
+                        Volunteer actions
+                        <i class="material-icons right">arrow_drop_down</i>
+                    </a>
+                </li>
+            {% endif %}
+                    {% if current_user.is_authenticated and current_user.is_admin %}
+                <li>
+                    <a class="dropdown-button" href="#!" data-activates="admin">
+                        Admin actions
+                        <i class="material-icons right">arrow_drop_down</i>
+                    </a>
+                </li>
+            {% endif %}
             <li>
                 {% if current_user.is_authenticated %}
-                    <a class="dropdown-button" href="#!" data-activates="dropdown1">{{ current_user.name }}<i
-                            class="material-icons right">arrow_drop_down</i></a>
+                    <a class="dropdown-button" href="#!" data-activates="user_menu">
+                        {{ current_user.name }}
+                        <i class="material-icons right">arrow_drop_down</i></a>
                 {% else %}
                     <a href="{{ authorization_url }}">log in</a>
                 {% endif %}
@@ -91,13 +120,22 @@
 </nav>
 
 <div class="container">
-    {{ flashed_messages() }}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
 </div>
 
 
 <!--  Scripts-->
-<script src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+
+
 <script src="{{ url_for('static', filename='js/materialize.js') }}"></script>
 <script src="{{ url_for('static', filename='js/init.js') }}"></script>
 
