@@ -7,13 +7,19 @@ __author__ = 'Xomak'
 
 class QueryHelper:
     @classmethod
-    def get_columns_list(cls, mapping: Table) -> List[str]:
+    def get_columns_list(cls, mapping: Table, excluded_keys=None) -> List[str]:
         """
         Returns list of columns's names from given SQLAlchemy Table object
+        :param excluded_keys: Keys, which will be excluded from the list
         :param mapping: SQLAlchemy table
         :return: List of names
         """
-        return [column.name for column in mapping.get_children()]
+        result = []
+        for column in mapping.get_children():
+            if excluded_keys is None or column.key not in excluded_keys:
+                result.append(column.name)
+
+        return result
 
     @classmethod
     def get_column_by_key(cls, mapping: Table, key: str) -> str:
@@ -29,7 +35,7 @@ class QueryHelper:
         return None
 
     @classmethod
-    def get_columns_string(cls, mapping: Table, temporary_name=None) -> str:
+    def get_columns_string(cls, mapping: Table, temporary_name=None,excluded_keys=None) -> str:
         """
         Returns string of columns, which can be used in SQL statement, like:
 
@@ -39,6 +45,7 @@ class QueryHelper:
         and request is actual name of the table
         this is done to satisfy requirements of SQLAlchemy's mapper (case of outer join)
 
+        :param excluded_keys: Keys, which will be excluded from the list
         :param mapping: SQLAlchemy table
         :param temporary_name: Temporary name for table in the statement
         :return: String
@@ -47,7 +54,7 @@ class QueryHelper:
         def get_column_description(column):
             return temporary_name+"."+column+" AS "+mapping.description+"_"+column
 
-        columns = cls.get_columns_list(mapping)
+        columns = cls.get_columns_list(mapping, excluded_keys=excluded_keys)
 
         if temporary_name:
             columns = [get_column_description(column) for column in columns]
