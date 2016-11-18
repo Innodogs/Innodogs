@@ -22,3 +22,10 @@ class InpaymentEventForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user_id.choices = [(u.id, u.name) for u in UsersRepository.get_all_users()]
+
+class FinantialEventsForm(FlaskForm):
+    datetime = DateField('When did it happen', description="When", validators=[DataRequired()],
+                             default=None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
