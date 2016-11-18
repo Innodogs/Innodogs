@@ -26,16 +26,6 @@ def edit_event(event_id: int):
         return "updated!"
 
 
-@events.route('/add', methods=['GET', 'POST'])
-@login_required
-@requires_roles('volunteer')
-def new_event():
-    if request.method == 'GET':
-        return "new form"
-    elif request.method == 'POST':
-        return "added!"
-
-
 @events.route('/financial/<int:event_id>/delete', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
@@ -65,6 +55,12 @@ def new_financial_event():
     elif request.method == 'POST':
         return "added!"
 
+@events.route('/financial', methods=['GET'])
+@login_required
+@requires_roles('volunteer')
+def inpayments_list():
+    inps = InpaymentRepository.get_all_inpayments()
+    return render_template('finance/list.html', inpayments=inps)
 
 @events.route('/<int:event_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -96,7 +92,6 @@ def event_type_add():
         EventTypeRepository.add_new_event_type(eventtype)
         return redirect(url_for('.event_type_list'))
     return render_template('eventtype/edit.html', form=form, title='Add')
-
 
 @events.route('/types/<int:et_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -137,7 +132,7 @@ def event_type_delete(et_id: int):
 
 @events.route('/inpayments/add', methods=['GET', 'POST'])
 @login_required
-@requires_roles('volunteer')
+#@requires_roles('volunteer')
 def add_inpayment():
     form = InpaymentEventForm()
     if form.validate_on_submit():
