@@ -10,6 +10,8 @@ from sqlalchemy import Table
 from sqlalchemy import Text
 from sqlalchemy.orm import mapper
 
+from app.events.finance.models import Expenditure
+
 __author__ = 'mputilov'
 
 metadata = MetaData()
@@ -41,30 +43,6 @@ EventMapping = Table('event', metadata,
                      )
 
 mapper(Event, EventMapping)
-
-
-class Expenditure:
-    """Standalone expenditure"""
-
-    def __init__(self):
-        super().__init__()
-        self.id = None
-        self.amount = None
-        self.datetime = None
-        self.comment = None
-
-    def __str__(self):
-        return "Expenditure # {} (amount={})".format(self.id, self.amount)
-
-
-ExpenditureEventMapping = Table('expenditure', metadata,
-                                Column('id', Integer, primary_key=True),
-                                Column('amount', Integer),
-                                Column('datetime', DateTime()),
-                                Column('comment', Text)
-                                )
-
-mapper(Expenditure, ExpenditureEventMapping)
 
 
 class FinancialEvent(Event):

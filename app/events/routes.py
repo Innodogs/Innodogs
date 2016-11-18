@@ -10,9 +10,9 @@ from app.users.utils import requires_roles
 from . import events
 from .finance.forms import InpaymentEventForm
 from .finance.models import Inpayment
-from .finance.repository import InpaymentRepository
-from .forms import EventTypeForm
-from .models import EventType
+from .finance.repository import InpaymentRepository, ExpenditureRepository
+from .forms import EventTypeForm, ExpenditureForm
+from .models import EventType, Expenditure
 from .repository import EventTypeRepository
 
 
@@ -46,14 +46,36 @@ def edit_financial_event(event_id: int):
         return "updated!"
 
 
-@events.route('/financial/add', methods=['GET', 'POST'])
+@events.route('/financial/expenditure/add', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
-def new_financial_event():
-    if request.method == 'GET':
-        return "new form"
-    elif request.method == 'POST':
-        return "added!"
+def new_expenditure():
+    form = ExpenditureForm()
+    if form.validate_on_submit():
+        expenditure = Expenditure()
+        form.populate_obj(expenditure)
+        ExpenditureRepository.add_new_expenditure(expenditure)
+        return redirect(url_for('.inpayments_list'))
+    else:
+        return render_template('finance/expenditure_form.html', action='.new_expenditure', form=form)
+
+
+@events.route('/financial/expenditure/<int:expenditure_id>/edit', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def edit_expenditure(expenditure_id: int):
+    try:
+        expenditure = ExpenditureRepository.get_expenditure_by_id(expenditure_id)
+    except NoResultFound:
+        abort(404)
+    form = ExpenditureForm(obj=expenditure)
+    if form.validate_on_submit():
+        form.populate_obj(expenditure)
+        ExpenditureRepository.update_expenditure(expenditure)
+        return redirect(url_for('.inpayments_list'))
+    else:
+        return render_template('finance/expenditure_form.html', action='.edit_expenditure', form=form, id=expenditure_id)
+
 
 @events.route('/financial', methods=['GET'])
 @login_required
@@ -61,6 +83,7 @@ def new_financial_event():
 def inpayments_list():
     inps = InpaymentRepository.get_all_inpayments()
     return render_template('finance/list.html', inpayments=inps)
+
 
 @events.route('/<int:event_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -92,6 +115,7 @@ def event_type_add():
         EventTypeRepository.add_new_event_type(eventtype)
         return redirect(url_for('.event_type_list'))
     return render_template('eventtype/edit.html', form=form, title='Add')
+
 
 @events.route('/types/<int:et_id>/edit', methods=['GET', 'POST'])
 @login_required

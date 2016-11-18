@@ -31,6 +31,20 @@ class InpaymentAndExpenditure:
         self.type = None
 
 
+class Expenditure:
+    """Standalone expenditure"""
+
+    def __init__(self):
+        super().__init__()
+        self.id = None
+        self.amount = None
+        self.datetime = None
+        self.comment = None
+
+    def __str__(self):
+        return "Expenditure # {} (amount={})".format(self.id, self.amount)
+
+
 InpaymentAndExpenditureMapping = Table('finance_event', metadata,
                                        Column('id', Integer, primary_key=True),
                                        Column('amount', Numeric()),
@@ -51,3 +65,12 @@ InpaymentMapping = Table('inpayment', metadata,
                          )
 
 mapper(Inpayment, InpaymentMapping)
+
+ExpenditureMapping = Table('expenditure', metadata,
+                           Column('id', Integer, primary_key=True),
+                           Column('amount', Integer),
+                           Column('datetime', DateTime()),
+                           Column('comment', Text)
+                           )
+
+mapper(Expenditure, ExpenditureMapping)

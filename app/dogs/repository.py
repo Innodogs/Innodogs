@@ -4,12 +4,9 @@ from sqlalchemy import text
 
 from app import db
 from app.dogs.proxy_models import DogWithSignificantEvents
-from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expenditure, FinancialEvent, \
-    EventTypeMapping, EventType
-from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
 from app.events.proxy_models import EventWithEventType
 from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
-from app.events.models import EventMapping, Event, ExpenditureEventMapping, Expenditure, FinancialEvent
+from app.events.models import EventMapping, Event, Expenditure, FinancialEvent
 from app.locations.models import LocationMapping, Location
 from app.utils.helpers import QueryHelper
 

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
+    {% if action == '.edit_expenditure' %}
+        <form action="{{ url_for(action, expenditure_id=id) }}" method="post">
+    {% else %}
+        <form action="{{ url_for(action) }}" method="post">
+    {% endif %}
+<div class="row">
+    {{ form.id }}
+    {{ form.hidden_tag() }}
+    <div class="col s4">
+        {{ render_field(form.amount) }}
+    </div>
+    <div class="col s4">
+        {{ render_field(form.datetime) }}
+    </div>
+</div>
+<div class="row">
+    {{ render_field(form.comment) }}
+</div>
+<input type="submit" value="Submit" class="btn"/>
+</div>
+</form>
+    <script>
+
+    </script>
+{% endblock %}
