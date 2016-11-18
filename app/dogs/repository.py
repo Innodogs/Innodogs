@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 from app import db
 from app.dogs.proxy_models import DogWithSignificantEvents
+from app.events.finance.models import ExpenditureMapping
 from app.events.proxy_models import EventWithEventType
 from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
 from app.events.models import EventMapping, Event, Expenditure, FinancialEvent
@@ -366,7 +367,7 @@ class DogsRepository:
         dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
         location_columns_string = QueryHelper.get_columns_string(LocationMapping, "locations")
         events_columns_string = QueryHelper.get_columns_string(EventMapping, "events")
-        expenditure_columns_string = QueryHelper.get_columns_string(ExpenditureEventMapping, "expenditures")
+        expenditure_columns_string = QueryHelper.get_columns_string(ExpenditureMapping, "expenditures")
 
         stmt = text("SELECT {dog_columns}, {location_columns}, {event_columns}, {expenditure_columns} "
                     "FROM {dogs_table} AS dogs "
@@ -381,7 +382,7 @@ class DogsRepository:
                             dogs_table=DogMapping.description,
                             locations_table=LocationMapping.description,
                             event_table=EventMapping.description,
-                            expenditure_table=ExpenditureEventMapping.description
+                            expenditure_table=ExpenditureMapping.description
                             ))
         dog_id = int(dog_id)
         result = db.session.query(Dog, Location, Event, Expenditure).from_statement(stmt).params(id=dog_id).all()

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
+    {% if action == '.edit_event' %}
+        <form action="{{ url_for(action, event_id=event_id) }}" method="post">
+    {% else %}
+        <form action="{{ url_for(action, dog_id=dog_id) }}" method="post">
+    {% endif %}
+<div class="row">
+    {{ form.id }}
+    {{ form.hidden_tag() }}
+    <div class="col s4">
+        {{ render_field(form.datetime) }}
+    </div>
+    <div class="col s4">
+        {{ render_field(form.event_type_id) }}
+    </div>
+</div>
+<div class="row">
+    {{ render_field(form.description) }}
+</div>
+<input type="submit" value="Submit" class="btn"/>
+</div>
+</form>
+    <script>
+
+    </script>
+{% endblock %}

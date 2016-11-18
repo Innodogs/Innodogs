@@ -6,24 +6,51 @@ from flask import request
 from flask_login import login_required
 from sqlalchemy.orm.exc import NoResultFound
 
+from app.dogs.repository import DogsRepository
 from app.users.utils import requires_roles
 from . import events
 from .finance.forms import InpaymentEventForm, ExpenditureForm
 from .finance.models import Inpayment
 from .finance.repository import InpaymentRepository, ExpenditureRepository
-from .forms import EventTypeForm
-from .models import EventType, Expenditure
-from .repository import EventTypeRepository
+from .forms import EventTypeForm, EventForm
+from .models import EventType, Expenditure, Event
+from .repository import EventTypeRepository, EventRepository
+
+
+@events.route('/add-for-dog/<int:dog_id>', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def add_for_dog(dog_id: int):
+    try:
+        dog = DogsRepository.get_dog_by_id(dog_id)
+    except NoResultFound:
+        abort(404)
+    form = EventForm()
+    if form.validate_on_submit():
+        event = Event()
+        event.dog_id = dog_id
+        form.populate_obj(event)
+        EventRepository.add_new_event(event)
+        return redirect(url_for('dogs.page_about_dog', dog_id=dog_id))
+    else:
+        return render_template('event/event_form.html', action='.add_for_dog', form=form, dog_id=dog_id)
 
 
 @events.route('/<int:event_id>/edit', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def edit_event(event_id: int):
-    if request.method == 'GET':
-        return "edit form" + str(event_id)
-    elif request.method == 'POST':
-        return "updated!"
+    try:
+        event = EventRepository.get_event_by_id(event_id)
+    except NoResultFound:
+        abort(404)
+    form = EventForm(obj=event)
+    if form.validate_on_submit():
+        form.populate_obj(event)
+        EventRepository.update_event(event)
+        return redirect(url_for('dogs.page_about_dog', dog_id=event.dog_id))
+    else:
+        return render_template('event/event_form.html', action='.edit_event', form=form, event_id=event_id)
 
 
 @events.route('/financial/<int:event_id>/delete', methods=['GET', 'POST'])

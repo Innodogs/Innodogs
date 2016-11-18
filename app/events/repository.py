@@ -4,7 +4,7 @@ from sqlalchemy import text
 
 from app import db
 from app.utils.helpers import QueryHelper
-from .models import EventType, EventTypeMapping, EventMapping
+from .models import EventType, EventTypeMapping, EventMapping, Event
 
 __author__ = 'Xomak'
 
@@ -84,3 +84,38 @@ class EventTypeRepository:
             id=type_id))
         result = db.engine.execute(query).fetchall()
         return len(result) == 0
+
+
+class EventRepository:
+
+    @classmethod
+    def get_event_by_id(cls, event_id: int):
+        """Get event by id"""
+
+        event_columns_string = QueryHelper.get_columns_string(EventMapping, "events")
+        stmt = text("SELECT {event_columns} FROM {events_table} AS events WHERE id = :id"
+                    .format(event_columns=event_columns_string,
+                            events_table=EventMapping.description))
+        result = db.session.query(Event).from_statement(stmt).params(id=event_id).one()
+        return result
+
+    @classmethod
+    def add_new_event(cls, event: Event):
+        """Add new event"""
+        columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(EventMapping, event,
+                                                                                      fields_to_exclude=['id'])
+        query = text('INSERT INTO {table_name} ({columns}) VALUES ({substitutions}) RETURNING *'.format(
+            table_name=EventMapping.description,
+            columns=columns,
+            substitutions=substitutions))
+        db.engine.execute(query.params(**params_dict))
+
+    @classmethod
+    def update_event(cls, event: Event):
+        """Updates existing event"""
+
+        update_clause, params_dict = QueryHelper.get_update_string_and_dict(EventMapping, event,
+                                                                            fields_to_exclude=['id'])
+        query = text("UPDATE %s SET %s WHERE id = :id" % (EventMapping.description, update_clause))
+        params_dict['id'] = event.id
+        db.engine.execute(query.params(**params_dict))

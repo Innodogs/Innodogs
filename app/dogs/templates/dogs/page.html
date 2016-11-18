@@ -86,7 +86,7 @@
             <center>
                 <h5>Events</h5>
                 {% if current_user.is_volunteer %}
-                    <a href="{{ url_for('events.new_financial_event') }}">new</a>
+                    <a href="{{ url_for('events.add_for_dog', dog_id=dog.id) }}">new</a>
                 {% endif %}
             </center>
             <table class="bordered">
@@ -134,7 +134,7 @@
             <center>
                 <h5>Events</h5>
                 {% if current_user.is_volunteer %}
-                    <a href="{{ url_for('events.new_event') }}">new</a>
+                    <a href="{{ url_for('events.add_for_dog', dog_id=dog.id) }}">new</a>
                 {% endif %}
             </center>
             <table class="bordered">
