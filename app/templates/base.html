@@ -12,7 +12,10 @@
           media="screen,projection"/>
     <link href="{{ url_for('static', filename='css/style.css') }}" type="text/css" rel="stylesheet"
           media="screen,projection"/>
+    <link href="{{ url_for('static', filename='css/autocomplete.css') }}" type="text/css" rel="stylesheet"
+          media="screen,projection"/>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery.materialize-autocomplete.js') }}"></script>
 
 
     <style>
@@ -97,7 +100,7 @@
                     </a>
                 </li>
             {% endif %}
-                    {% if current_user.is_authenticated and current_user.is_admin %}
+            {% if current_user.is_authenticated and current_user.is_admin %}
                 <li>
                     <a class="dropdown-button" href="#!" data-activates="admin">
                         Admin actions

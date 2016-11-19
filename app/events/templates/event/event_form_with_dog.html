@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+    <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
+    {% if action == '.edit_event' %}
+        <form action="{{ url_for(action, event_id=event_id) }}" method="post">
+    {% else %}
+        <form action="{{ url_for(action, expenditure_id=expenditure_id) }}" method="post">
+    {% endif %}
+<div class="row">
+    {{ form.id }}
+    {{ form.hidden_tag() }}
+    <div class="col s4">
+        {{ render_field(form.datetime) }}
+    </div>
+    <div class="col s4">
+        {{ render_field(form.event_type_id) }}
+    </div>
+</div>
+<div class="row">
+    <div class="input-field">
+        <div class="autocomplete">
+            <div class="ac-input" data-activates="dogsDropdown" data-beloworigin="true" autocomplete="off">
+                <input type="text" name="dog_name" id="dog_name" value="{{ dog_name }}"/>
+                <input type="hidden" name="dog_id" id="dog_id" value="{{ form.dog_id.data }}"/>
+            </div>
+            <ul id="dogsDropdown" class="dropdown-content ac-dropdown"></ul>
+        </div>
+        <label class="active" for="dog_name">Dog: </label>
+        <ul class="errors">
+            {% for error in form.dog_id.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+<div class="row">
+    {{ render_field(form.description) }}
+</div>
+<input type="submit" value="Submit" class="btn"/>
+</div>
+</form>
+    <script src="{{ url_for('static', filename='js/jquery.materialize-autocomplete.js') }}"></script>
+
+    <script>
+        $(function () {
+
+            var autocomplete = $('#dog_name').materialize_autocomplete({
+                limit: 20,
+                hidden: {
+                    enable: true,
+                    el: '#dog_id'
+                },
+                dropdown: {
+                    el: '#dogsDropdown'
+                },
+                getData: function (value, callback) {
+                    $.getJSON("{{ url_for("dogs.json_search_dogs") }}", {term: value},
+                            function (data) {
+                                callback(value, data);
+                            });
+
+                }
+            });
+        });
+    </script>
+{% endblock %}

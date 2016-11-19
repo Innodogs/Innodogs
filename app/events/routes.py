@@ -12,12 +12,53 @@ from . import events
 from .finance.forms import InpaymentEventForm, ExpenditureForm
 from .finance.models import Inpayment
 from .finance.repository import InpaymentRepository, ExpenditureRepository
-from .forms import EventTypeForm, EventForm
+from .forms import EventTypeForm, EventForm, EventWithDogForm
 from .models import EventType, Expenditure, Event
 from .repository import EventTypeRepository, EventRepository
 
 
-@events.route('/add-for-dog/<int:dog_id>', methods=['GET', 'POST'])
+@events.route('/events/<int:event_id>/edit-with-dog', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def edit_event_with_dog(event_id: int):
+    try:
+        event = EventRepository.get_event_by_id(event_id)
+    except NoResultFound:
+        abort(404)
+    if event.expenditure_id is None:
+        abort(404)
+    associated_dog = DogsRepository.get_dog_by_id(event.dog_id)
+    form = EventWithDogForm(obj=event)
+    if form.validate_on_submit():
+        form.populate_obj(event)
+        EventRepository.update_event(event)
+        return redirect(url_for('.edit_expenditure', expenditure_id=event.expenditure_id))
+    else:
+        return render_template('event/event_form_with_dog.html', action='.add_for_expenditure', form=form,
+                               expenditure_id=event.expenditure_id, dog_name=associated_dog.name)
+
+
+@events.route('/add-for/expenditure/<int:expenditure_id>', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def add_for_expenditure(expenditure_id: int):
+    try:
+        expenditure = ExpenditureRepository.get_expenditure_by_id(expenditure_id)
+    except NoResultFound:
+        abort(404)
+    form = EventWithDogForm()
+    if form.validate_on_submit():
+        event = Event()
+        event.expenditure_id = expenditure_id
+        form.populate_obj(event)
+        EventRepository.add_new_event(event)
+        return redirect(url_for('.edit_expenditure', expenditure_id=expenditure_id))
+    else:
+        return render_template('event/event_form_with_dog.html', action='.add_for_expenditure', form=form,
+                               expenditure_id=expenditure_id)
+
+
+@events.route('/add-for/dog/<int:dog_id>', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
 def add_for_dog(dog_id: int):

@@ -98,7 +98,7 @@ class EventRepository:
         event_type_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "event_types")
         dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
         stmt = text("SELECT {event_columns}, {event_type_columns}, {dog_columns} FROM {events_table} AS events "
-                    "JOIN {event_types_table} AS event_types ON event_types.id = events.id "
+                    "JOIN {event_types_table} AS event_types ON event_types.id = events.event_type_id "
                     "JOIN {dogs_table} AS dogs ON events.dog_id = dogs.id "
                     "WHERE events.expenditure_id = :expenditure_id"
                     .format(event_columns=event_columns_string,

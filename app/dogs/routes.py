@@ -93,7 +93,7 @@ def json_search_dogs():
         for dog in dogs_list:
             current_record = dict()
             current_record['id'] = dog.id
-            current_record['label'] = str("{} ({})").format(dog.name, dog.id)
+            current_record['text'] = str("{} ({})").format(dog.name, dog.id)
             result.append(current_record)
     return flask.jsonify(result)
 

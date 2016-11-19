@@ -44,7 +44,7 @@
         {% for event in related_events %}
             <tr>
                 <td>
-                    {{ event.event.datetime }}
+                    <a href="{{ url_for('.edit_event_with_dog', event_id=event.event.id) }}">{{ event.event.datetime }}</a>
                 </td>
                 <td>
                     {{ event.event_type.type_name }}
@@ -59,6 +59,7 @@
         {% endfor %}
     </table>
     </div>
+    <a href="{{ url_for('.add_for_expenditure', expenditure_id=id) }}" class="btn">Add new event</a>
 <input type="submit" value="Submit" class="btn"/>
 </div>
 </form>
