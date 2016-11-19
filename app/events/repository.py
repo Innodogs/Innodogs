@@ -134,7 +134,9 @@ class EventRepository:
             table_name=EventMapping.description,
             columns=columns,
             substitutions=substitutions))
-        db.engine.execute(query.params(**params_dict))
+        result = db.engine.execute(query.params(**params_dict))
+        event.id = next(iter(result))[0]
+        return event
 
     @classmethod
     def update_event(cls, event: Event):

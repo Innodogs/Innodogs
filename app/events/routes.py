@@ -34,8 +34,8 @@ def edit_event_with_dog(event_id: int):
         EventRepository.update_event(event)
         return redirect(url_for('.edit_expenditure', expenditure_id=event.expenditure_id))
     else:
-        return render_template('event/event_form_with_dog.html', action='.add_for_expenditure', form=form,
-                               expenditure_id=event.expenditure_id, dog_name=associated_dog.name)
+        return render_template('event/event_form_with_dog.html', action='.edit_event_with_dog', form=form,
+                               expenditure_id=event.expenditure_id, dog_name=associated_dog.name, event_id=event_id)
 
 
 @events.route('/add-for/expenditure/<int:expenditure_id>', methods=['GET', 'POST'])
@@ -123,7 +123,7 @@ def new_expenditure():
         expenditure = Expenditure()
         form.populate_obj(expenditure)
         ExpenditureRepository.add_new_expenditure(expenditure)
-        return redirect(url_for('.inpayments_list'))
+        return redirect(url_for('.edit_expenditure', expenditure_id=expenditure.id))
     else:
         return render_template('finance/expenditure_form.html', action='.new_expenditure', form=form)
 

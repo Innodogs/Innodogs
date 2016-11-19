@@ -104,7 +104,9 @@ class ExpenditureRepository:
             expenditures_table=ExpenditureMapping.description,
             columns=columns,
             substitutions=substitutions))
-        db.engine.execute(query.params(**params_dict))
+        result = db.engine.execute(query.params(**params_dict))
+        expenditure.id = next(iter(result))[0]
+        return expenditure
 
     @classmethod
     def update_expenditure(cls, expenditure: Expenditure):

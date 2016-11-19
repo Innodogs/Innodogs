@@ -24,42 +24,44 @@
 <div class="row">
     {{ render_field(form.comment) }}
 </div>
+{% if id %}
     <div class="row">
         <h4>Related events</h4>
-    <table>
-        <tr>
-            <th>
-                Date and time
-            </th>
-            <th>
-                Type
-            </th>
-            <th>
-                Dog
-            </th>
-            <th>
-                Description
-            </th>
-        </tr>
-        {% for event in related_events %}
+        <table>
             <tr>
-                <td>
-                    <a href="{{ url_for('.edit_event_with_dog', event_id=event.event.id) }}">{{ event.event.datetime }}</a>
-                </td>
-                <td>
-                    {{ event.event_type.type_name }}
-                </td>
-                <td>
-                    {{ event.dog.name }}
-                </td>
-                <td>
-                    {{ event.event.description }}
-                </td>
+                <th>
+                    Date and time
+                </th>
+                <th>
+                    Type
+                </th>
+                <th>
+                    Dog
+                </th>
+                <th>
+                    Description
+                </th>
             </tr>
-        {% endfor %}
-    </table>
+            {% for event in related_events %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('.edit_event_with_dog', event_id=event.event.id) }}">{{ event.event.datetime }}</a>
+                    </td>
+                    <td>
+                        {{ event.event_type.type_name }}
+                    </td>
+                    <td>
+                        {{ event.dog.name }}
+                    </td>
+                    <td>
+                        {{ event.event.description }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     </div>
     <a href="{{ url_for('.add_for_expenditure', expenditure_id=id) }}" class="btn">Add new event</a>
+{% endif %}
 <input type="submit" value="Submit" class="btn"/>
 </div>
 </form>
