@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 
+import flask
 from flask import abort
 from flask import current_app
 from flask import render_template, url_for, redirect
@@ -81,6 +82,20 @@ def page_about_dog(dog_id: int):
     if dog is None:
         abort(404)
     return render_template('dogs/page.html', dog=dog)
+
+
+@dogs.route('/json/dogs-by-keyword')
+def json_search_dogs():
+    term = request.args.get('term')
+    result = []
+    if term is not None and len(term) > 2:
+        dogs_list = DogsRepository.get_dogs_by_name_part(term)
+        for dog in dogs_list:
+            current_record = dict()
+            current_record['id'] = dog.id
+            current_record['label'] = str("{} ({})").format(dog.name, dog.id)
+            result.append(current_record)
+    return flask.jsonify(result)
 
 
 @dogs.route('/add', methods=['GET', 'POST'])

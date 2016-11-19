@@ -95,13 +95,15 @@ def edit_expenditure(expenditure_id: int):
         expenditure = ExpenditureRepository.get_expenditure_by_id(expenditure_id)
     except NoResultFound:
         abort(404)
+
+    related_events = EventRepository.get_events_by_expenditure_id(expenditure_id)
     form = ExpenditureForm(obj=expenditure)
     if form.validate_on_submit():
         form.populate_obj(expenditure)
         ExpenditureRepository.update_expenditure(expenditure)
         return redirect(url_for('.inpayments_list'))
     else:
-        return render_template('finance/expenditure_form.html', action='.edit_expenditure', form=form, id=expenditure_id)
+        return render_template('finance/expenditure_form.html', action='.edit_expenditure', form=form, id=expenditure_id, related_events=related_events)
 
 
 @events.route('/financial', methods=['GET'])

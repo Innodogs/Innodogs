@@ -20,6 +20,16 @@ class DogsRepository:
     """
 
     @classmethod
+    def get_dogs_by_name_part(cls, name_part: str):
+        dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
+        stmt = text("SELECT {dog_columns} FROM {dogs_table} AS dogs WHERE name ILIKE :name_part".
+            format(
+            dog_columns=dog_columns_string,
+            dogs_table=DogMapping.description
+        ))
+        return db.session.query(Dog).from_statement(stmt.params(name_part='%{}%'.format(name_part))).all()
+
+    @classmethod
     def get_all_dogs(cls) -> List[Dog]:
         """Gets all dogs, joined with location and main_picture"""
 
@@ -151,7 +161,7 @@ class DogsRepository:
 
     @classmethod
     def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
-                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None)\
+                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None) \
             -> List[DogWithSignificantEvents]:
         """
         Get DogWithSignificantEvents list, satisfying given criteria

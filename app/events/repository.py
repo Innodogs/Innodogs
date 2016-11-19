@@ -3,6 +3,8 @@ from typing import List
 from sqlalchemy import text
 
 from app import db
+from app.dogs.models import DogMapping, Dog
+from app.events.proxy_models import EventWithEventTypeAndDog
 from app.utils.helpers import QueryHelper
 from .models import EventType, EventTypeMapping, EventMapping, Event
 
@@ -87,6 +89,30 @@ class EventTypeRepository:
 
 
 class EventRepository:
+
+    @classmethod
+    def get_events_by_expenditure_id(cls, expenditure_id: int):
+        """Gets all events by expenditure id, joined with dog and type"""
+
+        event_columns_string = QueryHelper.get_columns_string(EventMapping, "events")
+        event_type_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "event_types")
+        dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
+        stmt = text("SELECT {event_columns}, {event_type_columns}, {dog_columns} FROM {events_table} AS events "
+                    "JOIN {event_types_table} AS event_types ON event_types.id = events.id "
+                    "JOIN {dogs_table} AS dogs ON events.dog_id = dogs.id "
+                    "WHERE events.expenditure_id = :expenditure_id"
+                    .format(event_columns=event_columns_string,
+                            event_type_columns=event_type_columns_string,
+                            dog_columns=dog_columns_string,
+                            event_types_table=EventTypeMapping.description,
+                            events_table=EventMapping.description,
+                            dogs_table=DogMapping.description
+                            ))
+        result = db.session.query(Event, EventType, Dog).from_statement(stmt.params(expenditure_id=expenditure_id)).all()
+        result_list = []
+        for result_tuple in result:
+            result_list.append(EventWithEventTypeAndDog(result_tuple[0], result_tuple[1], result_tuple[2]))
+        return result_list
 
     @classmethod
     def get_event_by_id(cls, event_id: int):
