@@ -65,7 +65,7 @@ class LocationsRepository:
     @classmethod
     def update_location(cls, location):
         """Update existing location"""
-        update_clause, params_dict = QueryHelper.get_update_string_and_dict(LocationMapping, location, fields_to_execute=['id'])
+        update_clause, params_dict = QueryHelper.get_update_string_and_dict(LocationMapping, location, fields_to_exclude=['id'])
         query = text('UPDATE {table_name} SET {update} WHERE id=:id'.format(
 	              table_name=LocationMapping.description, 
 		      update=update_clause))

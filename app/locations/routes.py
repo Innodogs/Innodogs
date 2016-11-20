@@ -33,15 +33,15 @@ def locations_edit(loc_id: int):
     except NoResultFound:
         abort(404)
         return
-    form = LocationsForm()
-    #form.parent_id.choices = get_locations_id()
+    form = LocationsForm(current_id=loc_id)
+    form.parent_id.choices = get_locations_id()
     if form.validate_on_submit():
         loc.name = form.name.data
         loc.description = form.description.data
         loc.parent_id = form.parent_id.data
         LocationsRepository.update_location(loc)
         return redirect(url_for('.locations_list'))
-    form = LocationsForm(obj=loc)
+    form = LocationsForm(obj=loc, current_id=loc_id)
     form.parent_id.choices = get_locations_id()
     return render_template('locations/edit.html', form=form, title='Edit')
 
