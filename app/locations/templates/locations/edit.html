@@ -11,8 +11,10 @@
         {{ form.csrf_token }}
         {{ render_field(form.name) }}
 	{{ render_field(form.description) }}
+        <div class="col s4">
 	{{ render_field(form.parent_id) }}
-        <input type="submit" value="Done" class="btn">
+        </div>
+        <input type="submit" value="Done" class="btn center">
       </div>
     </form>
 

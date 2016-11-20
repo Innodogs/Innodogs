@@ -16,6 +16,7 @@ def locations_list():
 @locations.route('/add', methods=['GET','POST'])
 def locations_add():
     form = LocationsForm()
+    form.parent_id.choices = get_locations_id()
     if form.validate_on_submit():
         newlocation = Location()
         newlocation.name = form.name.data
@@ -33,6 +34,7 @@ def locations_edit(loc_id: int):
         abort(404)
         return
     form = LocationsForm()
+    #form.parent_id.choices = get_locations_id()
     if form.validate_on_submit():
         loc.name = form.name.data
         loc.description = form.description.data
@@ -40,6 +42,7 @@ def locations_edit(loc_id: int):
         LocationsRepository.update_location(loc)
         return redirect(url_for('.locations_list'))
     form = LocationsForm(obj=loc)
+    form.parent_id.choices = get_locations_id()
     return render_template('locations/edit.html', form=form, title='Edit')
 
 @locations.route('/<int:loc_id>/delete', methods=['GET','POST'])
@@ -53,3 +56,7 @@ def locations_delete(loc_id: int):
         LocationsRepository.delete_location(loc_id)
         return redirect(url_for('.locations_list'))
     return render_template('locations/delete.html', name=loc.name, free_location=True)
+
+def get_locations_id():
+    location = LocationsRepository.get_all_locations()
+    return [(loc.id, str(loc.id)) for loc in location]
