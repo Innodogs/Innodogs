@@ -8,7 +8,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from app.users.utils import requires_roles
 from . import events
-from .finance.forms import InpaymentEventForm
+from .finance.forms import InpaymentEventForm, FinantialEventsForm
 from .finance.models import Inpayment
 from .finance.repository import InpaymentRepository
 from .forms import EventTypeForm
@@ -55,12 +55,33 @@ def new_financial_event():
     elif request.method == 'POST':
         return "added!"
 
-@events.route('/financial', methods=['GET'])
+
+@events.route('<int:dog_id>/add', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
-def inpayments_list():
+def new_event():
+    form = InpaymentEventForm()
+    if form.validate_on_submit():
+        inpayment = Inpayment()
+        form.populate_obj(inpayment)
+        InpaymentRepository.add_new_inpayment(inpayment)
+        flash('Inpayment added!', 'info')
+        return redirect(url_for('.add_inpayment'))
+    return render_template('finance/inpayment_form.html', form=form, title='Add inpayment', action='.add_inpayment')
+
+
+@events.route('/financial', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
+def inpayments_list_date():
+    form = FinantialEventsForm()
+    startdate = form.startdatetime.data
+    enddate = form.enddatetime.data
     inps = InpaymentRepository.get_all_inpayments()
-    return render_template('finance/list.html', inpayments=inps)
+    if (startdate is not None and enddate is not None):
+        inps = InpaymentRepository.get_all_inpayments_by_date(startdate, enddate)
+    return render_template('finance/list.html', inpayments=inps, form=form, action='.inpayments_list_date')
+
 
 @events.route('/<int:event_id>/delete', methods=['GET', 'POST'])
 @login_required
@@ -92,6 +113,7 @@ def event_type_add():
         EventTypeRepository.add_new_event_type(eventtype)
         return redirect(url_for('.event_type_list'))
     return render_template('eventtype/edit.html', form=form, title='Add')
+
 
 @events.route('/types/<int:et_id>/edit', methods=['GET', 'POST'])
 @login_required
@@ -132,7 +154,7 @@ def event_type_delete(et_id: int):
 
 @events.route('/inpayments/add', methods=['GET', 'POST'])
 @login_required
-#@requires_roles('volunteer')
+@requires_roles('volunteer')
 def add_inpayment():
     form = InpaymentEventForm()
     if form.validate_on_submit():
@@ -156,5 +178,5 @@ def edit_inpayment(id: int):
         InpaymentRepository.update_inpayment(inpayment)
         flash('Inpayment updated!', 'info')
         return redirect(url_for('.edit_inpayment', id=inpayment.id))
-    return render_template('finance/inpayment_form.html', form=form, title='Edit inpayment', action='.edit_inpayment', id=inpayment.id)
-
+    return render_template('finance/inpayment_form.html', form=form, title='Edit inpayment', action='.edit_inpayment',
+                           id=inpayment.id)

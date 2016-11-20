@@ -62,7 +62,7 @@ class InpaymentRepository:
 
     # add 17.11.2016
     @classmethod
-    def get_all_inpayments_by_date(cls,date) -> List[Inpayment]:
+    def get_all_inpayments_by_date(cls,startdate,enddate) -> List[Inpayment]:
         inpayment_columns = QueryHelper.get_columns_string(InpaymentAndExpenditureMapping, "inpayments",
                                                            excluded_keys=['type'])
         user_columns = QueryHelper.get_columns_string(UserMapping, "users")
@@ -74,14 +74,15 @@ class InpaymentRepository:
             "LEFT OUTER JOIN \"{user_table}\" AS users ON inpayments.user_id = users.id) "
             "UNION ALL "
             "(SELECT {expenditure_columns},NULL,'expenditure',NULL,NULL FROM {expenditure_table} AS expenditures )) AS result"
-            " where result.finance_event_datetime >= '{date} 00:00:00' "
-            " AND result.finance_event_datetime <= '{date} 23:59:59' "
+            " where result.finance_event_datetime >= '{startdate} 00:00:00' "
+            " AND result.finance_event_datetime <= '{enddate} 23:59:59' "
             " ORDER BY result.finance_event_datetime DESC"
             .format(inpayment_columns=inpayment_columns,
                     user_columns=user_columns,
                     inpayment_table=InpaymentMapping.description,
                     user_table=UserMapping.description,
-                    date=date,
+                    startdate=startdate,
+                    enddate=enddate,
                     expenditure_columns=expenditure_columns,
                     expenditure_table=ExpenditureEventMapping.description
                     ))
