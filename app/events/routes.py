@@ -9,7 +9,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from app.dogs.repository import DogsRepository
 from app.users.utils import requires_roles
 from . import events
-from .finance.forms import InpaymentEventForm, ExpenditureForm
+from .finance.forms import InpaymentEventForm, FinantialEventsForm, ExpenditureForm
 from .finance.models import Inpayment
 from .finance.repository import InpaymentRepository, ExpenditureRepository
 from .forms import EventTypeForm, EventForm, EventWithDogForm
@@ -147,12 +147,18 @@ def edit_expenditure(expenditure_id: int):
         return render_template('finance/expenditure_form.html', action='.edit_expenditure', form=form, id=expenditure_id, related_events=related_events)
 
 
-@events.route('/financial', methods=['GET'])
+@events.route('/financial', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
-def inpayments_list():
+def inpayments_list_date():
+    form = FinantialEventsForm()
+    startdate = form.startdatetime.data
+    enddate = form.enddatetime.data
     inps = InpaymentRepository.get_all_inpayments()
-    return render_template('finance/list.html', inpayments=inps)
+    if (startdate is not None and enddate is not None):
+        inps = InpaymentRepository.get_all_inpayments_by_date(startdate, enddate)
+    return render_template('finance/list.html', inpayments=inps, form=form, action='.inpayments_list_date')
+
 
 
 @events.route('/<int:event_id>/delete', methods=['GET', 'POST'])
@@ -226,7 +232,7 @@ def event_type_delete(et_id: int):
 
 @events.route('/inpayments/add', methods=['GET', 'POST'])
 @login_required
-#@requires_roles('volunteer')
+@requires_roles('volunteer')
 def add_inpayment():
     form = InpaymentEventForm()
     if form.validate_on_submit():
@@ -250,5 +256,5 @@ def edit_inpayment(id: int):
         InpaymentRepository.update_inpayment(inpayment)
         flash('Inpayment updated!', 'info')
         return redirect(url_for('.edit_inpayment', id=inpayment.id))
-    return render_template('finance/inpayment_form.html', form=form, title='Edit inpayment', action='.edit_inpayment', id=inpayment.id)
-
+    return render_template('finance/inpayment_form.html', form=form, title='Edit inpayment', action='.edit_inpayment',
+                           id=inpayment.id)

@@ -3,6 +3,7 @@ from wtforms import TextAreaField, HiddenField
 from wtforms.validators import DataRequired, Length, ValidationError
 
 from app.locations.repository import LocationsRepository
+from app.events.repository import EventTypeRepository
 from wtforms import StringField, BooleanField, SelectField, IntegerField
 from wtforms.validators import Optional
 
@@ -16,8 +17,14 @@ class DogsFilterForm(FlaskForm):
 
     name = StringField("Dog's name")
     sex = SelectField("Sex", [Optional()], choices=(("", "Choose sex of dog"), ("male", "Male"), ("female", "Female")))
+    location_id = SelectField('Location', choices=[], coerce=int)
     is_adopted = BooleanField("Is adopted")
     page = IntegerField("Page")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        all_locations = LocationsRepository.get_all_locations()
+        self.location_id.choices = [(location.id, location.name) for location in all_locations]
 
 
 def main_picture_must_be_not_deleted(dog_form, main_picture_field):
@@ -62,3 +69,17 @@ class DogForm(FlaskForm):
     @property
     def get_main_picture_id(self):
         return int(self.main_picture_id.data)
+
+class EventsForDogForm(FlaskForm):
+    id = HiddenField('Id')
+    description = TextAreaField('Description', validators=[
+        DataRequired(),
+        Length(min=4)
+    ], description='What is happend')
+    event_type_id = SelectField('Event type', choices=[], coerce=int)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        all_event_types = EventTypeRepository.get_all_event_types()
+        self.event_type_id.choices = [(event_type.id, event_type.type_name) for event_type in all_event_types]
+

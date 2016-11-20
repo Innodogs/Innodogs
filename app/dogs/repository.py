@@ -160,8 +160,8 @@ class DogsRepository:
         return dogs
 
     @classmethod
-    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
-                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None) \
+    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,location_id: int = None,
+                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None)\
             -> List[DogWithSignificantEvents]:
         """
         Get DogWithSignificantEvents list, satisfying given criteria
@@ -174,12 +174,12 @@ class DogsRepository:
         dog's history
         :return: List of DogWithSignificantEvents, satisfying given criteria
         """
-        stmt, bind_values = cls._get_query_part_for_criteria(name, is_adopted, sex, event_types_ids)
+        stmt, bind_values = cls._get_query_part_for_criteria(name, is_adopted, sex, location_id, event_types_ids)
         return cls.get_dogs_with_significant_events(stmt, bind_values, from_row=from_row, rows_count=rows_count)
 
     @classmethod
     def _get_query_part_for_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
-                                     event_types_ids: List[int] = None, fields_to_select: List[str] = None) -> Tuple[
+                                     location_id: int =None, event_types_ids: List[int] = None, fields_to_select: List[str] = None) -> Tuple[
         str, Dict]:
         """
         Get query, which finds all dogs' ids, satisfying given criteria
@@ -225,6 +225,12 @@ class DogsRepository:
                 where_clause += " AND"
             where_clause += " dogs.is_adopted = :is_adopted"
             bind_values['is_adopted'] = is_adopted
+
+        if location_id is not None:
+            if len(where_clause) > 0:
+                where_clause += " AND"
+            where_clause += " dogs.location_id = :location_id"
+            bind_values['location_id'] = location_id
 
         stmt = "SELECT {fields_to_select} FROM {dogs_table} AS dogs"
         if len(event_types_ids) > 0:

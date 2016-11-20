@@ -15,7 +15,7 @@ class InpaymentEventForm(FlaskForm):
     amount = DecimalField('Amount of money', description='How much money was donated',
                           validators=[DataRequired(), NumberRange()], places=0)
     datetime = DateField('When did it happen', description="When", validators=[DataRequired()],
-                             default=datetime.today)
+                         default=datetime.today)
     user_id = SelectField('Who did it', choices=[], description="Who is a donor", coerce=int)
     comment = TextAreaField('Commentary', description="Example: thank you, our dear donor!")
 
@@ -28,3 +28,12 @@ class ExpenditureForm(FlaskForm):
     amount = DecimalField('Amount', [NumberRange(min=0.1)])
     datetime = DateTimeField('Operation date and time', default=lambda: datetime.now())
     comment = TextAreaField('comment', [InputRequired()])
+
+class FinantialEventsForm(FlaskForm):
+    startdatetime = DateField('Start date', description="When", validators=[DataRequired()],
+                              default=None)
+    enddatetime = DateField('End date', description="When", validators=[DataRequired()],
+                            default=None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
