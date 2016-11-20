@@ -10,9 +10,10 @@
       <i class="material-icon circle red lighten-1">{{ location.id }}</i>
       <span class="title">{{ location.name }}</span>
       <p>Description: {{ location.description}}</p>
+      <p><i>Parent ID: {{ location.parent_id }}</i></p>
       <div class="secondary-content">
         <a href="{{ url_for(".locations_edit", loc_id=location.id) }}"<i>Edit</i></a><br>
-        <a href="#"><i>Delete</i></a>
+        <a href="{{ url_for (".locations_delete", loc_id=location.id) }}"><i>Delete</i></a>
       </div>
     </li>
   {%- endfor %}

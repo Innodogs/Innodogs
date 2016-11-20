@@ -87,5 +87,5 @@ class LocationsRepository:
         query = text("SELECT {loc_column} FROM {table_name} WHERE id = :id".format(
                       table_name=LocationMapping.description,
                       loc_column=loc_column_string))
-        result = db.session.query(Location).from_statement(query).params(id=location_id)
+        result = db.session.query(Location).from_statement(query).params(id=location_id).one()
         return result

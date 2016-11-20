@@ -1,5 +1,5 @@
 from flask import url_for, redirect, abort
-from flask import render_template
+from flask import render_template, request
 
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -39,5 +39,17 @@ def locations_edit(loc_id: int):
         loc.parent_id = form.parent_id.data
         LocationsRepository.update_location(loc)
         return redirect(url_for('.locations_list'))
-    form = LocationsForm()
+    form = LocationsForm(obj=loc)
     return render_template('locations/edit.html', form=form, title='Edit')
+
+@locations.route('/<int:loc_id>/delete', methods=['GET','POST'])
+def locations_delete(loc_id: int):
+    try:
+        loc = LocationsRepository.get_location_by_id(loc_id)
+    except NoResultFound:
+        abort(404)
+        return
+    if request.method == 'POST':
+        LocationsRepository.delete_location(loc_id)
+        return redirect(url_for('.locations_list'))
+    return render_template('locations/delete.html', name=loc.name, free_location=True)
