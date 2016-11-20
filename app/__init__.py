@@ -46,6 +46,9 @@ def create_app(config_name):
     from .events import events as events_blueprint
     app.register_blueprint(events_blueprint, url_prefix='/events')
 
+    from .locations import locations as locations_blueprint
+    app.register_blueprint(locations_blueprint, url_prefix='/locations')
+
     from .after_init import after_init
     after_init(app)
 

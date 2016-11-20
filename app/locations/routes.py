@@ -1,0 +1,43 @@
+from flask import url_for, redirect, abort
+from flask import render_template
+
+from sqlalchemy.orm.exc import NoResultFound
+
+from . import locations
+from .models import Location
+from .repository import LocationsRepository
+from .forms import LocationsForm
+
+@locations.route('/', methods=['GET'])
+def locations_list():
+    loc = LocationsRepository.get_all_locations()
+    return render_template('locations/list.html', location_list = loc)
+
+@locations.route('/add', methods=['GET','POST'])
+def locations_add():
+    form = LocationsForm()
+    if form.validate_on_submit():
+        newlocation = Location()
+        newlocation.name = form.name.data
+        newlocation.description = form.description.data
+        newlocation.parent_id = form.parent_id.data
+        LocationsRepository.add_new_location(newlocation)
+        return redirect(url_for('.locations_list'))
+    return render_template('locations/edit.html', form=form, title='Add')
+
+@locations.route('/<int:loc_id>/edit', methods=['GET','POST'])
+def locations_edit(loc_id: int):
+    try:
+        loc = LocationsRepository.get_location_by_id(loc_id)
+    except NoResultFound:
+        abort(404)
+        return
+    form = LocationsForm()
+    if form.validate_on_submit():
+        loc.name = form.name.data
+        loc.description = form.description.data
+        loc.parent_id = form.parent_id.data
+        LocationsRepository.update_location(loc)
+        return redirect(url_for('.locations_list'))
+    form = LocationsForm()
+    return render_template('locations/edit.html', form=form, title='Edit')
