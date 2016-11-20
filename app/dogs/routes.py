@@ -7,8 +7,9 @@ from flask import render_template, url_for, redirect
 from flask import request
 from wtforms import BooleanField
 
-from app.dogs.forms import DogForm
+from app.dogs.forms import DogForm, EventsForDogForm
 from app.dogs.forms import DogsFilterForm
+from app.events.models import Event
 from app.events.repository import EventTypeRepository
 from app.utils.pages_helper import Pages
 from . import dogs
@@ -41,7 +42,8 @@ def dogs_list():
 
             if (key == 'sex' or key == 'name') and value is not None and len(value) > 0 and value != 'None':
                 filter_args[key] = value
-
+            if (key == 'location_id') and value is not None and value >= 0:
+                filter_args[key] = value
             if key == 'is_adopted' and value:
                 filter_args[key] = True
 
