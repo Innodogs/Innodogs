@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %} Delete location {% endblock %}
+
+{% block content %} 
+
+    <h4 class="header center red-text text-lighten-2">Delete location</h4>
+    {% if free_location %}
+    <form action="" method="post">
+      <div>
+        <p>Do you want to delete '{{ name }}'</p>
+        <input type="submit" value="Delete" class="btn center">
+      </div>
+    </form>
+    {% else %}
+    <form action="" method="post">
+      <div>
+        <p>Location '{{ name }}' is used and cannot be deleted</p>
+        <input type="submit" value="Back" class="btn center">
+      </div>
+    </form>    
+    {% endif %}
+
+{% endblock %}
