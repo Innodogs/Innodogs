@@ -3,17 +3,21 @@
 
 {% block title %} {{ title }} event type {% endblock %}
 
-{% block content %} 
+{% block content %}
+    <div class="section"></div>
+    <div class="z-depth-1" style="background-color: white; padding: 25px;">
+        <h4 class="header center red-text text-lighten-2">{{ title }} event type</h4>
+        <form action="" method="post">
+            <div>
 
-    <h4 class="header center red-text text-lighten-2">{{ title }} event type</h4>
-    <form action="" method="post">
-      <div>
-        {{ form.csrf_token }}
-        {{ render_field(form.type_name) }}
-        <div>{{ form.is_significant }} {{ form.is_significant.label }} </div>
+                {{ form.csrf_token }}
+                <div style="margin: 0 0 10px 20px">
+                    {{ form.is_significant }} {{ form.is_significant.label }} </div>
+                {{ render_field(form.type_name) }}
 
-        <input type="submit" value="Done" class="btn">
-      </div>
-    </form>
 
+                <input type="submit" value="Done" class="btn">
+            </div>
+        </form>
+    </div>
 {% endblock %}
