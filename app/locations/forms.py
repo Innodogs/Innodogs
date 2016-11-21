@@ -20,5 +20,4 @@ class LocationsForm(FlaskForm):
     def validate_parent_id(form, field):
         if field.data and form.current_id:
             if LocationsRepository.is_cyclic_dependency(form.current_id, field.data):
-                #print(str(form.current_id) + " " + str(field.data))
                 raise ValidationError('Incorrect parent location')

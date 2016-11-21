@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 from app import db
 from app.utils.helpers import QueryHelper
+from app.dogs.models import DogMapping
 from .models import LocationMapping, Location
 
 
@@ -89,3 +90,12 @@ class LocationsRepository:
                       loc_column=loc_column_string))
         result = db.session.query(Location).from_statement(query).params(id=location_id).one()
         return result
+
+    @classmethod
+    def is_location_free(cls, location_id):
+        """Check if location is not used"""
+        query = text("SELECT d.id FROM {dog_table} AS d WHERE location_id = {id}".format(
+                      dog_table=DogMapping.description,
+                      id=location_id))
+        result = db.engine.execute(query).fetchall()
+        return len(result) == 0
