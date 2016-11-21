@@ -160,11 +160,12 @@ class DogsRepository:
         return dogs
 
     @classmethod
-    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,location_id: int = None,
-                                                     event_types_ids: List[int] = None, from_row=None, rows_count=None)\
-            -> List[DogWithSignificantEvents]:
+    def get_dogs_with_significant_events_by_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
+                                                     location_id: int = None, event_types_ids: List[int] = None,
+                                                     from_row=None, rows_count=None) -> List[DogWithSignificantEvents]:
         """
         Get DogWithSignificantEvents list, satisfying given criteria
+        :param location_id: Location id (all nested locations will be included)
         :param rows_count: Maximum count of dogs
         :param from_row: Start row
         :param name: Dog's name (LIKE query is used)
@@ -179,13 +180,14 @@ class DogsRepository:
 
     @classmethod
     def _get_query_part_for_criteria(cls, name: str = None, is_adopted: bool = None, sex: str = None,
-                                     location_id: int =None, event_types_ids: List[int] = None, fields_to_select: List[str] = None) -> Tuple[
-        str, Dict]:
+                                     location_id: int = None, event_types_ids: List[int] = None,
+                                     fields_to_select: List[str] = None) -> Tuple[str, Dict]:
         """
         Get query, which finds all dogs' ids, satisfying given criteria
         :param name: Dog's name (LIKE query is used)
         :param is_adopted: Is dog adopted
         :param sex: Dog's sex
+        :param location_id: Location id (all nested locations will be included)
         :param event_types_ids: List of event types' ids, such all of them should be presented in
         dog's history
         :return: Query and Param's dict
@@ -229,7 +231,13 @@ class DogsRepository:
         if location_id is not None:
             if len(where_clause) > 0:
                 where_clause += " AND"
-            where_clause += " dogs.location_id = :location_id"
+            locations_subquery = "WITH RECURSIVE r AS " \
+                                 "(SELECT id, parent_id FROM {locations_table} AS locations WHERE id = :location_id  " \
+                                 "UNION " \
+                                 "SELECT locations.id, locations.parent_id FROM {locations_table} AS locations " \
+                                 "JOIN r ON locations.parent_id = r.id) " \
+                                 "SELECT id FROM r".format(locations_table=LocationMapping.description)
+            where_clause += " dogs.location_id IN ({})".format(locations_subquery)
             bind_values['location_id'] = location_id
 
         stmt = "SELECT {fields_to_select} FROM {dogs_table} AS dogs"

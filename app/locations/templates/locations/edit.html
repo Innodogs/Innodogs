@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block title %} {{ title }} location {% endblock %}
+
+{% block content %} 
+
+    <h4 class="header center red-text text-lighten-2">{{ title }} location</h4>
+    <form action="" method="post">
+      <div>
+        {{ form.csrf_token }}
+        {{ render_field(form.name) }}
+	{{ render_field(form.description) }}
+        <div class="col s4">
+	{{ render_field(form.parent_id) }}
+        </div>
+        <input type="submit" value="Done" class="btn center">
+      </div>
+    </form>
+
+{% endblock %}
