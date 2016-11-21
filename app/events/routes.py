@@ -125,7 +125,7 @@ def new_expenditure():
         ExpenditureRepository.add_new_expenditure(expenditure)
         return redirect(url_for('.edit_expenditure', expenditure_id=expenditure.id))
     else:
-        return render_template('finance/expenditure_form.html', action='.new_expenditure', form=form)
+        return render_template('finance/expenditure_form.html', title="Add expenditure", action='.new_expenditure', form=form)
 
 
 @events.route('/financial/expenditure/<int:expenditure_id>/edit', methods=['GET', 'POST'])
@@ -240,7 +240,7 @@ def add_inpayment():
         form.populate_obj(inpayment)
         InpaymentRepository.add_new_inpayment(inpayment)
         flash('Inpayment added!', 'info')
-        return redirect(url_for('.add_inpayment'))
+        return redirect(url_for('.inpayments_list_date'))
     return render_template('finance/inpayment_form.html', form=form, title='Add inpayment', action='.add_inpayment')
 
 

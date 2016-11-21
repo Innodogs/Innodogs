@@ -4,7 +4,8 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-
+    <div class="section"></div>
+    <div class="z-depth-1" style="background-color: white; padding: 25px;">
         <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
         {% if action == '.edit_inpayment' %}
             <form action="{{ url_for(action, id=id) }}" method="post">
@@ -19,18 +20,20 @@
                 {{ render_field(form.amount) }}
             </div>
             <div class="col s4">
-                <dt>{{ form.datetime.label }}
-                <dd><input type="date" class="datepicker" value=" {{ form.datetime.data }}"/>
-                </dd>
+                {{ render_field(form.datetime) }}
             </div>
             <div class="col s4">
                 {{ render_field(form.user_id) }}
             </div>
         </div>
         {{ render_field(form.comment) }}
-        <input type="submit" value="Submit" class="btn"/>
+    <div class="row">
+        <input type="submit" style="float: right;" value="Add" class="btn green"/>
     </div>
-    </form>
+        </form>
+
+
+    </div>
     <script>
         $(document).ready(function () {
 
