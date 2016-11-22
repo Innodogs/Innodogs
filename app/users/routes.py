@@ -66,7 +66,8 @@ def user_list():
     users = None
     form = UsersFilterForm()
     if form.validate_on_submit():
-        users = UsersRepository.get_users_by_criteria(form.name.data, form.is_volunteer.data, form.is_admin.data)
+        users = UsersRepository.get_users_by_criteria(form.name.data, form.is_volunteer.data,
+                                                      form.is_admin.data, form.is_active.data)
     else:
         users = UsersRepository.get_all_users()
     return render_template('list.html', users=users, form=form)

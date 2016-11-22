@@ -9,6 +9,6 @@ class UsersFilterForm(FlaskForm):
     Form for user filtering
     """
     name = StringField("User name")
-    is_user = BooleanField("User", default=False)
+    is_active = BooleanField("Is active", default=False)
     is_volunteer = BooleanField("Volunteer", default=False)
     is_admin = BooleanField("Admin", default=False)

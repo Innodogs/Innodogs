@@ -49,7 +49,7 @@ class UsersRepository:
         return user
 
     @classmethod
-    def get_users_by_criteria(cls, name, is_volunteer, is_admin):
+    def get_users_by_criteria(cls, name, is_volunteer, is_admin, is_active):
         """Return list of users according given criteries"""
         users_column_list = QueryHelper.get_columns_string(UserMapping, "u")
         where_clause = ""
@@ -65,7 +65,12 @@ class UsersRepository:
         if is_admin:
             if where_clause:
                 where_clause += " AND "
-            where_clause += " u.is_admin = true"
+            where_clause += " u.is_admin=true"
+
+        if is_active:
+            if where_clause:
+                where_clause += " AND "
+            where_clause += " u._is_active=true"
 
         if where_clause:
             where_clause = "WHERE " + where_clause
@@ -74,7 +79,7 @@ class UsersRepository:
                     'FROM "{users_table}" AS u {where_cl}'
                     .format(cols=users_column_list, users_table=UserMapping.description,
                     where_cl=where_clause))
-        print(stmt)
+
         user = db.session.query(User).from_statement(stmt).params().all()
         return user
 
