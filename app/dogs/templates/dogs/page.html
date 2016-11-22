@@ -40,7 +40,7 @@
                     <div class="row">
                         <div class="col s6">
                             <label>Name</label>
-                            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">{{ dog.dog.name }}</div>
+                            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;">{{ dog.dog.name if dog.dog.name else 'Без имени' }}</div>
                         </div>
                         <div class=" col s3">
                             <label>Sex</label>
