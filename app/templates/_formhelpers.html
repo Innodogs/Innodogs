@@ -60,7 +60,7 @@
     {% endwith -%}
 {% endmacro -%}
 
-{% macro fancy_render_field(field, placeholder='') %}
+{% macro fancy_render_field(field, placeholder='', multiple=None) %}
     {% set class_ = '' %}
     {{ field.label }}
     {% if placeholder %}
@@ -72,8 +72,19 @@
         {% if field.type in ('SelectField', 'BooleanField') %}
             {% set class_ = ' browser-default' %}
         {% endif %}
-
-        {{ field(placeholder=field.description, class=class_)|safe }}
+        {% if field.type == 'FileField' %}
+            <div class="file-field input-field">
+                <div class="btn">
+                    <span>{{ field.description }}</span>
+                    {{ field(placeholder=field.description, class=class_, multiple=multiple)|safe }}
+                </div>
+                <div class="file-path-wrapper">
+                    <input class="file-path validate" type="text" placeholder="Upload one or more files">
+                </div>
+            </div>
+        {% else %}
+            {{ field(placeholder=field.description, class=class_, multiple=multiple)|safe }}
+        {% endif %}
     {% endif %}
     {% if field.errors %}
         <div class="alert alert-danger" role="alert">

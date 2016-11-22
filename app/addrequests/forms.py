@@ -5,11 +5,11 @@ from wtforms.validators import DataRequired, Length
 
 
 class AddRequestForm(FlaskForm):
-    description = TextAreaField('Description', validators=[
+    description = TextAreaField('Description', description='Description of a dog. Sex, possible location, etc.', validators=[
         DataRequired(),
         Length(min=4)
     ])
-    pictures = FileField('Pictures', validators=[
+    pictures = FileField('Pictures', description='Pictures of a dog', validators=[
         FileAllowed(['jpg', 'png'], 'Images only!')
     ])
 
