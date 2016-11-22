@@ -3,9 +3,9 @@ from typing import List, Tuple, Iterable, Dict
 from sqlalchemy import text
 
 from app import db
-from app.dogs.proxy_models import DogWithSignificantEvents
+from app.dogs.proxy_models import DogWithSignificantEvents, DogWithEvents
 from app.events.finance.models import ExpenditureMapping
-from app.events.proxy_models import EventWithEventType
+from app.events.proxy_models import EventWithEventType, EventWithTypeAndExpenditure
 from app.dogs.models import Dog, DogMapping, DogPictureMapping, DogPicture
 from app.events.models import EventMapping, Event, Expenditure, FinancialEvent, EventTypeMapping, EventType
 from app.locations.models import LocationMapping, Location
@@ -337,35 +337,32 @@ class DogsRepository:
         dog = cls.get_dog_by_id_with_events(dog_id)
         pictures = DogPictureRepository.get_pictures_by_dog_id(dog_id)
         try:
-            dog.main_picture = next(pic for pic in pictures if pic.is_main)
-            dog.pictures = [pic for pic in pictures if not pic.is_main]
+            dog.dog.main_picture = next(pic for pic in pictures if pic.is_main)
+            dog.dog.pictures = [pic for pic in pictures if not pic.is_main]
         except Exception:
             print("No main picture for do with {id}!".format(id=dog_id))
         return dog
 
     @classmethod
-    def _tuple_to_dog_and_location_and_events(cls, join_tuples: List[Tuple[Dog, Location, Event, Expenditure]]):
+    def _tuple_to_dog_and_location_and_events(cls, join_tuples: List[Tuple[Dog, Location, Event, EventType, Expenditure]]):
         """
         Converts tuple (Dog, Location, Event, Expenditure) to Dog with dog.location = location
         and dog.event_list = [event], dog.financial_event_list = [financial_event] accordingly
 
-        :param join_tuple: Input tuple
+        :param join_tuples: Input tuple
         :return: Dog with location and event list
         """
         if len(join_tuples) == 0:
             return None
-        dog = cls._tuple_to_dog_and_location(join_tuples[0])
-        dog.event_list = []
-        dog.financial_event_list = []
+        dog = None
         for record in join_tuples:
-            if record[3]:
-                event = record[2]
-                expenditure = record[3]
-                fin_event = FinancialEvent()
-                fin_event.post_init(event, expenditure)
-                dog.financial_event_list.append(fin_event)
-            elif record[2]:
-                dog.event_list.append(record[2])
+            if dog is None:
+                dog = DogWithEvents(record[0])
+                if record[1]:
+                    dog.dog.location = record[1]
+            else:
+                event = EventWithTypeAndExpenditure(record[2], record[4], record[3])
+                dog.add_event(event)
 
         return dog
 
@@ -391,14 +388,17 @@ class DogsRepository:
         dog_columns_string = QueryHelper.get_columns_string(DogMapping, "dogs")
         location_columns_string = QueryHelper.get_columns_string(LocationMapping, "locations")
         events_columns_string = QueryHelper.get_columns_string(EventMapping, "events")
+        event_type_columns_string = QueryHelper.get_columns_string(EventTypeMapping, "event_types")
         expenditure_columns_string = QueryHelper.get_columns_string(ExpenditureMapping, "expenditures")
 
-        stmt = text("SELECT {dog_columns}, {location_columns}, {event_columns}, {expenditure_columns} "
+        stmt = text("SELECT {dog_columns}, {location_columns}, {event_columns}, {event_type_columns}, "
+                    "{expenditure_columns} "
                     "FROM {dogs_table} AS dogs "
                     "LEFT JOIN {locations_table} AS locations ON dogs.location_id = locations.id "
                     "LEFT JOIN {event_table} AS events ON dogs.id = events.dog_id "
+                    "LEFT JOIN {event_types_table} AS event_types ON event_types.id = events.event_type_id "
                     "LEFT JOIN {expenditure_table} AS expenditures ON events.expenditure_id = expenditures.id "
-                    "WHERE dogs.id = :id "
+                    "WHERE dogs.id = :id ORDER BY events.datetime DESC"
                     .format(dog_columns=dog_columns_string,
                             location_columns=location_columns_string,
                             event_columns=events_columns_string,
@@ -406,10 +406,12 @@ class DogsRepository:
                             dogs_table=DogMapping.description,
                             locations_table=LocationMapping.description,
                             event_table=EventMapping.description,
-                            expenditure_table=ExpenditureMapping.description
+                            expenditure_table=ExpenditureMapping.description,
+                            event_types_table=EventTypeMapping.description,
+                            event_type_columns=event_type_columns_string
                             ))
         dog_id = int(dog_id)
-        result = db.session.query(Dog, Location, Event, Expenditure).from_statement(stmt).params(id=dog_id).all()
+        result = db.session.query(Dog, Location, Event, EventType, Expenditure).from_statement(stmt).params(id=dog_id).all()
         return cls._tuple_to_dog_and_location_and_events(result)
 
     @classmethod
