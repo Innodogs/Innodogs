@@ -48,6 +48,33 @@ class UsersRepository:
         user = db.session.query(User).from_statement(stmt).params().all()
         return user
 
+    @classmethod
+    def get_users_by_criteria(cls, name, is_volunteer, is_admin):
+        """Return list of users according given criteries"""
+        users_column_list = QueryHelper.get_columns_string(UserMapping, "u")
+        where_clause = ""
 
+        if name:
+            where_clause = " u.name='{uname}'".format(uname=name)
 
+        if is_volunteer:
+            if where_clause:
+                where_clause += " AND "
+            where_clause += " u.is_volunteer=true"
+
+        if is_admin:
+            if where_clause:
+                where_clause += " AND "
+            where_clause += " u.is_admin = true"
+
+        if where_clause:
+            where_clause = "WHERE " + where_clause
+
+        stmt = text('SELECT {cols} '
+                    'FROM "{users_table}" AS u {where_cl}'
+                    .format(cols=users_column_list, users_table=UserMapping.description,
+                    where_cl=where_clause))
+        print(stmt)
+        user = db.session.query(User).from_statement(stmt).params().all()
+        return user
 

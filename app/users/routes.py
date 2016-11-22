@@ -12,6 +12,7 @@ from . import users
 from .models import User
 from .repository import UsersRepository
 from .utils import requires_roles
+from .forms import UsersFilterForm
 
 
 @users.route('/profile', methods=['GET', 'POST'])
@@ -60,7 +61,12 @@ def login_failure_callback(e):
     return jsonify(error=str(e))
 
 
-@users.route('/list')
+@users.route('/list', methods=['GET','POST'])
 def user_list():
-    users = UsersRepository.get_all_users()
-    return render_template('list.html', users=users)
+    users = None
+    form = UsersFilterForm()
+    if form.validate_on_submit():
+        users = UsersRepository.get_users_by_criteria(form.name.data, form.is_volunteer.data, form.is_admin.data)
+    else:
+        users = UsersRepository.get_all_users()
+    return render_template('list.html', users=users, form=form)
