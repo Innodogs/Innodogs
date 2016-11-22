@@ -18,7 +18,7 @@ class DogsFilterForm(FlaskForm):
 
     name = StringField("Dog's name")
     sex = SelectField("Sex", [Optional()], choices=(("", "Choose sex of dog"), ("male", "Male"), ("female", "Female")))
-    location_id = SelectField('Location', choices=[], coerce=int)
+    location_id = SelectField('Location', [Optional()], choices=[], coerce=int)
     is_adopted = BooleanField("Is adopted")
     page = IntegerField("Page")
 
