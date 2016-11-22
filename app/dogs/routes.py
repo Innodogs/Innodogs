@@ -163,6 +163,10 @@ def upload_dog_picture():
 def delete_dog_picture(pic_id: int):
     pic = DogPictureRepository.get_picture_by_id(pic_id)
     pictures = DogPictureRepository.get_pictures_by_dog_id(pic.dog_id)
+    if not pic.is_main:
+        pic.dog_id = None
+        DogPictureRepository.update_picture(pic)
+        return jsonify({'changed_main': False})
     would_be_main = None
     if pictures:
         for p in filter(lambda x: x.id != pic.id, pictures):
