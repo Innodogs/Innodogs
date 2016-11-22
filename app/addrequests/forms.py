@@ -11,7 +11,7 @@ class AddRequestForm(FlaskForm):
     ])
     pictures = FileField('Pictures', description='Pictures of a dog', validators=[
         FileAllowed(['jpg', 'png'], 'Images only!')
-    ])
+    ], render_kw={'multiple': True})
 
 
 class RejectRequestForm(FlaskForm):

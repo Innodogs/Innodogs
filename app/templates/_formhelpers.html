@@ -60,7 +60,7 @@
     {% endwith -%}
 {% endmacro -%}
 
-{% macro fancy_render_field(field, placeholder='', multiple=None) %}
+{% macro fancy_render_field(field, placeholder='') %}
     {% set class_ = '' %}
     {% if field.type != 'BooleanField' %} {#booleanfield требует чтобы label был внизу. Нельзя взять и перенести это для всех филдов, тогда верстка попадает#}
         {{ field.label }}
@@ -78,14 +78,14 @@
             <div class="file-field input-field">
                 <div class="btn">
                     <span>{{ field.description }}</span>
-                    {{ field(placeholder=field.description, class=class_, multiple=multiple)|safe }}
+                    {{ field(placeholder=field.description, class=class_)|safe }}
                 </div>
                 <div class="file-path-wrapper">
                     <input class="file-path validate" type="text" placeholder="Upload one or more files">
                 </div>
             </div>
         {% else %}
-            {{ field(placeholder=field.description, class=class_, multiple=multiple)|safe }}
+            {{ field(placeholder=field.description, class=class_)|safe }}
         {% endif %}
     {% endif %}
     {% if field.type == 'BooleanField' %}

@@ -7,7 +7,7 @@
               enctype="multipart/form-data">
             {{ form.csrf_token }}
             {{ fancy_render_field(form.description) }}
-            {{ fancy_render_field(form.pictures, multiple="") }}
+            {{ fancy_render_field(form.pictures) }}
             <div>
                 <button class="btn waves-effect waves-light" type="submit" name="action">Submit
                     <i class="material-icons right">send</i>
