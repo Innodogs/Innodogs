@@ -165,10 +165,9 @@ def inpayments_list_date():
 @login_required
 @requires_roles('volunteer')
 def delete_event(event_id: int):
-    if request.method == 'GET':
-        return "delete form"
-    elif request.method == 'POST':
-        return "deleted!"
+    event = EventRepository.get_event_by_id(event_id)
+    EventRepository.delete_event(event_id)
+    return redirect(url_for('dogs.page_about_dog',dog_id=event.dog_id))
 
 
 @events.route('/types', methods=['GET'])

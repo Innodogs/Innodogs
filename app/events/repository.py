@@ -50,6 +50,16 @@ class EventTypeRepository:
         return result
 
     @classmethod
+    def get_event_by_id(cls, event_id):
+        """Get event"""
+        e_columns_string = QueryHelper.get_columns_string(EventMapping, "event")
+        stmt = text("SELECT {e_columns} FROM {e_table} WHERE id = :id"
+                    .format(e_columns=e_columns_string,
+                            e_table=EventMapping.description))
+        result = db.session.query(EventType).from_statement(stmt).params(id=event_id).one()
+        return result
+
+    @classmethod
     def add_new_event_type(cls, eventtype):
         """Add new type of events"""
         columns, substitutions, params_dict = QueryHelper.get_insert_strings_and_dict(EventTypeMapping, eventtype,
@@ -89,7 +99,6 @@ class EventTypeRepository:
 
 
 class EventRepository:
-
     @classmethod
     def get_events_by_expenditure_id(cls, expenditure_id: int):
         """Gets all events by expenditure id, joined with dog and type"""
@@ -108,11 +117,20 @@ class EventRepository:
                             events_table=EventMapping.description,
                             dogs_table=DogMapping.description
                             ))
-        result = db.session.query(Event, EventType, Dog).from_statement(stmt.params(expenditure_id=expenditure_id)).all()
+        result = db.session.query(Event, EventType, Dog).from_statement(
+            stmt.params(expenditure_id=expenditure_id)).all()
         result_list = []
         for result_tuple in result:
             result_list.append(EventWithEventTypeAndDog(result_tuple[0], result_tuple[1], result_tuple[2]))
         return result_list
+
+    @classmethod
+    def delete_event(cls, event_id):
+        """Delete event"""
+        query = text(
+            "DELETE FROM {table_name} AS e WHERE e.id = {id}".format(table_name=EventMapping.description,
+                                                                     id=event_id))
+        db.engine.execute(query)
 
     @classmethod
     def get_event_by_id(cls, event_id: int):
