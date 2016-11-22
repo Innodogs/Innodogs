@@ -72,7 +72,7 @@
         <a href="{{ url_for('main.index') }}" style="color:black;">
             <img class="responsive-img" style="width: 50px; margin: 4px;"
                  src="{{ url_for('static', filename='icon.png') }}"/>
-            <a href="{{ url_for('main.index') }}" class="brand-logo" style="color:black;">InnoDog</a></a>
+            <a href="{{ url_for('main.index') }}" class="brand-logo" style="color:black;">InnoDogs</a></a>
 
         <ul id="user_menu" class="dropdown-content">
             <li><a href="{{ url_for('users.profile') }}">Profile</a></li>
@@ -84,6 +84,7 @@
             <li><a href="{{ url_for('addrequests.requests_list') }}">Add requests</a></li>
             <li><a href="{{ url_for('events.inpayments_list_date') }}">Finances</a></li>
             <li><a href="{{ url_for('events.event_type_list') }}">Event types</a></li>
+            <li><a href="{{ url_for('locations.locations_list') }}">Locations</a></li>
             <li class="divider"></li>
         </ul>
 
