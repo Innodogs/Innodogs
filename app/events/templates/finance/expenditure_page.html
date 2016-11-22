@@ -1,31 +1,26 @@
 {% extends "base.html" %}
 {% from "_formhelpers.html" import render_field %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Expenditure details{% endblock %}
 
 {% block content %}
+
     <div class="section"></div>
+    {% if current_user.is_volunteer %}
+        <div id="editblock" style="position:absolute;margin-left: -80px">
+            <a href="{{ url_for('.edit_expenditure', expenditure_id=expenditure.id) }}"
+               class="btn-floating btn-large waves-effect waves-light red"><i class="large material-icons">mode_edit</i></a>
+        </div>
+    {% endif %}
     <div class="z-depth-1" style="background-color: white; padding: 25px;">
-        <h4 class="header center red-text text-lighten-2">{{ title }}</h4>
-        {% if action == '.edit_expenditure' %}
-            <form action="{{ url_for(action, expenditure_id=id) }}" method="post">
-        {% else %}
-            <form action="{{ url_for(action) }}" method="post">
-        {% endif %}
-        <div class="row">
-            {{ form.id }}
-            {{ form.hidden_tag() }}
-            <div class="col s4">
-                {{ render_field(form.amount) }}
-            </div>
-            <div class="col s4">
-                {{ render_field(form.datetime) }}
-            </div>
-        </div>
-        <div class="row">
-            {{ render_field(form.comment) }}
-        </div>
-        {% if id %}
+        <h3>Expenditure # {{ expenditure.id }}</h3>
+        <p>Amount: {{ expenditure.amount }}</p>
+        <p>Datetime: {{ expenditure.datetime }}</p>
+        <p>Description:</p>
+        <p>
+            {{ expenditure.comment }}
+        </p>
+        {% if related_events %}
             <div class="row">
                 <h4>Related events</h4>
                 <table>
@@ -46,7 +41,7 @@
                     {% for event in related_events %}
                         <tr>
                             <td>
-                                <a href="{{ url_for('.edit_event_with_dog', event_id=event.event.id) }}">{{ event.event.datetime }}</a>
+                                {{ event.event.datetime }}
                             </td>
                             <td>
                                 {{ event.event_type.type_name }}
@@ -61,14 +56,6 @@
                     {% endfor %}
                 </table>
             </div>
-            <a href="{{ url_for('.add_for_expenditure', expenditure_id=id) }}" class="btn">Add new event</a>
         {% endif %}
-        <div class="row">
-            <input type="submit" style="float: right;" value="Submit" class="btn green"/>
-        </div>
-        </form>
     </div>
-    <script>
-
-    </script>
 {% endblock %}

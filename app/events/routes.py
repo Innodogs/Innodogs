@@ -128,6 +128,16 @@ def new_expenditure():
         return render_template('finance/expenditure_form.html', title="Add expenditure", action='.new_expenditure', form=form)
 
 
+@events.route('/financial/expenditure/<int:expenditure_id>', methods=['GET', 'POST'])
+def show_expenditure(expenditure_id: int):
+    try:
+        expenditure = ExpenditureRepository.get_expenditure_by_id(expenditure_id)
+    except NoResultFound:
+        abort(404)
+    related_events = EventRepository.get_events_by_expenditure_id(expenditure_id)
+    return render_template('finance/expenditure_page.html', expenditure=expenditure, related_events=related_events)
+
+
 @events.route('/financial/expenditure/<int:expenditure_id>/edit', methods=['GET', 'POST'])
 @login_required
 @requires_roles('volunteer')
@@ -142,7 +152,7 @@ def edit_expenditure(expenditure_id: int):
     if form.validate_on_submit():
         form.populate_obj(expenditure)
         ExpenditureRepository.update_expenditure(expenditure)
-        return redirect(url_for('.inpayments_list'))
+        return redirect(url_for('.inpayments_list_date'))
     else:
         return render_template('finance/expenditure_form.html', action='.edit_expenditure', form=form, id=expenditure_id, related_events=related_events)
 
@@ -158,7 +168,6 @@ def inpayments_list_date():
     if (startdate is not None and enddate is not None):
         inps = InpaymentRepository.get_all_inpayments_by_date(startdate, enddate)
     return render_template('finance/list.html', inpayments=inps, form=form, action='.inpayments_list_date')
-
 
 
 @events.route('/<int:event_id>/delete', methods=['GET', 'POST'])

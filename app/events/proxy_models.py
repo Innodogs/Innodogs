@@ -1,4 +1,5 @@
 from app.dogs.models import Dog
+from app.events.finance.models import Expenditure
 from app.events.models import EventType, Event
 
 __author__ = 'Xomak'
@@ -23,3 +24,14 @@ class EventWithEventTypeAndDog:
         self.event = event
         self.event_type = event_type
         self.dog = dog
+
+
+class EventWithTypeAndExpenditure:
+    """
+    Event with its expenditure
+    """
+
+    def __init__(self, event: Event, expenditure: Expenditure, event_type: EventType):
+        self.event = event
+        self.expenditure = expenditure
+        self.event_type = event_type
