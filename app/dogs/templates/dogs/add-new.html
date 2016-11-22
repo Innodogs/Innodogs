@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "_formhelpers.html" import fancy_render_field %}
+{% from "_formhelpers.html" import fancy_render_field as ff %}
 {% block title %} Add dog {% endblock %}
 
 {% macro fancy_render_field(field, placeholder='') %}
@@ -37,28 +37,21 @@
 
     <div class="row"
          style="padding: 20px; width: 110%;     margin-left: -5%;   background: white;     border-radius: 16px;    border: 2px solid gainsboro;">
-        <div class="col s6">
-            <div class="row">
-                <div class="col s8">
-                    <label>User name</label>
-                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ current_user.name }}
-                    </div>
-                    <label>Date</label>
-                    <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ date.strftime("%d.%m.%Y") }}
-                    </div>
-                </div>
+        <div class="col s4">
+            <label>User name</label>
+            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ current_user.name }}
+            </div>
+            <label>Date</label>
+            <div style="   margin-top: 16px; margin-bottom: 15px;   border-bottom: 1px solid gainsboro;"> {{ date.strftime("%d.%m.%Y") }}
             </div>
         </div>
-        <form class="col s6 approve-form" style="border-left: 1px solid gainsboro;" method="post"
+        <form class="col s8 approve-form" style="border-left: 1px solid gainsboro;" method="post"
+              enctype="multipart/form-data"
               action="{{ url_for(".add_dog_without_request") }}">
             {{ add_dog_form.csrf_token }}
             <div class="row">
-                <div class="col s4">
-                    <img class="materialboxed" data-caption="A picture of some deer and tons of trees" width="100%"
-                         height="auto"
-                         src="1366695174.png">
-                </div>
-                <div class="col s8">
+                <div class="col s12">
+                    <div>{{ ff(add_dog_form.pictures) }}</div>
                     <div>
                         {{ fancy_render_field(add_dog_form.name) }}
                     </div>
@@ -89,8 +82,10 @@
                     </div>
                 </div>
                 <div class="row">
-                    <input type="submit" class="waves-effect waves-light btn" style="float: right;margin-right: 20px;"
-                           value="Add"/>
+                    <button style="float:right; margin-right: 2em" class="btn waves-effect waves-light" type="submit"
+                            name="action">Add
+                        <i class="material-icons right">send</i>
+                    </button>
                 </div>
             </div>
 

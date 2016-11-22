@@ -1,3 +1,4 @@
+from flask_wtf.file import FileAllowed, FileField
 from flask_wtf import FlaskForm
 from wtforms import TextAreaField, HiddenField
 from wtforms.validators import DataRequired, Length, ValidationError
@@ -47,13 +48,12 @@ class DogForm(FlaskForm):
         DataRequired(),
         Length(min=4)
     ], description='A comment about the dog')
-    is_hidden = BooleanField('Is hidden', validators=[
-        # DataRequired()
-    ])
-    is_adopted = BooleanField('Is adopted', validators=[
-        # DataRequired()
-    ])
+    is_hidden = BooleanField('Is hidden')
+    is_adopted = BooleanField('Is adopted')
     location_id = SelectField('Location', choices=[], coerce=int)
+    pictures = FileField('Pictures', description='Pictures of a dog', validators=[
+        FileAllowed(['jpg', 'png'], 'Images only!')
+    ], render_kw={'multiple': True})
     main_picture_id = HiddenField('Main picture id out of all pictures', validators=[main_picture_must_be_not_deleted])
     deleted_picture_ids = HiddenField('Deleted picture ids', validators=[deleted_pictures_format])
 

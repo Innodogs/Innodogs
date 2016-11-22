@@ -1,9 +1,11 @@
+import os
 import re
 from datetime import datetime
 
 import flask
-from flask import abort
+from flask import abort, jsonify
 from flask import current_app
+from flask import flash
 from flask import render_template, url_for, redirect
 from flask import request
 from flask_login import login_required
@@ -13,10 +15,11 @@ from app.dogs.forms import DogForm
 from app.dogs.forms import DogsFilterForm
 from app.events.repository import EventTypeRepository
 from app.users.utils import requires_roles
+from app.utils.helpers import save_pictures
 from app.utils.pages_helper import Pages
 from . import dogs
-from .models import Dog
-from .repository import DogsRepository
+from .models import Dog, DogPicture
+from .repository import DogsRepository, DogPictureRepository
 
 __author__ = 'Xomak'
 
@@ -108,12 +111,16 @@ def add_dog_without_request():
     add_dog_form = DogForm()
     if add_dog_form.validate_on_submit():
         dog = Dog()
-        dog.name = add_dog_form.name.data
-        dog.sex = add_dog_form.sex.data
-        dog.description = add_dog_form.description.data
-        dog.is_hidden = add_dog_form.is_hidden.data
-        dog.is_adopted = add_dog_form.is_adopted.data
-        DogsRepository.new_dog(dog)
+        add_dog_form.populate_obj(dog)
+        saved_dog = DogsRepository.new_dog(dog)
+        for i, (abspath_image_file, relpath_image_file) in enumerate(save_pictures(request)):
+            is_first = i == 0
+            picture = DogPicture(dog_id=saved_dog.id, uri=relpath_image_file, is_main=is_first)
+            is_saved = DogPictureRepository.insert_picture(picture)
+            if not is_saved:
+                os.remove(abspath_image_file)
+
+        flash("Added a dog with name {}".format(dog.name) if dog.name else "Added a dog with id {}".format(dog.id))
         return redirect(url_for('.dogs_list'))
     return render_template('dogs/add-new.html', date=datetime.now(), add_dog_form=add_dog_form)
 
