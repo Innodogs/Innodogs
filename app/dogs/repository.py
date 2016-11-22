@@ -228,7 +228,7 @@ class DogsRepository:
             where_clause += " dogs.is_adopted = :is_adopted"
             bind_values['is_adopted'] = is_adopted
 
-        if location_id is not None:
+        if location_id is not None and location_id > 0:
             if len(where_clause) > 0:
                 where_clause += " AND"
             locations_subquery = "WITH RECURSIVE r AS " \

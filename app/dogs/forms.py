@@ -25,7 +25,7 @@ class DogsFilterForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         all_locations = LocationsRepository.get_all_locations()
-        self.location_id.choices = [(location.id, location.name) for location in all_locations]
+        self.location_id.choices = [(-1, "Choose location")] + [(location.id, location.name) for location in all_locations]
 
 
 def main_picture_must_be_not_deleted(dog_form, main_picture_field):
