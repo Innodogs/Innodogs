@@ -120,7 +120,7 @@ def add_dog_without_request():
             if not is_saved:
                 os.remove(abspath_image_file)
 
-        flash("Added a dog with name {}".format(dog.name) if dog.name else "Added a dog with id {}".format(dog.id))
+        flash("Added a dog with name {}".format(dog.name) if dog.name else "Added a dog with id {}".format(saved_dog.id))
         return redirect(url_for('.dogs_list'))
     return render_template('dogs/add-new.html', date=datetime.now(), add_dog_form=add_dog_form)
 

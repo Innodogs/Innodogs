@@ -151,7 +151,7 @@ SavedFile = namedtuple('SavedFile', ['abspath', 'relpath'])
 
 
 def save_pictures(request, list_name='pictures') -> List[SavedFile]:
-    images = request.files.getlist(list_name)
+    images = filter(lambda img: bool(img.filename), request.files.getlist(list_name))
     saved = []
     if images:
         for img in images:
