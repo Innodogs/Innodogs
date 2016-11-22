@@ -360,9 +360,8 @@ class DogsRepository:
                 dog = DogWithEvents(record[0])
                 if record[1]:
                     dog.dog.location = record[1]
-            else:
-                event = EventWithTypeAndExpenditure(record[2], record[4], record[3])
-                dog.add_event(event)
+            event = EventWithTypeAndExpenditure(record[2], record[4], record[3])
+            dog.add_event(event)
 
         return dog
 
