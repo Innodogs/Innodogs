@@ -157,8 +157,8 @@ def save_pictures(request, list_name='pictures') -> List[SavedFile]:
         for img in images:
             # Create Images
             file_name = str(uuid.uuid4()) + secure_filename(img.filename)
-            abspath_image_file = os.path.join(current_app.config['UPLOAD_FOLDER_ABSOLUTE'], file_name)
-            relpath_image_file = os.path.join(current_app.config['UPLOAD_FOLDER'], file_name)
+            abspath_image_file = current_app.config['UPLOAD_FOLDER_ABSOLUTE'] + "/" + file_name
+            relpath_image_file = current_app.config['UPLOAD_FOLDER'] + "/" + file_name
             img.save(abspath_image_file)
             saved.append(SavedFile(abspath_image_file, relpath_image_file))
     return saved
