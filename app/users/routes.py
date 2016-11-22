@@ -62,6 +62,8 @@ def login_failure_callback(e):
 
 
 @users.route('/list', methods=['GET','POST'])
+@login_required
+@requires_roles('admin')
 def user_list():
     users = None
     form = UsersFilterForm()
