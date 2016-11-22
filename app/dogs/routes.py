@@ -145,3 +145,36 @@ def edit(dog_id: int):
     form = DogForm(obj=dog)
     form.main_picture_id.data = dog.main_picture.id if dog.main_picture else None
     return render_template('dogs/edit.html', form=form, dog=dog)
+
+
+@dogs.route('/picture', methods=['POST'])
+def upload_dog_picture():
+    pictures = []
+    for abspath_image_file, relpath_image_file in save_pictures(request):
+        picture = DogPicture(uri=relpath_image_file)
+        is_saved = DogPictureRepository.insert_picture(picture)
+        if not is_saved:
+            os.remove(abspath_image_file)
+        pictures.append(picture)
+    return jsonify(pictures)
+
+
+@dogs.route('/picture/<int:pic_id>', methods=['DELETE'])
+def delete_dog_picture(pic_id: int):
+    pic = DogPictureRepository.get_picture_by_id(pic_id)
+    was_main = pic.is_main
+    was_dog_id = pic.dog_id
+    pic.is_main = False
+    pic.dog_id = None
+
+    response = {'changed_main': was_main}
+    if was_main and was_dog_id:
+        pictures = DogPictureRepository.get_pictures_by_dog_id(was_dog_id)
+        if pictures:
+            would_be_main = next(iter(pictures))
+            would_be_main.is_main = True
+            is_updated = DogPictureRepository.transactional_pictures_update(pic, would_be_main)
+            print(is_updated)
+            response['new_main_id'] = would_be_main.id
+            response['old_main_id'] = pic_id
+    return jsonify(response), 200

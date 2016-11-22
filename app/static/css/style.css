@@ -35,3 +35,23 @@
     border-radius: 16px;
     border: 2px solid gainsboro;
 }
+
+.img-holder {
+    position: relative;
+}
+.img-holder.all-pictures {
+    float: left;
+    margin: 0.5em;
+    width:33%;
+}
+.img-holder .delete-pic-button {
+    position: absolute;
+    display: none;
+    height: 10px;
+    width: 10px;
+    top: 0;
+    right: 0;
+}
+.img-holder:hover .delete-pic-button {
+    display: block;
+}
