@@ -62,8 +62,10 @@
 
 {% macro fancy_render_field(field, placeholder='', multiple=None) %}
     {% set class_ = '' %}
-    {{ field.label }}
-    {% if placeholder %}
+    {% if field.type != 'BooleanField' %} {#booleanfield требует чтобы label был внизу. Нельзя взять и перенести это для всех филдов, тогда верстка попадает#}
+        {{ field.label }}
+    {% endif %}
+    {% if placeholder %} {#todo: убрать проверку, сделать дефолтное значение None. Проверить что ничего не упало#}
         {{ field(placeholder=placeholder)|safe }}
     {% else %}
         {% if field.type == 'TextAreaField' %}
@@ -85,6 +87,9 @@
         {% else %}
             {{ field(placeholder=field.description, class=class_, multiple=multiple)|safe }}
         {% endif %}
+    {% endif %}
+    {% if field.type == 'BooleanField' %}
+        {{ field.label }}
     {% endif %}
     {% if field.errors %}
         <div class="alert alert-danger" role="alert">
