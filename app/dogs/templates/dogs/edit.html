@@ -50,6 +50,16 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col s6">
+                                {{ fancy_render_field(form.is_adopted) }}
+                            </div>
+                            <div class="col s6">
+                                {#todo: inputfield класс добавить после того как поправить fancy_render_field#}
+                                {{ fancy_render_field(form.is_hidden) }}
+                            </div>
+
+                        </div>
+                        <div class="row">
                             <div class=" col s6">
                                 {{ fancy_render_field(form.location_id) }}
                             </div>
