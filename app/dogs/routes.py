@@ -6,12 +6,13 @@ from flask import abort
 from flask import current_app
 from flask import render_template, url_for, redirect
 from flask import request
+from flask_login import login_required
 from wtforms import BooleanField
 
-from app.dogs.forms import DogForm, EventsForDogForm
+from app.dogs.forms import DogForm
 from app.dogs.forms import DogsFilterForm
-from app.events.models import Event
 from app.events.repository import EventTypeRepository
+from app.users.utils import requires_roles
 from app.utils.pages_helper import Pages
 from . import dogs
 from .models import Dog
@@ -101,6 +102,8 @@ def json_search_dogs():
 
 
 @dogs.route('/add', methods=['GET', 'POST'])
+@login_required
+@requires_roles('volunteer')
 def add_dog_without_request():
     add_dog_form = DogForm()
     if add_dog_form.validate_on_submit():
@@ -116,6 +119,8 @@ def add_dog_without_request():
 
 
 @dogs.route('/<int:dog_id>/edit', methods=['POST', 'GET'])
+@login_required
+@requires_roles('volunteer')
 def edit(dog_id: int):
     if request.method == 'GET':
         dog = DogsRepository.get_dog_by_id_with_pictures(dog_id)
