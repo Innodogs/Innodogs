@@ -133,7 +133,7 @@ def edit(dog_id: int):
         dog = Dog()
         form.populate_obj(dog)
         DogsRepository.update_dog(dog)
-        return redirect(url_for('.edit', dog_id=dog_id))
+        return redirect(url_for('.page_about_dog', dog_id=dog_id))
     dog = DogsRepository.get_dog_by_id_with_pictures(dog_id)
     form = DogForm(obj=dog)
     form.main_picture_id.data = dog.main_picture.id if dog.main_picture else None
