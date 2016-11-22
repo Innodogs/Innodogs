@@ -16,25 +16,30 @@
                 {{ form.deleted_picture_ids }}
                 {{ form.main_picture_id }}
                 <div class="row">
-                    <div class="input-field col s4">
+                    <div class="picture-box input-field col s4">
 
                         {% if dog.main_picture %}
-                            <img src="{{ dog.main_picture.resolved_uri }}" width="100%"
-                                 id="main_pic_{{ dog.main_picture.id }}"
-                                 height="auto" alt="a main picture of the dog" class="dog_pic"/>
+                            <div class="img-holder">
+                                <img src="{{ dog.main_picture.resolved_uri }}" width="100%"
+                                     id="main_pic_{{ dog.main_picture.id }}"
+                                     height="auto" alt="a main picture of the dog" class="dog_pic"/>
+                                <a class="delete-pic-button" href="{{ url_for('.delete_dog_picture', pic_id=dog.main_picture.id) }}">x</a>
+                            </div>
                         {% else %}
                             <img width="100%" id="main_pic_unavailable"
                                  height="auto" src="{{ url_for('static', filename='dogs/no.image.available.png') }}"
                                  alt="unknown"/>
                         {% endif %}
                         {% for pic in dog.pictures %}
-                            <img class="dog_pic"
-                                 data-caption="picture of a dog"
-                                 width="33%"
-                                 height="auto"
-                                 style="float:left; margin: 0.5em"
-                                 id="pic_{{ pic.id }}"
-                                 src="{{ pic.resolved_uri }}"/>
+                            <div class="img-holder all-pictures">
+                                <img class="dog_pic"
+                                     data-caption="picture of a dog"
+                                     width="100%"
+                                     height="auto"
+                                     id="pic_{{ pic.id }}"
+                                     src="{{ pic.resolved_uri }}"/>
+                                <a class="delete-pic-button" href="{{ url_for('.delete_dog_picture', pic_id=pic.id) }}">x</a>
+                            </div>
                         {% endfor %}
 
                     </div>
