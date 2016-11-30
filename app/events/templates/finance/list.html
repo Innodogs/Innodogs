@@ -33,14 +33,16 @@
                     <span class="title">
                     {% if inpayment[0].type=="inpayment" %}
                         +
+                        {% set edit_url = url_for('events.edit_inpayment', id=inpayment[0].id) %}
                     {% else %}
                         -
+                        {% set edit_url = url_for('events.edit_expenditure', expenditure_id=inpayment[0].id) %}
                     {% endif %}
                         {{ inpayment[0].amount }}
                     </span>
                         </td>
                         <td>
-                            {{ inpayment[0].datetime.strftime('%Y-%m-%d %H:%m') }}
+                            <a href="{{ edit_url }}">{{ inpayment[0].datetime.strftime('%Y-%m-%d %H:%m') }}</a>
                         </td>
                         <td>
                             {{ inpayment[0].comment }}
